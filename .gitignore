@@ -33,3 +33,6 @@ wandb/
 results/
 experiments/
 checkpoints/
+
+# downloaded MatPES source jsonl (GB-scale, fetched separately)
+process_matpes/data/*.jsonl
