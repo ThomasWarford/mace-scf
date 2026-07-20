@@ -95,9 +95,52 @@ Convention (see `matpes_pipeline/kspace_fields.py`):
   the enumeration order depends on the cutoff.
 - Stored value: `ρ̃(k) = ∫_cell ρ(r) e^(−ik·r) d³r` in electrons, so
   `ρ̃(0)` of `fourier_chg_total` = NELECT and `ρ̃(0)` of
-  `fourier_aeccar_diff` ≈ 0. The repo-internal convention of
+  `fourier_aeccar_diff` = 0 in the continuum (not always in practice — see
+  below). The repo-internal convention of
   `graph_longrange.kspace.evaluate_fourier_series_at_points_flat` is this
   value × (2π)³/V.
+
+### `aeccar_diff` core-region spikes
+
+AECCAR1/2 are VASP's *all-electron* reconstructed densities (unlike CHGCAR,
+the smooth pseudo/valence density), so they carry the sharply-peaked density
+near heavy-element nuclei. A finite FFT grid can't integrate that peak
+exactly, so `ρ̃(0)` of `fourier_aeccar_diff` — exactly 0 in the continuum,
+since AECCAR2 and AECCAR1 both integrate to NELECT — comes out nonzero for a
+minority of frames, up to several electrons in the worst cases (uranium,
+lanthanide, actinide compounds).
+
+Investigated in `analysis/`: the defect isn't smooth grid noise, it's
+single-voxel spikes sitting exactly at heavy nuclei — confirmed one grid
+point wide across every severity level sampled (`raw_spikes.py`,
+`spike_contamination.py`). A single-voxel spike has a flat Fourier spectrum,
+so it contaminates *every* stored k roughly equally, not just the monopole —
+to an atom-centered multipole model this looks like a spurious point charge
+sitting on that nucleus, not just a bad total. That ruled out fixing the grid
+directly (`pin_and_smooth.py`): neighbour-voxel averaging can't undo a defect
+spread across the whole spectrum, and a fixed voxel threshold can spuriously
+trigger on frames that were already fine.
+
+Frames are instead *flagged*, per atom, via `assemble_xyz.py`'s
+`CHECK_AECCAR_TOL_PER_ATOM` (`|ρ̃(0)| / n_atoms > 0.01 e/atom`, recorded as an
+`aeccar_diff_nonzero` violation in `assembly_report.json`). Per atom, not per
+volume or as an absolute cell total: it's a per-nucleus quadrature error that
+accumulates with atom count (Spearman ρ≈0.5 vs NELECT/natoms in a random
+sample, ρ≈0.3 vs volume and only because volume tracks natoms in bulk
+structures) — padding a cell with vacuum can't dilute an error that lives at
+the nuclei, so a per-volume or flat per-cell threshold is physically wrong in
+both directions: it misses small contaminated cells (the newly-caught
+population under the per-atom rule has a median of 3 atoms) and over-flags
+large ones whose absolute error is just ordinary per-atom noise summed over
+many atoms (~20% of the frames flagged under the old flat 0.05 e cutoff were
+released at 0.01 e/atom — their per-atom rate sits inside background noise).
+Currently flags 19,040/774,818 frames (2.46%).
+
+**`REF_fourier_aeccar_diff` is stored raw** — pinning or masking the monopole
+(or the whole channel) is left to the consumer. Check the
+`aeccar_diff_nonzero` violations in `assembly_report.json` before trusting
+this field for a given frame; `chg_total` and `chg_diff` come from CHGCAR,
+the smooth pseudo-density, and aren't affected by this failure mode.
 
 extxyz `info` only handles 1-D arrays reliably, so everything is flattened
 row-major. Reshape recipe:
