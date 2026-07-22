@@ -155,6 +155,38 @@ k_vectors = triplets @ (2 * np.pi * np.linalg.inv(atoms.cell[:].T))
 `fourier_grid_dims` records the FFT grid the coefficients came from.
 Coefficients are float32 in the xyz (`--float64-fourier` to change).
 
+## Split files: xyz for training, HDF5 for k-space
+
+`mace_scf`'s training loader reads extxyz directly into memory via `ase.io`
+(no on-disk intermediate format; HDF5 loading exists upstream but is
+unused and blocked by `check_args.py`). ASE's extxyz *info* parser is
+per-frame regex + `literal_eval`, which is fine for scalars but far too slow
+once `k_triplets`/`REF_fourier_*` are in the comment line — those arrays
+are ~98% of the file's bytes and don't matter for energy/force training, so
+they're split out:
+
+- `MatPES-{PBE,R2SCAN}-nofourier.xyz` (`strip_kspace_info.py`) — everything
+  in the "What each frame contains" section above *except* the k-point
+  keys, produced by filtering the comment-line tokens directly (text
+  streaming, not an ASE round-trip). 166 GB → 1.6 GB / 146 GB → 1.3 GB, same
+  frame counts and order as the original combined files.
+- `MatPES-{PBE,R2SCAN}-kspace.h5` (`build_kspace_h5.py`,
+  `submit_kspace_h5.sbatch`) — `k_triplets`, `fc_chg_total`, `fc_chg_diff`,
+  `fc_aeccar_diff` and `grid_dims`, read straight from the npz
+  intermediates (no text parsing at all). Stored CSR-style: each field is
+  one flat dataset concatenated across all frames, plus a `frame_offsets`
+  int64 array of length `n_frames + 1` so frame `i`'s rows are
+  `[frame_offsets[i]:frame_offsets[i+1]]`. This avoids both the ASE parsing
+  cost and the metadata overhead of one HDF5 group per frame (774,818
+  frames total). Also stores `provenance_path` (one string per frame) so
+  alignment against the matching `-nofourier.xyz` can be verified directly
+  — by construction, row `i` in both files is the same npz (both are built
+  by the identical `sorted(glob(f"{npz_dir}/block_*/*.npz"))` iteration
+  order) — rather than assumed from row order alone.
+
+The original combined `MatPES-{PBE,R2SCAN}.xyz` (with everything inline)
+are left in place too.
+
 ## Tests
 
 ```bash
