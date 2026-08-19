@@ -71,6 +71,12 @@ def extended_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--formal_charges_from_data", action="store_true", default=False
     )
+    parser.add_argument(
+        "--formal_charge_noise_sigma",
+        help="Standard deviation of zero-sum Gaussian noise added to per-atom formal charges during training",
+        type=float,
+        default=None,
+    )
     parser.add_argument("--field_feature_max_l", type=int, default=1)
     parser.add_argument("--field_feature_widths", type=str, default="[1.0, 2.0]")
     parser.add_argument(

@@ -21,6 +21,7 @@ def check_config_conflicts(args: argparse.Namespace):
     compute_and_fill_irreps(args)
     check_train_test_files(args)
     check_unsupported_training_options(args)
+    check_formal_charge_noise(args)
     fill_fixedpoint_update_config(args)
     fill_field_readout_config(args)
 
@@ -49,6 +50,30 @@ def check_config_conflicts(args: argparse.Namespace):
         raise ValueError("wandb_watch_log_freq must be a positive integer")
     
     args.config_type_weights = set_configfigtype_weights(args.config_type_weights)
+
+
+FORMAL_CHARGE_DATA_MODELS = ("LocalSplitCharges", "FixedChargeBaselinedMACE")
+
+
+def check_formal_charge_noise(args: argparse.Namespace):
+    sigma = getattr(args, "formal_charge_noise_sigma", None)
+    if sigma is None:
+        return
+    if sigma <= 0.0:
+        raise ValueError(
+            f"formal_charge_noise_sigma must be positive, got {sigma}"
+        )
+    # only these models read per-atom formal charges from the data, so noise is a no-op elsewhere
+    if args.model not in FORMAL_CHARGE_DATA_MODELS:
+        raise ValueError(
+            f"formal_charge_noise_sigma is only supported for model in "
+            f"{list(FORMAL_CHARGE_DATA_MODELS)}, got model={args.model}"
+        )
+    if not args.formal_charges_from_data:
+        raise ValueError(
+            "formal_charge_noise_sigma requires --formal_charges_from_data; without it "
+            "formal charges come from the per-species table and the noise is ignored."
+        )
 
 
 def check_and_fix_heads(args: argparse.Namespace):

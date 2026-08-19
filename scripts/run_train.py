@@ -154,6 +154,11 @@ def main() -> None:
     # Data preparation
     train_set, valid_set, z_table, atomic_energies, test_collections = load_train_valid_sets_from_xyz(args, args.config_type_weights)
     logging.info(f"Atomic energies: {atomic_energies.tolist()}")
+
+    if args.formal_charge_noise_sigma is not None:
+        train_set = mace_scf.data.add_formal_charge_noise(
+            train_set, args.formal_charge_noise_sigma
+        )
     
     train_sampler, valid_sampler = None, None
     if args.distributed:
