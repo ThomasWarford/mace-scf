@@ -4,7 +4,6 @@ python scripts/run_train.py \
     --train_file=train.xyz \
     --valid_fraction=0.2 \
     --test_file=train.xyz \
-    --E0s=average \
     --model=LocalSplitCharges \
     --formal_charges_from_data \
     --formal_charge_noise_sigma=0.1 \
@@ -12,7 +11,7 @@ python scripts/run_train.py \
     --weight_decay=1e-8 \
     --ema \
     --ema_decay=0.99999 \
-    --clip_grad=100 \
+    --clip_grad=50 \
     --batch_size=16 \
     --valid_batch_size=32 \
     --eval_interval=1 \
