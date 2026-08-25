@@ -1,0 +1,48 @@
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      dipole: REF_dipole
+      total_charge: total_charge # if absent, uses 0
+    arrays_keys:
+      forces: REF_forces
+      atomic_multipoles: REF_atomic_multipoles
+
+# --- Backbone (MACE) ----------------------------------------------------------
+interaction_first: RealAgnosticResidualNonLinearInteractionBlock
+interaction: RealAgnosticResidualNonLinearInteractionBlock
+num_interactions: 2
+correlation: 3
+max_ell: 3
+hidden_irreps: 256x0e + 256x1o
+num_radial_basis: 8
+num_cutoff_basis: 5
+MLP_irreps: 16x0e
+r_max: 6.0
+
+# --- Electrostatics -------------------------------------------------------------
+atomic_multipoles_max_l: 1
+atomic_multipoles_smearing_width: 1.5
+kspace_cutoff_factor: 1.5
+electrostatic_pbc_method: pbc
+
+train_schedule:
+  0:
+    name: stage1
+    start: 0
+    end: 99
+    loss:
+      atomic_multipoles: 100.0
+      dipole: 1.0
+      energy_per_atom: 1.0
+      forces: 100.0
+    lr: 0.01
+  1:
+    name: stage2
+    start: 100
+    end: 199
+    loss:
+      dipole: 10.0
+      energy_per_atom: 1000.0
+      forces: 100.0
+    lr: 0.001
