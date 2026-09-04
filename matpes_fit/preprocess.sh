@@ -1,21 +1,22 @@
 #!/bin/bash
-# Preprocess MatPES-{PBE,R2SCAN}-charges.xyz into sharded HDF5 for on-the-fly
-# dataloading, via scripts/preprocess_data.py.
+# Preprocess MatPES-{PBE,R2SCAN}-charges-quick.xyz into sharded HDF5 for
+# on-the-fly dataloading, via scripts/preprocess_data.py.
 #
 # Submit from the mace-scf repository root:
 #   sbatch matpes_fit/preprocess.sh
 #
-# NOTE: the -charges.xyz files must come from the current version of
-# process_matpes/matpes_pipeline/assemble_charges_xyz.py (which reuses
-# assemble_xyz.py's build_atoms and so includes REF_forces/REF_stress/
-# REF_total_charge alongside REF_formal_charges/REF_multipoles). Files
-# generated before that update lack forces/stress/total_charge. Regenerate
-# with `sbatch submit_assembly_charges.sbatch` from process_matpes/ first if
-# unsure.
+# NOTE: -charges-quick.xyz is a stopgap: process_matpes/matpes_pipeline/
+# merge_ref_keys.py copies REF_forces/REF_stress/REF_total_charge/etc. from
+# the existing -nofourier.xyz onto the existing -charges.xyz (which only had
+# REF_formal_charges/REF_multipoles), avoiding a multi-hour re-run of
+# assemble_charges_xyz.py's per-frame pymatgen bond-valence analysis. Once
+# `sbatch submit_assembly_charges.sbatch` (from process_matpes/) finishes
+# regenerating -charges.xyz for real with the current script, switch
+# train_file below back to -charges.xyz and drop the -quick files.
 #
 # scripts/preprocess_data.py reads the whole --train_file with ASE in a
 # single process before any sharding/multiprocessing happens, so this step
-# is not parallelized across NUM_PROCESS. The -charges.xyz files are ~1.5GB
+# is not parallelized across NUM_PROCESS. The -charges*.xyz files are ~1.5GB
 # (Fourier/k-space arrays already stripped), much lighter than the raw
 # 177GB MatPES-PBE.xyz, so this should complete quickly.
 #
@@ -43,7 +44,7 @@ SEED=123
 # order). REF_total_charge is always 0.0 in this data (neutral DFT cells).
 run_preprocess () {
     local functional="$1"
-    local train_file="${XYZ_DIR}/MatPES-${functional}-charges.xyz"
+    local train_file="${XYZ_DIR}/MatPES-${functional}-charges-quick.xyz"
     local h5_prefix="matpes_fit/processed_${functional,,}/"
     local e0s
     e0s=$(cat "e0s_matpes_${functional,,}.txt")
