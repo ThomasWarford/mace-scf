@@ -186,7 +186,7 @@ def main():
 
 
     logging.info("Computing statistics")
-    if len(atomic_energies_dict) == 0:
+    if not atomic_energies_dict:
         atomic_energies_dict = get_atomic_energies(args.E0s, collections.train, z_table)
     atomic_energies: np.ndarray = np.array(
         [atomic_energies_dict[z] for z in z_table.zs]
