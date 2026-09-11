@@ -6,6 +6,7 @@ import ast
 import numpy as np
 import json
 import random
+import time
 import tqdm
 from glob import glob
 import h5py
@@ -32,7 +33,20 @@ from mace.modules import compute_statistics
 
 
 def compute_stats_target(file: str, z_table: AtomicNumberTable, r_max: float, atomic_energies: Tuple, batch_size: int):
-    train_dataset = HDF5Dataset(file, z_table=z_table, r_max=r_max)
+    # h5py can transiently fail to open a shard a sibling process just
+    # finished writing (stale metadata on a networked filesystem); retry
+    # briefly instead of failing the whole preprocessing run over it.
+    last_exc = None
+    for attempt in range(5):
+        try:
+            train_dataset = HDF5Dataset(file, z_table=z_table, r_max=r_max)
+            break
+        except Exception as exc:  # pylint: disable=broad-except
+            last_exc = exc
+            time.sleep(2 * (attempt + 1))
+    else:
+        raise last_exc
+
     train_loader = torch_geometric.dataloader.DataLoader(
         dataset=train_dataset, 
         batch_size=batch_size, 
