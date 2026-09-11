@@ -43,6 +43,7 @@ conda run --live-stream -n mace_scf python -u scripts/preprocess_data.py \
     --train_file="${train_file}" \
     --valid_fraction="${VALID_FRACTION}" \
     --h5_prefix="${h5_prefix}" \
+    --work_dir="${h5_prefix}" \
     --r_max="${R_MAX}" \
     --E0s="${e0s}" \
     --heads="${heads}" \
