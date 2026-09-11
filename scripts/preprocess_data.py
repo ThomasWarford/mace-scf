@@ -41,7 +41,6 @@ def compute_stats_target(file: str, z_table: AtomicNumberTable, r_max: float, at
     )
     
     avg_num_neighbors, mean, std = compute_statistics(train_loader, atomic_energies)
-    # mean/std are per-head arrays; float() needs the single "default" head's scalar.
     output = [avg_num_neighbors, float(np.asarray(mean).reshape(-1)[0]), float(np.asarray(std).reshape(-1)[0])]
     return output
 
