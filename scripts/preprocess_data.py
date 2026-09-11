@@ -41,7 +41,10 @@ def compute_stats_target(file: str, z_table: AtomicNumberTable, r_max: float, at
     )
     
     avg_num_neighbors, mean, std = compute_statistics(train_loader, atomic_energies)
-    output = [avg_num_neighbors, float(mean), float(std)]
+    # mean/std are per-head arrays (mace.modules.utils.compute_statistics); this
+    # repo only preprocesses one head ("default") at a time, so take that head's
+    # scalar. float() on a size-1 (but non-0-d) array raises under current numpy.
+    output = [avg_num_neighbors, float(np.asarray(mean).reshape(-1)[0]), float(np.asarray(std).reshape(-1)[0])]
     return output
 
 
