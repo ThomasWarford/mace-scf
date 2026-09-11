@@ -35,7 +35,7 @@ VALID_FRACTION=0.01
 SEED=123
 
 train_file="${XYZ_DIR}/MatPES-${functional}-charges-quick.xyz"
-h5_prefix="matpes_fit/_processed_${functional,,}_debug/"
+h5_prefix="matpes_fit/processed_${functional,,}/"
 e0s=$(cat "e0s_matpes_${functional,,}.txt")
 heads='{"default": {"info_keys": {"energy": "REF_energy", "total_charge": "REF_total_charge", "stress": "REF_stress"}, "arrays_keys": {"forces": "REF_forces", "charges": "REF_formal_charges", "atomic_multipoles": "REF_multipoles"}}}'
 
