@@ -21,6 +21,12 @@ DEVICE = os.environ.get("MACE_DEVICE", "cpu")
 INCLUDE_FERMI_LEVEL_OBJECTIVE = os.environ.get("MACE_TEST_FERMI_LEVEL", "1") == "1"
 INCLUDE_ESP_OBJECTIVE = os.environ.get("MACE_TEST_ESPS", "1") == "1"
 INCLUDE_FORCE_OBJECTIVE = os.environ.get("MACE_TEST_FORCES", "0") == "1"
+INCLUDE_IMPLICIT_NORMAL_CG = (
+    os.environ.get("MACE_TEST_IMPLICIT_NORMAL_CG", "0") == "1"
+)
+IMPLICIT_LINEAR_SOLVES = ["inverse"]
+if INCLUDE_IMPLICIT_NORMAL_CG:
+    IMPLICIT_LINEAR_SOLVES.append("normal_cg")
 PERIODIC = bool(os.environ.get(
     "USE_PBC",
     False,
@@ -78,19 +84,26 @@ def _objective_batch_cases(objectives):
     ]
 
 
-def _scf_objective_mode_charge_batch_cases(modes):
+def _scf_objective_mode_charge_batch_linear_solve_cases(modes):
     return [
         pytest.param(
             mode,
             objective,
             constant_charge,
             batch_size,
-            id=f"{mode}-{objective}-cc_{constant_charge}-bs_{batch_size}",
+            linear_solve,
+            id=(
+                f"{mode}-{linear_solve}-{objective}-"
+                f"cc_{constant_charge}-bs_{batch_size}"
+            ),
         )
         for mode in modes
         for objective in _scf_objectives()
         for constant_charge in [False, True]
         for batch_size in [1, 2]
+        for linear_solve in (
+            IMPLICIT_LINEAR_SOLVES if mode == "implicit" else ["inverse"]
+        )
         if not (objective == "fermi_level" and not constant_charge)
     ]
 
@@ -138,7 +151,7 @@ def _build_dataset(model, atoms_list):
     )
 
 
-def _build_wrapper(model, mode, constant_charge):
+def _build_wrapper(model, mode, constant_charge, linear_solve="inverse"):
     optimizer = torch.optim.SGD(model.parameters(), lr=0.0)
     scf_options = None
     if mode != "direct":
@@ -152,11 +165,13 @@ def _build_wrapper(model, mode, constant_charge):
             use_autograd_forces=True,
         )
     return FixedPointWrapper(
+        model=model,
         optimizer=optimizer,
         output_args=OUTPUT_ARGS,
         training_options=FixedPointTrainingOptions(
             mode=mode,
             scf=scf_options,
+            linear_solve=linear_solve,
         ),
     )
 
@@ -191,7 +206,7 @@ def _scalar_objective(output, objective):
 
 def _wrapper_objective_gradient(wrapper, model, batch_dict, objective):
     model.zero_grad(set_to_none=True)
-    output = wrapper(model, batch_dict, training=True)
+    output = wrapper(batch_dict, training=True)
     loss = _scalar_objective(output, objective)
     _, param = _first_parameter_for_gradient(model)
     grad = torch.autograd.grad(loss, param)[0].reshape(-1)[0].detach().cpu().item()
@@ -208,7 +223,7 @@ def _finite_difference_objective_gradient(wrapper, model, batch_dict, objective,
         plus_value = initial_value.clone()
         plus_value.reshape(-1)[0] = flat[0] + delta
         param.copy_(plus_value)
-    plus_output = wrapper(model, batch_dict, training=True)
+    plus_output = wrapper(batch_dict, training=True)
     plus_value = _scalar_objective(plus_output, objective).detach().cpu().item()
     _cleanup_model(model)
 
@@ -216,7 +231,7 @@ def _finite_difference_objective_gradient(wrapper, model, batch_dict, objective,
         minus_value = initial_value.clone()
         minus_value.reshape(-1)[0] = flat[0] - delta
         param.copy_(minus_value)
-    minus_output = wrapper(model, batch_dict, training=True)
+    minus_output = wrapper(batch_dict, training=True)
     minus_value = _scalar_objective(minus_output, objective).detach().cpu().item()
     _cleanup_model(model)
 
@@ -244,7 +259,7 @@ def _run_force_gradient_check(wrapper, model, batch_size, constant_charge, delta
     all_energies = []
 
     for batch_dict in wrap_loader(dataset, batch_size=batch_size, device=DEVICE):
-        output = wrapper(model, batch_dict, training=True)
+        output = wrapper(batch_dict, training=True)
         all_energies += list(output["energy"].detach().cpu().numpy())
         all_forces += split_to_graphs(
             output["forces"].detach().cpu().numpy(),
@@ -291,7 +306,7 @@ def test_wrapper_output_contract(mode, constant_charge, batch_size):
     wrapper = _build_wrapper(model, mode=mode, constant_charge=constant_charge)
 
     batch_dict = next(wrap_loader(dataset, batch_size=batch_size, device=DEVICE))
-    output = wrapper(model, batch_dict, training=True)
+    output = wrapper(batch_dict, training=True)
 
     assert "energy" in output
     assert "density_coefficients" in output
@@ -367,22 +382,28 @@ def test_direct_wrapper_parameter_gradient_matches_finite_difference(objective, 
 
 
 @pytest.mark.parametrize(
-    "mode, objective, constant_charge, batch_size",
-    _scf_objective_mode_charge_batch_cases(["unroll_scf", "implicit"])
-    + _scf_objective_mode_charge_batch_cases(["linearize_solve"]),
+    "mode, objective, constant_charge, batch_size, linear_solve",
+    _scf_objective_mode_charge_batch_linear_solve_cases(["unroll_scf", "implicit"])
+    + _scf_objective_mode_charge_batch_linear_solve_cases(["linearize_solve"]),
 )
 def test_scf_wrapper_parameter_gradient_matches_finite_difference(
     mode,
     objective,
     constant_charge,
     batch_size,
+    linear_solve,
 ):
     torch.set_default_dtype(torch.float64)
     model = _load_reference_model()
     atoms_list = _load_reference_atoms(num_configs=2)
     dataset = _build_dataset(model, atoms_list)
     batch_dict = next(wrap_loader(dataset, batch_size=batch_size, device=DEVICE))
-    wrapper = _build_wrapper(model, mode=mode, constant_charge=constant_charge)
+    wrapper = _build_wrapper(
+        model,
+        mode=mode,
+        constant_charge=constant_charge,
+        linear_solve=linear_solve,
+    )
 
     analytic = _wrapper_objective_gradient(wrapper, model, batch_dict, objective)
     finite_difference = _finite_difference_objective_gradient(
@@ -392,7 +413,8 @@ def test_scf_wrapper_parameter_gradient_matches_finite_difference(
         objective,
     )
     print(
-        f"mode={mode}, objective={objective}, constant_charge={constant_charge}, batch_size={batch_size}\n"
+        f"mode={mode}, linear_solve={linear_solve}, objective={objective}, "
+        f"constant_charge={constant_charge}, batch_size={batch_size}\n"
         f"\tmax_abs_gradient_error={np.max(np.abs(analytic-finite_difference))} "
         f"numerical_gradient={finite_difference}"
     )
@@ -404,7 +426,8 @@ def test_scf_wrapper_parameter_gradient_matches_finite_difference(
         atol=1e-6,
     ), (
         f"mode={mode}, objective={objective}, constant_charge={constant_charge}, "
-        f"analytic={analytic}, finite_difference={finite_difference}"
+        f"linear_solve={linear_solve}, analytic={analytic}, "
+        f"finite_difference={finite_difference}"
     )
 
 

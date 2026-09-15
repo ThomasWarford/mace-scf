@@ -21,6 +21,7 @@ def check_config_conflicts(args: argparse.Namespace):
     compute_and_fill_irreps(args)
     check_train_test_files(args)
     check_unsupported_training_options(args)
+    check_formal_charge_noise(args)
     fill_fixedpoint_update_config(args)
     fill_field_readout_config(args)
 
@@ -30,6 +31,11 @@ def check_config_conflicts(args: argparse.Namespace):
                 fixed_point_training_options_from_stage(train_stage)
             )
             train_stage.pop("scf_training_options", None)
+            if args.distributed and train_stage["fixed_point_training_options"].mode == "implicit":
+                raise NotImplementedError(
+                    "fixed-point mode 'implicit' is not tested with "
+                    "--distributed."
+                )
     else:
         for train_stage in args.train_schedule:
             assert "scf_training_options" not in train_stage, f"scf_training_options should not be set for model={args.model}"
@@ -44,6 +50,30 @@ def check_config_conflicts(args: argparse.Namespace):
         raise ValueError("wandb_watch_log_freq must be a positive integer")
     
     args.config_type_weights = set_configfigtype_weights(args.config_type_weights)
+
+
+FORMAL_CHARGE_DATA_MODELS = ("LocalSplitCharges", "FixedChargeBaselinedMACE")
+
+
+def check_formal_charge_noise(args: argparse.Namespace):
+    sigma = getattr(args, "formal_charge_noise_sigma", None)
+    if sigma is None:
+        return
+    if sigma <= 0.0:
+        raise ValueError(
+            f"formal_charge_noise_sigma must be positive, got {sigma}"
+        )
+    # only these models read per-atom formal charges from the data, so noise is a no-op elsewhere
+    if args.model not in FORMAL_CHARGE_DATA_MODELS:
+        raise ValueError(
+            f"formal_charge_noise_sigma is only supported for model in "
+            f"{list(FORMAL_CHARGE_DATA_MODELS)}, got model={args.model}"
+        )
+    if not args.formal_charges_from_data:
+        raise ValueError(
+            "formal_charge_noise_sigma requires --formal_charges_from_data; without it "
+            "formal charges come from the per-species table and the noise is ignored."
+        )
 
 
 def check_and_fix_heads(args: argparse.Namespace):
@@ -168,8 +198,6 @@ def check_train_test_files(args):
 
 
 def check_unsupported_training_options(args):
-    if args.distributed:
-        raise ValueError("Distributed training is not supported in this repo right now")
     if args.statistics_file is not None:
         raise ValueError(
             "statistics_file is not supported in this repo right now. "

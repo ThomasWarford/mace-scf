@@ -11,6 +11,7 @@ from graph_longrange.gto_utils import gto_basis_kspace_cutoff, DisplacedGTOExter
 from graph_longrange.kspace import compute_k_vectors_flat
 from graph_longrange.features import GTOElectrostaticFeatures
 from mace.tools import torch_tools
+from mace.modules.wrapper_ops import CuEquivarianceConfig
 
 
 # needed for torchopt
@@ -70,6 +71,24 @@ def build_model(
         radial_MLP=ast.literal_eval(args.radial_MLP),
         radial_type=args.radial_type,
     )
+
+    cueq_config = None
+    if args.enable_cueq:
+        if args.model != "LocalSplitCharges":
+            raise NotImplementedError(
+                f"--enable_cueq is only wired up for LocalSplitCharges, not {args.model}"
+            )
+        # mul_ir rather than upstream's ir_mul
+        cueq_config = CuEquivarianceConfig(
+            enabled=True,
+            layout="mul_ir",
+            group="O3_e3nn",
+            optimize_all=True,
+            conv_fusion=False,
+        )
+        if not cueq_config.enabled:
+            raise RuntimeError("--enable_cueq requested but cuequivariance is not available")
+        logging.info(f"Using cuequivariance: {cueq_config}")
 
     model: torch.nn.Module
 
@@ -143,6 +162,7 @@ def build_model(
             compute_polarizability=args.compute_polarizability,
             use_linear_final_readout=args.use_linear_final_readout,
             pbc_handling=args.electrostatic_pbc_method,
+            cueq_config=cueq_config,
         )
     elif args.model == "LocalCharges":
         model = electrostatics.LocalCharges(

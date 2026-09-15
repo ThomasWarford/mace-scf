@@ -71,6 +71,12 @@ def extended_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--formal_charges_from_data", action="store_true", default=False
     )
+    parser.add_argument(
+        "--formal_charge_noise_sigma",
+        help="Standard deviation of zero-sum Gaussian noise added to per-atom formal charges during training",
+        type=float,
+        default=None,
+    )
     parser.add_argument("--field_feature_max_l", type=int, default=1)
     parser.add_argument("--field_feature_widths", type=str, default="[1.0, 2.0]")
     parser.add_argument(
@@ -226,6 +232,16 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=False,
         help="Log scalar parameter and gradient summaries during optimization.",
+    )
+    parser.add_argument(
+        "--log-all-ranks",
+        action="store_true",
+        default=False,
+        help=(
+            "In distributed training, write each rank's log records to its own "
+            "'{tag}_rank{rank}.log'/'{tag}_rank{rank}_debug.log' file under "
+            "--log_dir, instead of only logging on rank 0."
+        ),
     )
     parser.add_argument(
         "--fixedpoint-initial-charge-head-scale",

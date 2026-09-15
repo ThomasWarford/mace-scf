@@ -50,6 +50,7 @@ class _LocalSourceModelBase(torch.nn.Module):
         heads: List[str],
         is_last: bool,
         use_linear_final_readout: bool,
+        cueq_config=None,
     ) -> torch.nn.Module:
         output_irreps = o3.Irreps(f"{len(heads)}x0e")
         if is_last and not use_linear_final_readout:
@@ -59,8 +60,9 @@ class _LocalSourceModelBase(torch.nn.Module):
                 gate,
                 output_irreps,
                 len(heads),
+                cueq_config=cueq_config,
             )
-        return LinearReadoutBlock(hidden_irreps, output_irreps)
+        return LinearReadoutBlock(hidden_irreps, output_irreps, cueq_config=cueq_config)
 
     def _init_local_model(
         self,
@@ -83,6 +85,7 @@ class _LocalSourceModelBase(torch.nn.Module):
         radial_type: Optional[str] = "bessel",
         heads: Optional[List[str]] = None,
         use_linear_final_readout: bool = False,
+        cueq_config=None,
     ) -> None:
         self.register_buffer(
             "atomic_numbers", torch.tensor(atomic_numbers, dtype=torch.int64)
@@ -104,7 +107,9 @@ class _LocalSourceModelBase(torch.nn.Module):
         )
 
         self.node_embedding = LinearNodeEmbeddingBlock(
-            irreps_in=self.node_attr_irreps, irreps_out=self.node_feats_irreps
+            irreps_in=self.node_attr_irreps,
+            irreps_out=self.node_feats_irreps,
+            cueq_config=cueq_config,
         )
         self.radial_embedding = RadialEmbeddingBlock(
             r_max=r_max,
@@ -134,6 +139,7 @@ class _LocalSourceModelBase(torch.nn.Module):
             hidden_irreps=hidden_irreps,
             avg_num_neighbors=avg_num_neighbors,
             radial_MLP=radial_MLP,
+            cueq_config=cueq_config,
         )
         self.interactions = torch.nn.ModuleList([inter])
 
@@ -145,10 +151,11 @@ class _LocalSourceModelBase(torch.nn.Module):
             correlation=correlation,
             num_elements=num_elements,
             use_sc=use_sc_first,
+            cueq_config=cueq_config,
         )
         self.products = torch.nn.ModuleList([prod])
         self.readouts = torch.nn.ModuleList(
-            [LinearReadoutBlock(hidden_irreps, o3.Irreps(f"{len(heads)}x0e"))]
+            [LinearReadoutBlock(hidden_irreps, o3.Irreps(f"{len(heads)}x0e"), cueq_config=cueq_config)]
         )
 
         for layer_idx in range(1, num_interactions):
@@ -161,6 +168,7 @@ class _LocalSourceModelBase(torch.nn.Module):
                 hidden_irreps=hidden_irreps,
                 avg_num_neighbors=avg_num_neighbors,
                 radial_MLP=radial_MLP,
+                cueq_config=cueq_config,
             )
             self.interactions.append(inter)
             self.products.append(
@@ -170,6 +178,7 @@ class _LocalSourceModelBase(torch.nn.Module):
                     correlation=correlation,
                     num_elements=num_elements,
                     use_sc=True,
+                    cueq_config=cueq_config,
                 )
             )
             self.readouts.append(
@@ -180,6 +189,7 @@ class _LocalSourceModelBase(torch.nn.Module):
                     heads=heads,
                     is_last=layer_idx == num_interactions - 1,
                     use_linear_final_readout=use_linear_final_readout,
+                    cueq_config=cueq_config,
                 )
             )
 
@@ -274,6 +284,7 @@ class LocalSplitCharges(_LocalSourceModelBase):
         heads: Optional[List[str]] = None,
         compute_polarizability: bool = False,
         use_linear_final_readout: bool = False,
+        cueq_config=None,
     ):
         super().__init__()
         self._init_local_model(
@@ -296,6 +307,7 @@ class LocalSplitCharges(_LocalSourceModelBase):
             radial_type=radial_type,
             heads=heads,
             use_linear_final_readout=use_linear_final_readout,
+            cueq_config=cueq_config,
         )
 
         # embedding of oxidation states
