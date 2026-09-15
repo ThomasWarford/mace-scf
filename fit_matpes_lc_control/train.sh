@@ -1,0 +1,37 @@
+python scripts/run_train.py \
+    --name="lc_control" \
+    --config=config.yaml \
+    --train_file=train.xyz \
+    --valid_fraction=0.2 \
+    --test_file=train.xyz \
+    --E0s=fix \
+    --model=LocalCharges \
+    --interaction_first=RealAgnosticDensityInteractionBlock \
+    --interaction=RealAgnosticDensityResidualInteractionBlock \
+    --num_interactions=2 \
+    --correlation=3 \
+    --max_ell=3 \
+    --hidden_irreps="128x0e + 128x1o" \
+    --num_radial_basis=10 \
+    --MLP_irreps="16x0e" \
+    --r_max=6.0 \
+    --atomic_multipoles_max_l=1 \
+    --atomic_multipoles_smearing_width=1.5 \
+    --electrostatic_pbc_method=pbc \
+    --weight_decay=1e-8 \
+    --ema \
+    --ema_decay=0.99999 \
+    --clip_grad=100 \
+    --batch_size=16 \
+    --valid_batch_size=32 \
+    --eval_interval=1 \
+    --patience=40 \
+    --error_table=PerAtomRMSE \
+    --device=cuda \
+    --default_dtype=float64 \
+    --seed=1 \
+    --keep_checkpoints \
+    --save_all_checkpoints \
+    --restart_latest \
+    --num_workers=4 \
+    --save_cpu
