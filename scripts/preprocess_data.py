@@ -21,6 +21,12 @@ from typing import List, Tuple
 from mace import tools, data
 from mace.tools.scripts_utils import get_atomic_energies
 from mace_scf.utils.check_args import check_and_fix_heads
+from mace_scf.utils.load_data import (
+    get_atomic_number_table_from_zs,
+    log_dataset_summary,
+    validate_xyz_collections,
+    validate_xyz_paths,
+)
 from mace_scf.utils.extend_arg_parse import preprocess_extended_arg_parser
 from mace.data import save_configurations_as_HDF5, HDF5Dataset
 from mace.tools.scripts_utils import (
@@ -146,7 +152,9 @@ def main():
         )
         config_type_weights = {"Default": 1.0}
     
-    # Data preparation
+    # Same validation the .xyz training path runs: once the data is .h5 shards, training
+    # can no longer see the pbc/cell/dipole information these checks need.
+    validate_xyz_paths(args)
     collections, atomic_energies_dict = get_dataset_from_xyz(
         work_dir=args.work_dir,
         train_path=args.train_file,
@@ -158,20 +166,19 @@ def main():
         key_specification=args.key_specification,
 
     )
-    logging.info(
-        f"Total number of configurations: train={len(collections.train)}, valid={len(collections.valid)}, "
-        f"tests=[{', '.join([name + ': ' + str(len(test_configs)) for name, test_configs in collections.tests])}]"
-    )
+    validate_xyz_collections(collections, args)
 
     # Atomic number table
     # yapf: disable
-    z_table = tools.get_atomic_number_table_from_zs(
+    z_table = get_atomic_number_table_from_zs(
         z
         for configs in (collections.train, collections.valid)
         for config in configs
         for z in config.atomic_numbers
     )
-    logging.info(z_table)
+    log_dataset_summary(
+        z_table, collections.train, collections.valid, collections.tests
+    )
 
     logging.info("Preparing training set")
     if args.shuffle:
@@ -212,13 +219,14 @@ def main():
     logging.info(f"Mean: {mean}")
     logging.info(f"Standard deviation: {std}")
 
-    # save the statistics as a json
+    # Consumers parse these with ast.literal_eval, so the values must be plain Python
+    # (get_atomic_number_table_from_zs already keeps z_table.zs int).
     statistics = {
-        "atomic_energies": str(atomic_energies_dict),
-        "avg_num_neighbors": avg_num_neighbors,
-        "mean": mean,
-        "std": std,
-        "atomic_numbers": str(z_table.zs),
+        "atomic_energies": str({int(z): float(e) for z, e in atomic_energies_dict.items()}),
+        "avg_num_neighbors": float(avg_num_neighbors),
+        "mean": float(mean),
+        "std": float(std),
+        "atomic_numbers": str(list(z_table.zs)),
         "r_max": args.r_max,
     }
     

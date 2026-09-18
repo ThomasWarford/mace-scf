@@ -269,6 +269,7 @@ def prepare_run_dir(
     *,
     reference_data: Path = DEFAULT_REFERENCE_DATA,
     overwrite: bool = False,
+    config_overrides: Optional[Mapping[str, Any]] = None,
 ):
     run_dir = Path(run_dir)
     if overwrite and run_dir.exists():
@@ -291,6 +292,11 @@ def prepare_run_dir(
             "train_file": str(train_file),
         },
     )
+    # Applied last so a case can point at something other than the copied .xyz -- e.g. a
+    # directory of preprocessed .h5 shards.
+    if config_overrides:
+        config = deep_update(config, config_overrides)
+        train_file = Path(config["train_file"])
     config_path = run_dir / "config.yaml"
     config_path.write_text(yaml.safe_dump(config, sort_keys=False))
     return config_path, train_file
@@ -303,12 +309,14 @@ def run_train_case(
     reference_data: Path = DEFAULT_REFERENCE_DATA,
     overwrite: bool = False,
     check: bool = False,
+    config_overrides: Optional[Mapping[str, Any]] = None,
 ):
     config_path, train_file = prepare_run_dir(
         run_dir,
         case,
         reference_data=reference_data,
         overwrite=overwrite,
+        config_overrides=config_overrides,
     )
     cmd = [
         *case.command_prefix,

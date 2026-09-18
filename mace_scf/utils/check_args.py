@@ -1,7 +1,10 @@
 import argparse
 import ast
+import json
 import logging
+import re
 import os
+from pathlib import Path
 from e3nn import o3
 from mace_scf.electrostatics import field_blocks
 from mace_scf.electrostatics.fixed_point_options import (
@@ -19,8 +22,8 @@ def check_config_conflicts(args: argparse.Namespace):
     check_and_fix_heads(args)
     check_and_fix_train_schedule(args)
     compute_and_fill_irreps(args)
+    load_statistics_file(args)
     check_train_test_files(args)
-    check_unsupported_training_options(args)
     check_formal_charge_noise(args)
     fill_fixedpoint_update_config(args)
     fill_field_readout_config(args)
@@ -186,23 +189,106 @@ def set_configfigtype_weights(config_type_weights_str):
     return config_type_weights
 
 
+HDF5_SUFFIXES = (".h5", ".hdf5")
+
+
+def is_preprocessed_dataset(path) -> bool:
+    """True for a .h5 file, or a directory of .h5 shards, from preprocess_data.py.
+
+    Deliberately not upstream's ``check_path_ase_read``, which answers the wider question
+    "is this ASE-readable" and so also accepts LMDB, which mace_scf cannot read. Anything
+    this returns False for is handed to the .xyz loader.
+    """
+    path = Path(path)
+    if path.is_dir():
+        return any(path.glob("*.h5")) or any(path.glob("*.hdf5"))
+    return path.suffix in HDF5_SUFFIXES
+
+
 def check_train_test_files(args):
-    if args.train_file is None or not args.train_file.endswith(".xyz"):
-        raise ValueError("Only .xyz train_file inputs are supported in this repo right now")
-    if args.valid_file is not None and not args.valid_file.endswith(".xyz"):
-        raise ValueError("Only .xyz valid_file inputs are supported in this repo right now")
+    if args.train_file is None:
+        raise ValueError("a --train_file is required")
+
+    train_is_xyz = args.train_file.endswith(".xyz")
+    if not train_is_xyz and not is_preprocessed_dataset(args.train_file):
+        raise ValueError(
+            "train_file must be a .xyz file, a .h5 file, or a directory of "
+            f"preprocessed .h5 shards, got {args.train_file!r}"
+        )
+    if args.valid_file is not None:
+        valid_is_xyz = args.valid_file.endswith(".xyz")
+        if not valid_is_xyz and not is_preprocessed_dataset(args.valid_file):
+            raise ValueError(
+                "valid_file must be a .xyz file, a .h5 file, or a directory of "
+                f"preprocessed .h5 shards, got {args.valid_file!r}"
+            )
+        if valid_is_xyz != train_is_xyz:
+            raise ValueError(
+                "train_file and valid_file must both be .xyz or both be preprocessed "
+                ".h5 input"
+            )
+    elif not train_is_xyz:
+        # The .h5 loader has no notion of valid_fraction; it reads two datasets.
+        raise ValueError(
+            "a --valid_file is required when training from preprocessed .h5 input "
+            "(--valid_fraction is only supported for .xyz input)"
+        )
+
     if args.test_file is not None and not args.test_file.endswith(".xyz"):
         raise ValueError("Only .xyz test_file inputs are supported in this repo right now")
     if args.test_dir is not None:
         raise ValueError("test_dir HDF5/sharded test inputs are not supported in this repo right now")
 
 
-def check_unsupported_training_options(args):
-    if args.statistics_file is not None:
-        raise ValueError(
-            "statistics_file is not supported in this repo right now. "
-            "Pass r_max, E0s, and avg_num_neighbors directly, or use "
-            "--compute_avg_num_neighbors."
+def atomic_numbers_from_statistics(statistics: dict) -> list:
+    # Files written before z-table values were coerced to int hold "[np.int64(1), ...]",
+    # which literal_eval cannot parse; unwrap the numpy reprs so old files still load.
+    raw = re.sub(r"np\.\w+\((-?[\d.eE+-]+)\)", r"\1", statistics["atomic_numbers"])
+    return [int(z) for z in ast.literal_eval(raw)]
+
+
+def load_statistics_file(args: argparse.Namespace):
+    """Fill the z-table, E0s and normalisation from a preprocess_data.py statistics.json.
+
+    Mirrors upstream mace.cli.run_train, which reads the same file, except that an
+    explicitly passed --atomic_numbers or --E0s wins over the file: regressing E0s
+    separately while pointing at the same statistics.json is a normal thing to want.
+    """
+    if args.statistics_file is None:
+        return
+
+    with open(args.statistics_file, "r", encoding="utf-8") as f:
+        statistics = json.load(f)
+    logging.info(f"Using statistics file {args.statistics_file}")
+
+    if args.atomic_numbers is None:
+        args.atomic_numbers = str(atomic_numbers_from_statistics(statistics))
+    else:
+        logging.info("Using atomic numbers from the command line, not the statistics file")
+
+    if args.E0s is None:
+        args.E0s = statistics["atomic_energies"]
+    else:
+        logging.info("Using E0s from the command line, not the statistics file")
+
+    # avg_num_neighbors defaults to 1 rather than None, so a deliberate value cannot be
+    # told apart from the default and the file always wins. Pinning it matters: it divides
+    # every interaction message, and recomputing it over a different split shifts energies.
+    args.avg_num_neighbors = statistics["avg_num_neighbors"]
+    args.compute_avg_num_neighbors = False
+
+    # Only MACE/ScaleShiftMACE read these; LocalSplitCharges has no scale/shift term.
+    args.mean = statistics["mean"]
+    args.std = statistics["std"]
+
+    # Neighbour lists are built at load time from --r_max, so a mismatch is not an error,
+    # but the avg_num_neighbors just pinned above was measured at the file's r_max.
+    statistics_r_max = statistics.get("r_max")
+    if statistics_r_max is not None and statistics_r_max != args.r_max:
+        logging.warning(
+            f"--r_max is {args.r_max} but the statistics file was written at "
+            f"r_max={statistics_r_max}; avg_num_neighbors={args.avg_num_neighbors} does "
+            "not describe the cutoff being trained at."
         )
 
 

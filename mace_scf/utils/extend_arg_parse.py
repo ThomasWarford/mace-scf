@@ -23,8 +23,48 @@ def remove_options(parser, options):
                 break
 
 
+def add_data_validation_args(parser: argparse.ArgumentParser) -> None:
+    """Args shared by run_train and preprocess_data.
+
+    The pbc / low-density checks run wherever the .xyz is still being read: at train time
+    for .xyz input, and at preprocess time for input that becomes .h5 shards.
+    """
+    parser.add_argument(
+        "--electrostatic_pbc_method",
+        type=str,
+        default="mixed_periodic",
+        choices=[
+            "realspace",
+            "pbc",
+            "slab",
+            "molecule_in_box",
+            "mixed_periodic",
+            "auto",
+        ],
+    )
+    parser.add_argument(
+        "--allow_low_density_pbc",
+        action="store_true",
+        default=False,
+        help="Allow fully periodic low-density configurations that look like clusters in large cells.",
+    )
+    parser.add_argument(
+        "--override_pbc_checks",
+        action="store_true",
+        default=False,
+        help="Skip the check that each config's pbc is compatible with --electrostatic_pbc_method.",
+    )
+    parser.add_argument(
+        "--low_density_pbc_max_volume_per_atom",
+        type=float,
+        default=100.0,
+        help="Maximum volume per atom for pbc=TTT configs before treating them as suspicious.",
+    )
+
+
 def preprocess_extended_arg_parser() -> argparse.ArgumentParser:
     parser = build_preprocess_arg_parser()
+    add_data_validation_args(parser)
     # overwrite all key defaults to None - mace_scf only uses the config file for keys
     for item in parser._actions:
         if item.option_strings[0][-4:] == "_key":
@@ -91,19 +131,7 @@ def extended_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--quadrupole_feature_corrections", action="store_true", default=False
     )
-    parser.add_argument(
-        "--electrostatic_pbc_method",
-        type=str,
-        default="mixed_periodic",
-        choices=[
-            "realspace",
-            "pbc",
-            "slab",
-            "molecule_in_box",
-            "mixed_periodic",
-            "auto",
-        ],
-    )
+    add_data_validation_args(parser)
     parser.add_argument(
         "--static_bond_transfer_block", 
         help="Block to use for static bond transfer",
@@ -193,24 +221,6 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         "--atom_density_scaling",
         type=str,
         default="None"
-    )
-    parser.add_argument(
-        "--allow_low_density_pbc",
-        action="store_true",
-        default=False,
-        help="Allow fully periodic low-density configurations that look like clusters in large cells.",
-    )
-    parser.add_argument(
-        "--override_pbc_checks",
-        action="store_true",
-        default=False,
-        help="Skip the check that each config's pbc is compatible with --electrostatic_pbc_method.",
-    )
-    parser.add_argument(
-        "--low_density_pbc_max_volume_per_atom",
-        type=float,
-        default=100.0,
-        help="Maximum volume per atom for pbc=TTT configs before treating them as suspicious.",
     )
     parser.add_argument(
         "--wandb-watch",

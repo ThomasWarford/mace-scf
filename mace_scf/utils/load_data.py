@@ -53,14 +53,30 @@ def _as_path_list(path_or_paths):
     return list(path_or_paths)
 
 
-def check_explicit_dipole_component_weights(file_path, key_specification, split_name):
+def _run_config_validators(args, validators):
+    """Apply per-config validators in a single pass over each input file.
+
+    Every validator sees the same configurations, so they share one ase.io.iread:
+    a pass per check would parse a multi-GB training file once per check.
+    """
+    validators = [validate for validate in validators if validate is not None]
+    if not validators:
+        return
+    for split_name in ("train", "valid", "test"):
+        for path in _as_path_list(getattr(args, f"{split_name}_file", None)):
+            for config_index, atoms in enumerate(ase.io.iread(path, index=":")):
+                for validate in validators:
+                    validate(atoms, config_index, path, split_name)
+
+
+def _dipole_weight_validator(key_specification):
     dipole_key = key_specification.info_keys.get("dipole")
     if dipole_key is None or dipole_key == "none":
-        return
+        return None
 
-    for config_index, atoms in enumerate(ase.io.iread(file_path, index=":")):
+    def validate(atoms, config_index, file_path, split_name):
         if dipole_key not in atoms.info:
-            continue
+            return
         if "config_dipole_weight" not in atoms.info:
             raise ValueError(
                 "Dipole data found without explicit config_dipole_weight. "
@@ -80,6 +96,16 @@ def check_explicit_dipole_component_weights(file_path, key_specification, split_
                 f"split={split_name}, file={file_path}, index={config_index}, "
                 f"dipole_key={dipole_key!r}, shape={dipole_weight.shape}."
             )
+
+    return validate
+
+
+def check_explicit_dipole_component_weights(file_path, key_specification, split_name):
+    validate = _dipole_weight_validator(key_specification)
+    if validate is None:
+        return
+    for config_index, atoms in enumerate(ase.io.iread(file_path, index=":")):
+        validate(atoms, config_index, file_path, split_name)
 
 
 _ALLOWED_PBC_BY_METHOD = {
@@ -102,13 +128,12 @@ def _pbc_tuple(atoms) -> Tuple[bool, bool, bool]:
     return tuple(bool(x) for x in pbc)
 
 
-def check_pbc_consistent_with_electrostatic_method(
-    file_path, electrostatic_pbc_method, split_name
-):
+def _pbc_validator(electrostatic_pbc_method):
     allowed = _ALLOWED_PBC_BY_METHOD.get(electrostatic_pbc_method)
     if allowed is None:
-        return
-    for atoms in ase.io.iread(file_path, index=":"):
+        return None
+
+    def validate(atoms, config_index, file_path, split_name):
         pbc = _pbc_tuple(atoms)
         if pbc not in allowed:
             allowed_str = ", ".join(
@@ -122,34 +147,53 @@ def check_pbc_consistent_with_electrostatic_method(
                 f"(allowed: {allowed_str})."
             )
 
+    return validate
+
+
+def check_pbc_consistent_with_electrostatic_method(
+    file_path, electrostatic_pbc_method, split_name
+):
+    validate = _pbc_validator(electrostatic_pbc_method)
+    if validate is None:
+        return
+    for config_index, atoms in enumerate(ase.io.iread(file_path, index=":")):
+        validate(atoms, config_index, file_path, split_name)
+
+
+def _enabled_pbc_validator(args):
+    if getattr(args, "override_pbc_checks", False):
+        return None
+    return _pbc_validator(getattr(args, "electrostatic_pbc_method", None))
+
 
 def check_pbc_consistent_with_electrostatic_method_for_paths(args):
-    if getattr(args, "override_pbc_checks", False):
-        return
-    method = getattr(args, "electrostatic_pbc_method", None)
-    if method is None:
-        return
-    for path in _as_path_list(args.train_file):
-        check_pbc_consistent_with_electrostatic_method(path, method, "train")
-    for path in _as_path_list(args.valid_file):
-        check_pbc_consistent_with_electrostatic_method(path, method, "valid")
-    for path in _as_path_list(args.test_file):
-        check_pbc_consistent_with_electrostatic_method(path, method, "test")
+    _run_config_validators(args, [_enabled_pbc_validator(args)])
 
 
 def check_explicit_dipole_component_weights_for_paths(args):
-    for path in _as_path_list(args.train_file):
-        check_explicit_dipole_component_weights(
-            path, args.key_specification, "train"
-        )
-    for path in _as_path_list(args.valid_file):
-        check_explicit_dipole_component_weights(
-            path, args.key_specification, "valid"
-        )
-    for path in _as_path_list(args.test_file):
-        check_explicit_dipole_component_weights(
-            path, args.key_specification, "test"
-        )
+    _run_config_validators(args, [_dipole_weight_validator(args.key_specification)])
+
+
+def validate_xyz_paths(args):
+    """Every check that needs the raw xyz, in one pass per file.
+
+    This is the single definition of which path-level checks constitute validation;
+    run_train (for .xyz input) and preprocess_data (for input that becomes .h5 shards)
+    both call it rather than each listing the checks themselves.
+    """
+    _run_config_validators(
+        args,
+        [_dipole_weight_validator(args.key_specification), _enabled_pbc_validator(args)],
+    )
+
+
+def validate_xyz_collections(collections, args):
+    """The checks that need parsed configurations rather than the raw file."""
+    check_low_density_periodic_configs(
+        collections,
+        max_volume_per_atom=args.low_density_pbc_max_volume_per_atom,
+        allow_low_density_pbc=args.allow_low_density_pbc,
+    )
 
 
 def check_low_density_periodic_configs(
@@ -184,10 +228,30 @@ def check_low_density_periodic_configs(
             )
 
 
+def get_atomic_number_table_from_zs(zs) -> tools.AtomicNumberTable:
+    """An AtomicNumberTable of plain ints.
+
+    config.atomic_numbers is a numpy array, so feeding it to the upstream helper builds a
+    table of np.int64, whose repr is "np.int64(1)" -- not int()-able and not
+    literal_eval-able. That leaks into everything that stringifies the table: the log line
+    parsed by the test harness, and statistics.json.
+    """
+    return tools.get_atomic_number_table_from_zs(int(z) for z in zs)
+
+
+def log_dataset_summary(z_table, train_set, valid_set, tests=()) -> None:
+    """The one definition of this line; the test harness parses it."""
+    logging.info(z_table)
+    test_summary = ", ".join(f"{name}: {len(configs)}" for name, configs in tests)
+    logging.info(
+        f"Total number of configurations: train={len(train_set)}, "
+        f"valid={len(valid_set)}, tests=[{test_summary}]"
+    )
+
+
 def load_train_valid_sets_from_xyz(args: argparse.Namespace,  config_type_weights: Dict):
     # data
-    check_explicit_dipole_component_weights_for_paths(args)
-    check_pbc_consistent_with_electrostatic_method_for_paths(args)
+    validate_xyz_paths(args)
     collections, atomic_energies_dict = get_dataset_from_xyz(
         work_dir=args.work_dir,
         train_path=args.train_file,
@@ -198,24 +262,18 @@ def load_train_valid_sets_from_xyz(args: argparse.Namespace,  config_type_weight
         seed=args.valid_set_seed,
         key_specification=args.key_specification,
     )
-    logging.info(
-        f"Total number of configurations: train={len(collections.train)}, valid={len(collections.valid)}, "
-        f"tests=[{', '.join([name + ': ' + str(len(test_configs)) for name, test_configs in collections.tests])}]"
-    )
-    check_low_density_periodic_configs(
-        collections,
-        max_volume_per_atom=args.low_density_pbc_max_volume_per_atom,
-        allow_low_density_pbc=args.allow_low_density_pbc,
-    )
+    validate_xyz_collections(collections, args)
 
     # Atomic number table
-    z_table = tools.get_atomic_number_table_from_zs(
+    z_table = get_atomic_number_table_from_zs(
         z
         for configs in (collections.train, collections.valid)
         for config in configs
         for z in config.atomic_numbers
     )
-    logging.info(z_table)
+    log_dataset_summary(
+        z_table, collections.train, collections.valid, collections.tests
+    )
 
     # energies
     if atomic_energies_dict is None or len(atomic_energies_dict) == 0:
@@ -250,33 +308,35 @@ def load_train_valid_sets_from_xyz(args: argparse.Namespace,  config_type_weight
     return train_set, valid_set, z_table, atomic_energies, collections.tests
 
 
-def load_train_valid_sets_from_h5(args: argparse.Namespace):
+def load_train_valid_sets_from_preprocessed(args: argparse.Namespace):
+    """Load preprocessed HDF5: a directory of shards, or a single .h5 file.
 
-    # has to come from command line
-    zs_list = ast.literal_eval(args.atomic_numbers)
-    z_table = tools.get_atomic_number_table_from_zs(zs_list)
+    Returns the same 5-tuple as the .xyz loader. Shards carry no config_type grouping,
+    so there are never test collections.
+    """
+    # The z-table cannot be derived from the shards, so it has to come from the command
+    # line (or, via load_statistics_file, from the statistics.json written beside them).
+    z_table = get_atomic_number_table_from_zs(ast.literal_eval(args.atomic_numbers))
     atomic_energies_dict = get_atomic_energies(args.E0s, None, z_table)
-    train_set = mace.data.HDF5Dataset(args.train_file, r_max=args.r_max, z_table=z_table, atomic_dataclass=ExtAtomicData, atomic_multipoles_max_l=args.atomic_multipoles_max_l)
-    valid_set = mace.data.HDF5Dataset(args.valid_file, r_max=args.r_max, z_table=z_table, atomic_dataclass=ExtAtomicData, atomic_multipoles_max_l=args.atomic_multipoles_max_l)
+
+    def load(path):
+        read = (
+            mace.data.dataset_from_sharded_hdf5
+            if os.path.isdir(path)
+            else mace.data.HDF5Dataset
+        )
+        return read(
+            path,
+            r_max=args.r_max,
+            z_table=z_table,
+            atomic_dataclass=ExtAtomicData,
+            atomic_multipoles_max_l=args.atomic_multipoles_max_l,
+        )
+
+    train_set = load(args.train_file)
+    valid_set = load(args.valid_file)
     atomic_energies: np.ndarray = np.array(
         [atomic_energies_dict[z] for z in z_table.zs]
     )
-    return train_set, valid_set, z_table, atomic_energies
-
-def load_train_valid_sets_from_sharded_h5(args: argparse.Namespace):
-
-    # has to come from command line
-    zs_list = ast.literal_eval(args.atomic_numbers)
-    z_table = tools.get_atomic_number_table_from_zs(zs_list)
-    atomic_energies_dict = get_atomic_energies(args.E0s, None, z_table)
-    train_set = mace.data.dataset_from_sharded_hdf5(
-        args.train_file, r_max=args.r_max, z_table=z_table, atomic_dataclass=ExtAtomicData, atomic_multipoles_max_l=args.atomic_multipoles_max_l
-    )
-    valid_set = mace.data.dataset_from_sharded_hdf5(
-        args.valid_file, r_max=args.r_max, z_table=z_table, atomic_dataclass=ExtAtomicData, atomic_multipoles_max_l=args.atomic_multipoles_max_l
-    )
-    atomic_energies: np.ndarray = np.array(
-        [atomic_energies_dict[z] for z in z_table.zs]
-    )
-    
-    return train_set, valid_set, z_table, atomic_energies
+    log_dataset_summary(z_table, train_set, valid_set)
+    return train_set, valid_set, z_table, atomic_energies, []

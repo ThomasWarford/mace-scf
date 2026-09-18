@@ -1,13 +1,17 @@
 import ast
 import json
 import logging
+from functools import partial
 from pathlib import Path
 from typing import Any, Optional
 from dataclasses import asdict, is_dataclass
 import types
 
 import numpy as np
-from mace_scf.utils.load_data import load_train_valid_sets_from_xyz
+from mace_scf.utils.load_data import (
+    load_train_valid_sets_from_preprocessed,
+    load_train_valid_sets_from_xyz,
+)
 import torch
 import torch.nn.functional
 from torch_ema import ExponentialMovingAverage
@@ -26,7 +30,11 @@ import mace_scf.data
 import mace_scf.utils
 
 from mace_scf import electrostatics
-from mace_scf.utils.check_args import check_config_conflicts
+from mace_scf.utils.check_args import (
+    check_config_conflicts,
+    fill_default_dirs,
+    is_preprocessed_dataset,
+)
 import mace_scf.utils.run_train_utils
 from mace.tools.slurm_distributed import DistributedEnvironment
 
@@ -88,7 +96,7 @@ def build_lr_scheduler(optimizer, args):
 
 def main() -> None:
     args = mace_scf.utils.extended_arg_parser().parse_args()
-    check_config_conflicts(args)
+    fill_default_dirs(args)
     tag = tools.get_tag(name=args.name, seed=args.seed)
 
     if args.distributed:
@@ -117,6 +125,10 @@ def main() -> None:
         rank=rank,
         log_all_ranks=args.log_all_ranks,
     )
+    # Runs after setup_logger so that the records it emits (the statistics file in use,
+    # the r_max mismatch warning) reach the log file rather than an unconfigured root.
+    check_config_conflicts(args)
+
     if args.distributed:
         logging.info(f"Process group initialized: {torch.distributed.is_initialized()}")
         logging.info(f"Processes: {world_size}")
@@ -151,8 +163,16 @@ def main() -> None:
     logging.info("Using the key specifications to parse data:")
     logging.info(args.key_specification)
 
-    # Data preparation
-    train_set, valid_set, z_table, atomic_energies, test_collections = load_train_valid_sets_from_xyz(args, args.config_type_weights)
+    # Data preparation. check_train_test_files() has already classified the input with
+    # the same predicate, so the two cannot disagree about what a preprocessed path is.
+    if is_preprocessed_dataset(args.train_file):
+        logging.info("Loading preprocessed .h5 input; its checks ran at preprocess time.")
+        load_train_valid_sets = load_train_valid_sets_from_preprocessed
+    else:
+        load_train_valid_sets = partial(
+            load_train_valid_sets_from_xyz, config_type_weights=args.config_type_weights
+        )
+    train_set, valid_set, z_table, atomic_energies, test_collections = load_train_valid_sets(args)
     logging.info(f"Atomic energies: {atomic_energies.tolist()}")
 
     if args.formal_charge_noise_sigma is not None:
@@ -327,7 +347,10 @@ def main() -> None:
     test_data_loaders = None
     if args.log_on_test_sets:
         if not(args.test_file is not None and args.test_file.endswith(".xyz")):
-            raise ValueError("logging on test tests obly availble for and xyz test file")
+            raise ValueError(
+                "--log_on_test_sets requires an .xyz --test_file; test sets are not read "
+                "from .h5 shards"
+            )
 
         test_sets = {}
         test_data_loaders = {}
