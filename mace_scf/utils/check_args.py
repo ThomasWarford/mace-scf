@@ -281,6 +281,14 @@ def load_statistics_file(args: argparse.Namespace):
     args.mean = statistics["mean"]
     args.std = statistics["std"]
 
+    # Absent from files written before the offset moved into preprocessing; FixedPoint then measures it at startup.
+    if args.fermi_level_offset is None:
+        statistics_fermi_level_offset = statistics.get("fermi_level_offset")
+        if statistics_fermi_level_offset is not None:
+            args.fermi_level_offset = float(statistics_fermi_level_offset)
+    else:
+        logging.info("Using the Fermi level offset from the command line, not the statistics file")
+
     # Neighbour lists are built at load time from --r_max, so a mismatch is not an error,
     # but the avg_num_neighbors just pinned above was measured at the file's r_max.
     statistics_r_max = statistics.get("r_max")

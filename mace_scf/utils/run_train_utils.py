@@ -425,6 +425,15 @@ def get_fermi_level_offset(dataloader, args, device):
         )
         return float(args.fermi_level_offset)
 
+    # Only FixedPoint reads this, and the scan below costs a neighbour-list build per config on HDF5 shards.
+    if args.model != "FixedPoint":
+        logging.info(
+            "Fermi level offset is only used by FixedPoint; skipping the training-set scan "
+            "for model %s",
+            args.model,
+        )
+        return 0.0
+
     fermi_sum = 0.0
     num_values = 0
     for data in dataloader.dataset:

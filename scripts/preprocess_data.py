@@ -26,6 +26,7 @@ from mace_scf.utils.load_data import (
     log_dataset_summary,
     validate_xyz_collections,
     validate_xyz_paths,
+    fermi_level_offset_from_configurations,
 )
 from mace_scf.utils.extend_arg_parse import preprocess_extended_arg_parser
 from mace.data import save_configurations_as_HDF5, HDF5Dataset
@@ -219,6 +220,10 @@ def main():
     logging.info(f"Mean: {mean}")
     logging.info(f"Standard deviation: {std}")
 
+    # Pinned like avg_num_neighbors; the training-time fallback walks every config to measure it.
+    fermi_level_offset = fermi_level_offset_from_configurations(collections.train)
+    logging.info(f"Fermi level offset: {fermi_level_offset}")
+
     # Consumers parse these with ast.literal_eval, so the values must be plain Python
     # (get_atomic_number_table_from_zs already keeps z_table.zs int).
     statistics = {
@@ -228,6 +233,7 @@ def main():
         "std": float(std),
         "atomic_numbers": str(list(z_table.zs)),
         "r_max": args.r_max,
+        "fermi_level_offset": fermi_level_offset,
     }
     
     with open(args.h5_prefix + "statistics.json", "w") as f:

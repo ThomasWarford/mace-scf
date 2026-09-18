@@ -1,5 +1,5 @@
 
-from typing import Dict, Iterable, Tuple
+from typing import Dict, Iterable, Optional, Tuple
 
 import ase.io
 from mace_scf.data.new_atomic_data import ExtAtomicData
@@ -361,3 +361,21 @@ def load_train_valid_sets_from_preprocessed(args: argparse.Namespace):
     )
     log_dataset_summary(z_table, train_set, valid_set)
     return train_set, valid_set, z_table, atomic_energies, []
+
+
+def fermi_level_offset_from_configurations(configurations) -> Optional[float]:
+    """Mean Fermi level over the configurations that carry one, or None if none do."""
+    fermi_sum = 0.0
+    num_values = 0
+    for config in configurations:
+        fermi_level = config.properties.get("fermi_level")
+        if fermi_level is None:
+            continue
+        weight = config.property_weights.get("fermi_level")
+        if weight is None or not bool(np.all(np.asarray(weight) > 0.0)):
+            continue
+        fermi_sum += float(np.asarray(fermi_level).reshape(-1)[0])
+        num_values += 1
+    if num_values == 0:
+        return None
+    return fermi_sum / num_values
