@@ -5,7 +5,9 @@ no cuequivariance support raises ``NotImplementedError`` in ``build_model`` and 
 skipped here, so its cases start running by themselves once support lands.
 
 The parity checks need CUDA (cuequivariance's symmetric contraction and layout
-transpose have no CPU kernels); the configuration checks run anywhere.
+transpose have no CPU kernels); the configuration checks run anywhere. Forward parity
+covers forces and stress; the gradient test backpropagates through both, so the
+double-backward paths are exercised in float64.
 """
 
 import importlib.util
@@ -68,15 +70,16 @@ CASES = [
     ModelCase(
         "LocalSplitCharges",
         FORMAL_CHARGES_ARGV + ELECTROSTATIC_ARGV,
-        ("energy", "forces", "density_coefficients", "dipole"),
+        ("energy", "forces", "stress", "density_coefficients", "dipole"),
     ),
-    ModelCase("LocalCharges", ELECTROSTATIC_ARGV, ("energy", "forces", "density_coefficients")),
+    ModelCase("LocalCharges", ELECTROSTATIC_ARGV,
+              ("energy", "forces", "stress", "density_coefficients")),
     ModelCase(
         "FixedChargeBaselinedMACE",
         FORMAL_CHARGES_ARGV + ELECTROSTATIC_ARGV,
-        ("energy", "forces"),
+        ("energy", "forces", "stress"),
     ),
-    ModelCase("MACE", (), ("energy", "forces")),
+    ModelCase("MACE", (), ("energy", "forces", "stress")),
 ]
 CASE_IDS = [case.model for case in CASES]
 
@@ -288,8 +291,8 @@ def test_forward_matches_e3nn(case):
     batch = _batch(atoms, "cuda")
     e3nn_model.eval()
     cueq_model.eval()
-    reference = e3nn_model(batch.to_dict(), training=False, compute_force=True)
-    actual = cueq_model(batch.to_dict(), training=False, compute_force=True)
+    reference = e3nn_model(batch.to_dict(), training=False, compute_force=True, compute_stress=True)
+    actual = cueq_model(batch.to_dict(), training=False, compute_force=True, compute_stress=True)
     for key in case.outputs:
         assert reference.get(key) is not None, f"{case.model}: e3nn produced no {key}"
         torch.testing.assert_close(
@@ -309,8 +312,11 @@ def test_gradients_match_e3nn(case):
         for param in model.parameters():
             param.grad = None
         model.train()
-        out = model(batch.to_dict(), training=True, compute_force=True)
-        (out["energy"].sum() + out["forces"].pow(2).sum()).backward()
+        out = model(batch.to_dict(), training=True, compute_force=True, compute_stress=True)
+        loss = out["energy"].sum() + out["forces"].pow(2).sum()
+        if out.get("stress") is not None:
+            loss = loss + out["stress"].pow(2).sum()
+        loss.backward()
         return {n: p.grad.detach() for n, p in model.named_parameters() if p.grad is not None}
 
     reference, actual = grads(e3nn_model), grads(cueq_model)
