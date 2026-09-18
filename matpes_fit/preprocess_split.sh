@@ -6,6 +6,11 @@
 # mp-id, different ionic step / volume scaling) across train and valid.
 # One array task per functional (task 0 = PBE, task 1 = R2SCAN).
 #
+# --allow_low_density_pbc: ~3% of MatPES frames exceed the 100 A^3/atom default and
+# would abort the run. They are real MatPES content, not clusters mislabelled as
+# periodic -- the extreme cases (3443 A^3/atom, one atom in a ~15 A box) are the
+# isolated-atom reference calculations.
+#
 # Submit from the mace-scf repository root:
 #   sbatch matpes_fit/preprocess_split.sh
 
@@ -46,4 +51,5 @@ conda run --live-stream -n mace_scf python -u scripts/preprocess_data.py \
     --compute_statistics \
     --num_process="${NUM_PROCESS}" \
     --seed="${SEED}" \
+    --allow_low_density_pbc \
     --shuffle=True

@@ -133,7 +133,7 @@ def _pbc_validator(electrostatic_pbc_method):
     if allowed is None:
         return None
 
-    def validate(atoms, config_index, file_path, split_name):
+    def validate(atoms, config_index, source, split_name):
         pbc = _pbc_tuple(atoms)
         if pbc not in allowed:
             allowed_str = ", ".join(
@@ -141,8 +141,8 @@ def _pbc_validator(electrostatic_pbc_method):
             )
             pbc_str = "".join("T" if x else "F" for x in pbc)
             raise ValueError(
-                f"Found pbc={pbc_str} in {split_name} file {file_path}, "
-                f"which is incompatible with "
+                f"Found pbc={pbc_str} in {split_name} config {config_index} of "
+                f"{source}, which is incompatible with "
                 f"--electrostatic_pbc_method={electrostatic_pbc_method} "
                 f"(allowed: {allowed_str})."
             )
@@ -174,21 +174,42 @@ def check_explicit_dipole_component_weights_for_paths(args):
     _run_config_validators(args, [_dipole_weight_validator(args.key_specification)])
 
 
-def validate_xyz_paths(args):
-    """Every check that needs the raw xyz, in one pass per file.
+def check_pbc_consistent_for_collections(collections, electrostatic_pbc_method):
+    """The pbc check over parsed configurations rather than the raw file.
 
-    This is the single definition of which path-level checks constitute validation;
-    run_train (for .xyz input) and preprocess_data (for input that becomes .h5 shards)
-    both call it rather than each listing the checks themselves.
+    Configuration keeps .pbc, so this needs no second read of the xyz -- on a multi-GB
+    training file re-reading costs more than every check put together.
     """
-    _run_config_validators(
-        args,
-        [_dipole_weight_validator(args.key_specification), _enabled_pbc_validator(args)],
-    )
+    validate = _pbc_validator(electrostatic_pbc_method)
+    if validate is None:
+        return
+    for split_name, configs in _named_config_splits(collections):
+        for config_index, config in enumerate(configs):
+            validate(config, config_index, "the parsed configurations", split_name)
+
+
+def validate_xyz_paths(args):
+    """The checks that can only be answered from the raw xyz.
+
+    Only the dipole-weight check, which reads an atoms.info key that parsing does not
+    keep; it returns immediately when the head declares no dipole key, so datasets
+    without dipoles pay nothing. Everything else is checked after parsing, in
+    validate_xyz_collections.
+    """
+    _run_config_validators(args, [_dipole_weight_validator(args.key_specification)])
 
 
 def validate_xyz_collections(collections, args):
-    """The checks that need parsed configurations rather than the raw file."""
+    """The checks that run against parsed configurations.
+
+    This and validate_xyz_paths are the single definition of what validation means for
+    .xyz input; run_train and preprocess_data both call them rather than each listing
+    the checks themselves.
+    """
+    if not getattr(args, "override_pbc_checks", False):
+        check_pbc_consistent_for_collections(
+            collections, getattr(args, "electrostatic_pbc_method", None)
+        )
     check_low_density_periodic_configs(
         collections,
         max_volume_per_atom=args.low_density_pbc_max_volume_per_atom,
