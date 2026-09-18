@@ -1,0 +1,34 @@
+# MatPES R2SCAN LocalSplitCharges baseline: energy + forces + stress, from scratch.
+# Key names are inert for .h5 input (parsing happened at preprocess time) but check_and_fix_heads still requires them.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+
+# Stage 1 is upstream MACE's from-scratch balance; stage 2 is the lambda=5 weighting probed in fits/warmup_check.
+# stress is constant across stages so only the energy/force balance changes. Weights must be floats: 100 parses as int and raises.
+train_schedule:
+  0:
+    name: stage1
+    start: 0
+    end: 49
+    loss:
+      energy_per_atom: 1.0
+      forces: 100.0
+      stress: 1.0
+    lr: 0.01
+  1:
+    name: stage2
+    start: 50
+    end: 89
+    loss:
+      energy_per_atom: 100.0
+      forces: 20.0
+      stress: 1.0
+    lr: 0.001
