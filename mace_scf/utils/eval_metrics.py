@@ -149,11 +149,13 @@ class MaceSCFLoss(Metric):
             output.get("density_coefficients") is not None
             and batch.density_coefficients is not None
         ):
+            # Skip configs whose reference multipoles were masked out (e.g. NaN DDEC6).
+            keep = batch.density_coefficients_weight.view(-1)[batch.batch] > 0.0
             self.dmas_computed += 1
             self.delta_dmas.append(
-                batch.density_coefficients - output["density_coefficients"]
+                (batch.density_coefficients - output["density_coefficients"])[keep]
             )
-            self.dmas.append(batch.density_coefficients)
+            self.dmas.append(batch.density_coefficients[keep])
         if (
             output.get("electrostatic_potentials") is not None
             and batch.electrostatic_potentials is not None

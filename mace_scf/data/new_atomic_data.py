@@ -175,6 +175,11 @@ class ExtAtomicData(AtomicData):
             if config.property_weights.get("atomic_multipoles") is not None
             else torch.tensor(1.0, dtype=torch.get_default_dtype())
         )
+        # MatPES leaves REF_multipoles NaN where DDEC6 failed; drop those from the loss.
+        if not torch.isfinite(density_coefficients).all():
+            density_coefficients = torch.nan_to_num(density_coefficients, nan=0.0)
+            density_coefficients_weight = torch.zeros_like(density_coefficients_weight)
+
         electrostatic_potentials = (
             torch.tensor(config.properties.get("electrostatic_potentials")).unsqueeze(
                 -1
