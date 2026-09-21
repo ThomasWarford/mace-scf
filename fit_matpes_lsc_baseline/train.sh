@@ -27,6 +27,9 @@
 #
 # The job name is the W&B run id, so resubmissions under --restart_latest append to one run.
 
+# lr 0.01 is MACE's from-scratch default; 0b3's 0.005 at batch 16 sqrt-scales to it, and
+# reduce_loss makes gradients world-size invariant, so 8 and 32 GPUs share one lr.
+
 set -euo pipefail
 
 # Find the repo root: the submit dir is not always it (job 58545264), and SLURM spools this script so BASH_SOURCE cannot be used.

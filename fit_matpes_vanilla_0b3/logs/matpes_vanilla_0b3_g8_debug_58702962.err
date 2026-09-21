@@ -1,0 +1,285 @@
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/wandb/analytics/sentry.py:269: DeprecationWarning: Read the `app_url` setting from the appropriate Settings object.
+  app_url = wandb.util.app_url(tags["base_url"])  # type: ignore[index]
+wandb: WARNING `resume` will be ignored since W&B syncing is set to `offline`. Starting a new run with run id matpes_vanilla_0b3_g8.
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/wandb/analytics/sentry.py:269: DeprecationWarning: Read the `app_url` setting from the appropriate Settings object.
+  app_url = wandb.util.app_url(tags["base_url"])  # type: ignore[index]
+wandb: Tracking run with wandb version 0.28.0
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/wandb/wandb/offline-run-20260921_113008-matpes_vanilla_0b3_g8
+wandb: View this run in the terminal with `wandb leet`
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876342) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876341) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876343) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739664) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739663) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739666) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739665) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876344) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876344) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739664) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739663) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876341) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876342) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1876343) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739666) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1739665) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+[2026-09-21T18:59:10.116] error: *** STEP 58702962.0 ON nid008572 CANCELLED AT 2026-09-21T18:59:10 DUE TO TIME LIMIT ***
+[2026-09-21T18:59:10.117] error: *** JOB 58702962 ON nid008572 CANCELLED AT 2026-09-21T18:59:10 DUE TO TIME LIMIT ***

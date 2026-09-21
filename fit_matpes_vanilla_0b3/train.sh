@@ -31,7 +31,7 @@
 # horizon -- longer than the whole run, leaving the eval weights about half converged at
 # the end. 0.9998 is ~5.7k steps, about 8 epochs. Rescale it with the rank count.
 #
-# --pair_repulsion and --scheduler_patience 5 track 0b3.sh. ZBL needed a code change as
+# --pair_repulsion tracks 0b3.sh. ZBL needed a code change as
 # well as the flag: build_model's model_config never carried pair_repulsion, so the flag
 # alone was inert (see run_train_utils.py). Kept because every other axis here sits on the
 # 0b3 side -- density interaction blocks, no edge_irreps, num_radial_basis 10 -- and MatPES
@@ -52,6 +52,9 @@
 #   sbatch --export=ALL,TRAIN_DIR fit_matpes_vanilla_0b3/train.sh # 8-shard subset, smoke tests only
 #
 # The job name is the W&B run id, so resubmissions under --restart_latest append to one run.
+
+# lr 0.01 is MACE's from-scratch default; 0b3's 0.005 at batch 16 sqrt-scales to it, and
+# reduce_loss makes gradients world-size invariant, so 8 and 32 GPUs share one lr.
 
 set -euo pipefail
 
@@ -133,7 +136,6 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --error_table PerAtomRMSEstressvirials \
     --optimizer adam \
     --amsgrad \
-    --scheduler_patience 5 \
     --ema \
     --ema_decay 0.9998 \
     --compute_polarizability False \
@@ -144,7 +146,6 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --distributed \
     --seed 1 \
     --clip_grad 100 \
-    --patience 40 \
     --debug-log-grad-summary \
     --wandb \
     --wandb_project matpes-lsc-comparison \

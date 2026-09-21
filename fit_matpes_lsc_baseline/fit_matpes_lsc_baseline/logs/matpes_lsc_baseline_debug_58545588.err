@@ -1,0 +1,52 @@
+note: submitted from /global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_baseline, so the SLURM .out/.err for this job are
+      under that directory, not /global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_baseline/logs/
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+[2026-09-18T21:49:14.131] error: *** STEP 58545588.0 ON nid002121 CANCELLED AT 2026-09-18T21:49:14 DUE TO TIME LIMIT ***
+[2026-09-18T21:49:14.131] error: *** JOB 58545588 ON nid002121 CANCELLED AT 2026-09-18T21:49:14 DUE TO TIME LIMIT ***

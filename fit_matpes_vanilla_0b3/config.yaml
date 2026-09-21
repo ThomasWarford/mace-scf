@@ -28,7 +28,7 @@ train_schedule:
       energy_per_atom: 1.0
       forces: 100.0
       stress: 1.0
-    lr: 0.015
+    lr: 0.01
   1:
     name: stage2
     start: 50
@@ -37,4 +37,4 @@ train_schedule:
       energy_per_atom: 100.0
       forces: 20.0
       stress: 1.0
-    lr: 0.0015
+    lr: 0.001

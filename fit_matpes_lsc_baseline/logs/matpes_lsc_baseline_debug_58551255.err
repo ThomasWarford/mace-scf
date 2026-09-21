@@ -1,0 +1,990 @@
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/u1/t/twarford/dev/mace-scf/mace_scf/utils/implicit.py:7: UserWarning: torchopt not found, implicit differentiation not available
+  warnings.warn("torchopt not found, implicit differentiation not available")
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/tp_fully_connected.py:142: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/cuequivariance_torch/operations/linear.py:125: DeprecationWarning: `use_fallback` is deprecated, please use `method` instead
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/ast.py:407: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  return visitor(node)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/u1/t/twarford/dev/mace-scf/mace_scf/electrostatics/localsources.py:353: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "change_of_basis", torch.tensor(change_of_basis)
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/u1/t/twarford/dev/graph_electrostatics/graph_longrange/gto_utils.py:57: DeprecationWarning: __array_wrap__ must accept context and return_scalar arguments (positionally) in the future. (Deprecated NumPy 2.0)
+  * scipy.special.gamma((2 * ls + 3) / 2)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/wandb/analytics/sentry.py:269: DeprecationWarning: Read the `app_url` setting from the appropriate Settings object.
+  app_url = wandb.util.app_url(tags["base_url"])  # type: ignore[index]
+wandb: WARNING `resume` will be ignored since W&B syncing is set to `offline`. Starting a new run with run id matpes_lsc_baseline_debug.
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/wandb/analytics/sentry.py:269: DeprecationWarning: Read the `app_url` setting from the appropriate Settings object.
+  app_url = wandb.util.app_url(tags["base_url"])  # type: ignore[index]
+wandb: Tracking run with wandb version 0.28.0
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_baseline/wandb/wandb/offline-run-20260918_163753-matpes_lsc_baseline_debug
+wandb: View this run in the terminal with `wandb leet`
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956005) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956006) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956003) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115176) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115177) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115175) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115174) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956004) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956004) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956003) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956005) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=956006) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115177) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115175) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115176) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+/global/homes/t/twarford/.conda/envs/mace_scf/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=1115174) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  self.pid = os.fork()
+[rank3]:[W918 16:44:52.534115324 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 3 while trying to allocate 3034578944 bytes (free: 2848194560, total: 42404806656).
+[2026-09-19T00:06:19.761] error: *** STEP 58551255.0 ON nid002828 CANCELLED AT 2026-09-19T00:06:19 DUE to SIGNAL Terminated ***
+[2026-09-19T00:06:19.762] error: *** JOB 58551255 ON nid002828 CANCELLED AT 2026-09-19T00:06:19 DUE to SIGNAL Terminated ***
