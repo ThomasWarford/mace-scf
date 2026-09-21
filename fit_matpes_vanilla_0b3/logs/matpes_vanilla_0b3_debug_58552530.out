@@ -1,0 +1,216 @@
+repo root: /global/u1/t/twarford/dev/mace-scf
+MASTER_PORT=55695
+DistributedEnvironment(master_addr=nid001625, master_port=55695, world_size=32, local_rank=0, rank=0)
+2026-09-18 17:39:57.727 INFO: Using statistics file /global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/statistics.json
+2026-09-18 17:39:57.735 INFO: Process group initialized: True
+2026-09-18 17:39:57.735 INFO: Processes: 32
+2026-09-18 17:39:57.735 INFO: MACE version: 0.3.14
+2026-09-18 17:39:57.736 INFO: CUDA version: 13.0, CUDA device: 0
+2026-09-18 17:39:57.736 INFO: Configuration: Namespace(config='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/config.yaml', name='matpes_vanilla_0b3', seed=1, work_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3', log_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/logs', model_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3', checkpoints_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/checkpoints', results_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/results', downloads_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/downloads', device='cuda', default_dtype='float64', distributed=True, launcher='slurm', log_level='INFO', plot=True, plot_frequency=0, plot_interaction_e=False, r_max=6.0, radial_type='bessel', num_radial_basis=10, num_cutoff_basis=5, pair_repulsion=True, distance_transform='None', apply_cutoff=True, use_last_readout_only=False, use_embedding_readout=False, interaction='RealAgnosticDensityResidualInteractionBlock', interaction_first='RealAgnosticDensityInteractionBlock', max_ell=3, correlation=3, use_reduced_cg=False, use_so3=False, use_agnostic_product=False, num_interactions=2, MLP_irreps='16x0e', radial_MLP='[64, 64, 64]', hidden_irreps='128x0e + 128x1o', edge_irreps=None, num_channels=None, max_L=None, gate='silu', scaling='rms_forces_scaling', avg_num_neighbors=54.184029281139374, compute_avg_num_neighbors=False, compute_stress=True, compute_forces=True, train_file='/global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/train', valid_file='/global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/val', valid_fraction=0.1, test_file=None, test_dir=None, multi_processed_test=False, num_workers=8, pin_memory=True, atomic_numbers='[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 89, 90, 91, 92, 93, 94]', mean=-3.814699526876211, std=1.5658278409391642, statistics_file='/global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/statistics.json', les_arguments=None, E0s='{1: -1.12256101, 2: -0.32636788, 3: -0.77574867, 4: -0.55505964, 5: -1.1719562, 6: -2.37153267, 7: -4.42722573, 8: -3.22079709, 9: -2.24667956, 10: -1.87587063, 11: -2.47916288, 12: -2.46009842, 13: -3.13610691, 14: -4.10417318, 15: -5.58350445, 16: -5.11758869, 17: -4.8080844, 18: -4.81548181, 19: -5.1619833, 20: -4.96437348, 21: -7.3758385, 22: -7.89348124, 23: -9.39933491, 24: -11.58612906, 25: -11.62153053, 26: -9.75123742, 27: -8.06962288, 28: -7.33886001, 29: -6.96372255, 30: -7.44297004, 31: -8.61531029, 32: -10.00138965, 33: -11.8352409, 34: -11.78712055, 35: -11.94318729, 36: -12.53125178, 37: -13.16897743, 38: -13.3079222, 39: -16.17722027, 40: -16.68644557, 41: -17.68512895, 42: -20.43632183, 43: -19.6789338, 44: -18.30519319, 45: -18.30000869, 46: -18.77913604, 47: -18.47864697, 48: -19.04302934, 49: -20.18193266, 50: -21.36410117, 51: -23.14770657, 52: -23.14988811, 53: -23.31069583, 54: -23.80420774, 55: -24.33703294, 56: -25.72952087, 57: -25.77726829, 58: -26.70836462, 59: -28.03128505, 60: -30.12134597, 61: -31.83328727, 62: -34.20690699, 63: -37.50571106, 64: -37.09642203, 65: -35.36334319, 66: -35.18798673, 67: -34.4915607, 68: -33.45594441, 69: -32.87419661, 70: -33.50674037, 71: -33.75240649, 72: -38.72151641, 73: -40.45435788, 74: -43.42146831, 75: -45.01003731, 76: -44.9549781, 77: -45.21733442, 78: -45.78349652, 79: -47.17549869, 80: -48.91051649, 81: -51.09730432, 82: -53.33681477, 83: -56.1998466, 89: -65.08565284, 90: -67.22815256, 91: -70.10833751, 92: -74.35431907, 93: -78.24114297, 94: -82.93460559}', pseudolabel_replay=False, foundation_filter_elements=True, multiheads_finetuning=True, foundation_head=None, weight_pt_head=1.0, real_pt_data_ratio_threshold=0.1, num_samples_pt=10000, force_mh_ft_lr=False, subselect_pt='random', filter_type_pt='none', allow_random_padding_pt=True, pt_train_file=None, pt_valid_file=None, foundation_model_elements=False, keep_isolated_atoms=False, energy_key=None, forces_key=None, virials_key=None, stress_key=None, dipole_key=None, polarizability_key=None, head_key=None, charges_key=None, elec_temp_key=None, total_spin_key=None, total_charge_key=None, embedding_specs=None, skip_evaluate_heads='pt_head', forces_weight=100.0, swa_forces_weight=100.0, energy_weight=1.0, swa_energy_weight=1000.0, virials_weight=1.0, swa_virials_weight=10.0, stress_weight=1.0, swa_stress_weight=10.0, dipole_weight=1.0, swa_dipole_weight=1.0, swa_polarizability_weight=1.0, polarizability_weight=1.0, config_type_weights={'Default': 1.0}, huber_delta=0.01, beta=0.9, batch_size=16, valid_batch_size=32, lr=0.01, swa_lr=0.001, weight_decay=1e-08, amsgrad=True, scheduler='ReduceLROnPlateau', lr_factor=0.8, scheduler_patience=5, lr_scheduler_gamma=0.9993, swa=False, start_swa=None, lbfgs=False, ema=True, ema_decay=0.9998, max_num_epochs=2048, patience=40, foundation_model=None, foundation_model_readout=True, eval_interval=1, keep_checkpoints=False, save_all_checkpoints=False, save_cpu=True, clip_grad=100.0, dry_run=False, enable_cueq=False, only_cueq=False, enable_oeq=False, wandb=True, wandb_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/wandb', wandb_project='matpes-lsc-comparison', wandb_entity='', wandb_name='matpes_vanilla_0b3_debug', wandb_log_hypers=['lr', 'batch_size', 'r_max', 'weight_decay', 'max_num_epochs'], atomic_multipoles_key=None, electrostatic_potentials_key=None, external_field_key=None, fermi_level_key=None, include_local_electron_energy=True, atomic_multipoles_max_l=1, atomic_multipoles_smearing_width=1.5, kspace_cutoff_factor=1.0, atomic_formal_charges='{}', formal_charges_from_data=False, formal_charge_noise_sigma=None, field_feature_max_l=1, field_feature_widths='[1.0, 2.0]', dont_include_pbc_corrections=False, include_electrostatic_self_interaction=True, valid_set_seed=1, quadrupole_feature_corrections=False, electrostatic_pbc_method='mixed_periodic', allow_low_density_pbc=False, override_pbc_checks=False, low_density_pbc_max_volume_per_atom=100.0, static_bond_transfer_block='OxidationDependentSymmetricPredictionSourceBlock', oxidation_state_mixer='SumOxidationStateMixer', return_electrostatic_potentials=False, train_schedule=[{'name': 'stage1', 'start': 0, 'end': 49, 'loss': {'energy_per_atom': {'weight': 1.0}, 'forces': {'weight': 100.0}, 'stress': {'weight': 1.0}}, 'lr': 0.015}, {'name': 'stage2', 'start': 50, 'end': 89, 'loss': {'energy_per_atom': {'weight': 100.0}, 'forces': {'weight': 20.0}, 'stress': {'weight': 1.0}}, 'lr': 0.0015}], fixedpoint_update_config={'type': <class 'mace_scf.electrostatics.field_blocks.OneBodyVariableUpdate'>, 'potential_embedding_cls': <class 'mace_scf.electrostatics.field_blocks.BiasedLinearPotentialEmbedding'>, 'nonlinearity_cls': <class 'mace_scf.electrostatics.field_blocks.NoNonLinearity'>}, field_readout_config={'type': <class 'mace_scf.electrostatics.field_blocks.StrictQuadraticFieldEnergyReadout'>}, field_block_weight_decay=5e-07, local_charges_weight_decay=5e-07, field_feature_norms='average', fermi_level_offset=None, field_norm_factor=1.0, oxidation_state_range='(-6.0, 6.0)', polarizable_charges=False, beta_two=0.999, log_on_test_sets=False, scf_convergence_summary=False, use_linear_final_readout=False, include_field_si=False, use_linear_local_charges=False, atom_density_scaling='None', wandb_watch='gradients', wandb_watch_log_freq=25, debug_log_grad_summary=True, log_all_ranks=False, fixedpoint_initial_charge_head_scale=0.01, heads={'default': {'info_keys': {'energy': 'REF_energy', 'total_charge': 'REF_total_charge', 'stress': 'REF_stress', 'head': 'head'}, 'arrays_keys': {'forces': 'REF_forces', 'charges': 'REF_formal_charges', 'atomic_multipoles': 'REF_multipoles'}}}, error_table='PerAtomRMSEstressvirials', compute_polarizability=False, restart_latest=True, model='ScaleShiftMACE', optimizer='adam', qeq_charges='autograd', train_hardness=False, read_enegs=False, read_hardness=False, enegs_key=None, default_hardness=2.0)
+2026-09-18 17:39:57.737 INFO: Using the key specifications to parse data:
+2026-09-18 17:39:57.738 INFO: KeySpecification(info_keys={'energy': 'REF_energy', 'total_charge': 'REF_total_charge', 'stress': 'REF_stress', 'head': 'head'}, arrays_keys={'forces': 'REF_forces', 'charges': 'REF_formal_charges', 'atomic_multipoles': 'REF_multipoles'})
+2026-09-18 17:39:57.740 INFO: Loading preprocessed .h5 input; its checks ran at preprocess time.
+2026-09-18 17:39:57.740 INFO: Isolated Atomic Energies (E0s) not in training file, using command line argument
+2026-09-18 17:40:29.943 INFO: AtomicNumberTable: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 89, 90, 91, 92, 93, 94)
+2026-09-18 17:40:29.945 INFO: Total number of configurations: train=362799, valid=11254, tests=[]
+2026-09-18 17:40:29.945 INFO: Atomic energies: [-1.12256101, -0.32636788, -0.77574867, -0.55505964, -1.1719562, -2.37153267, -4.42722573, -3.22079709, -2.24667956, -1.87587063, -2.47916288, -2.46009842, -3.13610691, -4.10417318, -5.58350445, -5.11758869, -4.8080844, -4.81548181, -5.1619833, -4.96437348, -7.3758385, -7.89348124, -9.39933491, -11.58612906, -11.62153053, -9.75123742, -8.06962288, -7.33886001, -6.96372255, -7.44297004, -8.61531029, -10.00138965, -11.8352409, -11.78712055, -11.94318729, -12.53125178, -13.16897743, -13.3079222, -16.17722027, -16.68644557, -17.68512895, -20.43632183, -19.6789338, -18.30519319, -18.30000869, -18.77913604, -18.47864697, -19.04302934, -20.18193266, -21.36410117, -23.14770657, -23.14988811, -23.31069583, -23.80420774, -24.33703294, -25.72952087, -25.77726829, -26.70836462, -28.03128505, -30.12134597, -31.83328727, -34.20690699, -37.50571106, -37.09642203, -35.36334319, -35.18798673, -34.4915607, -33.45594441, -32.87419661, -33.50674037, -33.75240649, -38.72151641, -40.45435788, -43.42146831, -45.01003731, -44.9549781, -45.21733442, -45.78349652, -47.17549869, -48.91051649, -51.09730432, -53.33681477, -56.1998466, -65.08565284, -67.22815256, -70.10833751, -74.35431907, -78.24114297, -82.93460559]
+2026-09-18 17:40:29.946 INFO: Average number of neighbors: 54.184029281139374
+2026-09-18 17:40:29.948 INFO: Fermi level offset is only used by FixedPoint; skipping the training-set scan for model ScaleShiftMACE
+2026-09-18 17:40:29.949 INFO: using Fermi level offset 0.0
+2026-09-18 17:40:29.949 INFO: Ignoring field_feature_norms='average' for model ScaleShiftMACE; field features are only used by FixedPoint.
+2026-09-18 17:40:29.950 INFO: using normalization for field features None
+2026-09-18 17:40:29.951 INFO: using atom density scaling factors [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.]
+2026-09-18 17:40:29.951 INFO: Building model
+2026-09-18 17:40:29.952 INFO: Hidden irreps: 128x0e + 128x1o
+2026-09-18 17:40:29.952 INFO: using mean -3.814699526876211 and std 1.5658278409391642 from the statistics file
+2026-09-18 17:40:31.274 WARNING: Cannot find checkpoint with tag 'matpes_vanilla_0b3_run-1_stage1' in '/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/checkpoints'
+2026-09-18 17:40:31.276 INFO: Using Weights and Biases for logging
+2026-09-18 17:40:34.450 INFO: ScaleShiftMACE(
+  (node_embedding): LinearNodeEmbeddingBlock(
+    (linear): Linear(89x0e -> 128x0e | 11392 weights)
+  )
+  (radial_embedding): RadialEmbeddingBlock(
+    (bessel_fn): BesselBasis(r_max=6.0, num_basis=10, trainable=False)
+    (cutoff_fn): PolynomialCutoff(p=5, r_max=6.0)
+  )
+  (pair_repulsion_fn): ZBLBasis(c=tensor([0.1818, 0.5099, 0.2802, 0.0282], device='cuda:0'))
+  (spherical_harmonics): SphericalHarmonics()
+  (atomic_energies_fn): AtomicEnergiesBlock(energies=[[-1.1226, -0.3264, -0.7757, -0.5551, -1.1720, -2.3715, -4.4272, -3.2208, -2.2467, -1.8759, -2.4792, -2.4601, -3.1361, -4.1042, -5.5835, -5.1176, -4.8081, -4.8155, -5.1620, -4.9644, -7.3758, -7.8935, -9.3993, -11.5861, -11.6215, -9.7512, -8.0696, -7.3389, -6.9637, -7.4430, -8.6153, -10.0014, -11.8352, -11.7871, -11.9432, -12.5313, -13.1690, -13.3079, -16.1772, -16.6864, -17.6851, -20.4363, -19.6789, -18.3052, -18.3000, -18.7791, -18.4786, -19.0430, -20.1819, -21.3641, -23.1477, -23.1499, -23.3107, -23.8042, -24.3370, -25.7295, -25.7773, -26.7084, -28.0313, -30.1213, -31.8333, -34.2069, -37.5057, -37.0964, -35.3633, -35.1880, -34.4916, -33.4559, -32.8742, -33.5067, -33.7524, -38.7215, -40.4544, -43.4215, -45.0100, -44.9550, -45.2173, -45.7835, -47.1755, -48.9105, -51.0973, -53.3368, -56.1998, -65.0857, -67.2282, -70.1083, -74.3543, -78.2411, -82.9346]])
+  (interactions): ModuleList(
+    (0): RealAgnosticDensityInteractionBlock(
+      (linear_up): Linear(128x0e -> 128x0e | 16384 weights)
+      (conv_tp): TensorProduct(128x0e x 1x0e+1x1o+1x2e+1x3o -> 128x0e+128x1o+128x2e+128x3o | 512 paths | 512 weights)
+      (conv_tp_weights): FullyConnectedNet[10, 64, 64, 64, 512]
+      (linear): Linear(128x0e+128x1o+128x2e+128x3o -> 128x0e+128x1o+128x2e+128x3o | 65536 weights)
+      (skip_tp): FullyConnectedTensorProduct(128x0e+128x1o+128x2e+128x3o x 89x0e -> 128x0e+128x1o+128x2e+128x3o | 5832704 paths | 5832704 weights)
+      (density_fn): FullyConnectedNet[10, 1]
+      (reshape): reshape_irreps()
+    )
+    (1): RealAgnosticDensityResidualInteractionBlock(
+      (linear_up): Linear(128x0e+128x1o -> 128x0e+128x1o | 32768 weights)
+      (conv_tp): TensorProduct(128x0e+128x1o x 1x0e+1x1o+1x2e+1x3o -> 256x0e+384x1o+384x2e+256x3o | 1280 paths | 1280 weights)
+      (conv_tp_weights): FullyConnectedNet[10, 64, 64, 64, 1280]
+      (linear): Linear(128x0e+128x0e+128x1o+128x1o+128x1o+128x2e+128x2e+128x2e+128x3o+128x3o -> 128x0e+128x1o+128x2e+128x3o | 163840 weights)
+      (skip_tp): FullyConnectedTensorProduct(128x0e+128x1o x 89x0e -> 128x0e | 1458176 paths | 1458176 weights)
+      (density_fn): FullyConnectedNet[10, 1]
+      (reshape): reshape_irreps()
+    )
+  )
+  (products): ModuleList(
+    (0): EquivariantProductBasisBlock(
+      (symmetric_contractions): SymmetricContraction(
+        (contractions): ModuleList(
+          (0): Contraction(
+            (contractions_weighting): ModuleList(
+              (0-1): 2 x GraphModule()
+            )
+            (contractions_features): ModuleList(
+              (0-1): 2 x GraphModule()
+            )
+            (weights): ParameterList(
+                (0): Parameter containing: [torch.float64 of size 89x4x128 (cuda:0)]
+                (1): Parameter containing: [torch.float64 of size 89x1x128 (cuda:0)]
+            )
+            (graph_opt_main): GraphModule()
+          )
+          (1): Contraction(
+            (contractions_weighting): ModuleList(
+              (0-1): 2 x GraphModule()
+            )
+            (contractions_features): ModuleList(
+              (0-1): 2 x GraphModule()
+            )
+            (weights): ParameterList(
+                (0): Parameter containing: [torch.float64 of size 89x3x128 (cuda:0)]
+                (1): Parameter containing: [torch.float64 of size 89x1x128 (cuda:0)]
+            )
+            (graph_opt_main): GraphModule()
+          )
+        )
+      )
+      (linear): Linear(128x0e+128x1o -> 128x0e+128x1o | 32768 weights)
+    )
+    (1): EquivariantProductBasisBlock(
+      (symmetric_contractions): SymmetricContraction(
+        (contractions): ModuleList(
+          (0): Contraction(
+            (contractions_weighting): ModuleList(
+              (0-1): 2 x GraphModule()
+            )
+            (contractions_features): ModuleList(
+              (0-1): 2 x GraphModule()
+            )
+            (weights): ParameterList(
+                (0): Parameter containing: [torch.float64 of size 89x4x128 (cuda:0)]
+                (1): Parameter containing: [torch.float64 of size 89x1x128 (cuda:0)]
+            )
+            (graph_opt_main): GraphModule()
+          )
+        )
+      )
+      (linear): Linear(128x0e -> 128x0e | 16384 weights)
+    )
+  )
+  (readouts): ModuleList(
+    (0): LinearReadoutBlock(
+      (linear): Linear(128x0e+128x1o -> 1x0e | 128 weights)
+    )
+    (1): NonLinearReadoutBlock(
+      (linear_1): Linear(128x0e -> 16x0e | 2048 weights)
+      (non_linearity): Activation [x] (16x0e -> 16x0e)
+      (linear_2): Linear(16x0e -> 1x0e | 16 weights)
+    )
+  )
+  (scale_shift): ScaleShiftBlock(scale=1.5658, shift=-3.8147)
+)
+2026-09-18 17:40:34.623 INFO: Number of parameters: 8242980
+2026-09-18 17:40:34.624 INFO: Optimizer: Adam (
+Parameter Group 0
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: embedding
+    weight_decay: 0.0
+
+Parameter Group 1
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: interactions_decay
+    weight_decay: 1e-08
+
+Parameter Group 2
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: interactions_no_decay
+    weight_decay: 0.0
+
+Parameter Group 3
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: products
+    weight_decay: 1e-08
+
+Parameter Group 4
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: readouts
+    weight_decay: 0.0
+)
+2026-09-18 17:40:34.627 INFO: WeightedLoss(energy_per_atom_weight=1.0, forces_weight=100.0, stress_weight=1.0, )
+2026-09-18 17:40:35.261 INFO: Setting global learning rate to 0.015
+2026-09-18 17:40:35.265 WARNING: Cannot find checkpoint with tag 'matpes_vanilla_0b3_run-1_stage1' in '/global/u1/t/twarford/dev/mace-scf/fit_matpes_vanilla_0b3/checkpoints'
+2026-09-18 17:40:35.273 INFO: Using gradient clipping with tolerance=100.000
+2026-09-18 17:43:43.854 INFO: Epoch 0: loss=76.1703, RMSE_E_per_atom=1455.3 meV, RMSE_F=860.3 meV / A, RMSE_stress_per_atom=8.4 meV / A^3
+2026-09-18 17:45:53.746 INFO: Epoch 1: loss=59.5422, RMSE_E_per_atom=1408.6 meV, RMSE_F=757.6 meV / A, RMSE_stress_per_atom=8.6 meV / A^3
+2026-09-18 17:48:08.607 INFO: Epoch 2: loss=45.9576, RMSE_E_per_atom=1365.2 meV, RMSE_F=661.8 meV / A, RMSE_stress_per_atom=7.7 meV / A^3
+2026-09-18 17:50:20.165 INFO: Epoch 3: loss=41.2267, RMSE_E_per_atom=1350.2 meV, RMSE_F=626.7 meV / A, RMSE_stress_per_atom=7.8 meV / A^3
+2026-09-18 17:52:30.194 INFO: Epoch 4: loss=42.7340, RMSE_E_per_atom=1350.7 meV, RMSE_F=639.5 meV / A, RMSE_stress_per_atom=7.7 meV / A^3
+2026-09-18 17:54:40.726 INFO: Epoch 5: loss=35.0934, RMSE_E_per_atom=1333.6 meV, RMSE_F=575.9 meV / A, RMSE_stress_per_atom=7.4 meV / A^3
+2026-09-18 17:56:53.147 INFO: Epoch 6: loss=33.6791, RMSE_E_per_atom=1330.2 meV, RMSE_F=563.6 meV / A, RMSE_stress_per_atom=7.2 meV / A^3
+2026-09-18 17:59:04.893 INFO: Epoch 7: loss=33.9492, RMSE_E_per_atom=1326.0 meV, RMSE_F=566.9 meV / A, RMSE_stress_per_atom=7.2 meV / A^3
+2026-09-18 18:01:17.686 INFO: Epoch 8: loss=31.6959, RMSE_E_per_atom=1324.3 meV, RMSE_F=546.5 meV / A, RMSE_stress_per_atom=6.9 meV / A^3
+2026-09-18 18:03:34.608 INFO: Epoch 9: loss=31.6826, RMSE_E_per_atom=1308.2 meV, RMSE_F=545.8 meV / A, RMSE_stress_per_atom=6.5 meV / A^3
+2026-09-18 18:05:46.452 INFO: Epoch 10: loss=29.4684, RMSE_E_per_atom=1310.9 meV, RMSE_F=526.2 meV / A, RMSE_stress_per_atom=6.4 meV / A^3
+2026-09-18 18:08:03.628 INFO: Epoch 11: loss=29.0477, RMSE_E_per_atom=1310.5 meV, RMSE_F=521.8 meV / A, RMSE_stress_per_atom=6.2 meV / A^3

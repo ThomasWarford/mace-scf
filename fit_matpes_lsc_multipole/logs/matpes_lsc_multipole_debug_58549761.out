@@ -1,0 +1,377 @@
+repo root: /global/u1/t/twarford/dev/mace-scf
+MASTER_PORT=35183
+DistributedEnvironment(master_addr=nid001921, master_port=35183, world_size=8, local_rank=0, rank=0)
+2026-09-18 16:01:40.648 INFO: Using statistics file /global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/statistics.json
+2026-09-18 16:01:40.657 INFO: Process group initialized: True
+2026-09-18 16:01:40.658 INFO: Processes: 8
+2026-09-18 16:01:40.659 INFO: MACE version: 0.3.14
+2026-09-18 16:01:40.660 INFO: CUDA version: 13.0, CUDA device: 0
+2026-09-18 16:01:40.660 INFO: Configuration: Namespace(config='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/config.yaml', name='matpes_lsc_multipole', seed=1, work_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole', log_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/logs', model_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole', checkpoints_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/checkpoints', results_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/results', downloads_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/downloads', device='cuda', default_dtype='float64', distributed=True, launcher='slurm', log_level='INFO', plot=True, plot_frequency=0, plot_interaction_e=False, r_max=6.0, radial_type='bessel', num_radial_basis=8, num_cutoff_basis=5, pair_repulsion=False, distance_transform='None', apply_cutoff=True, use_last_readout_only=False, use_embedding_readout=False, interaction='RealAgnosticResidualInteractionBlock', interaction_first='RealAgnosticResidualInteractionBlock', max_ell=3, correlation=3, use_reduced_cg=False, use_so3=False, use_agnostic_product=False, num_interactions=2, MLP_irreps='16x0e', radial_MLP='[64, 64, 64]', hidden_irreps='128x0e + 128x1o', edge_irreps=None, num_channels=None, max_L=None, gate='silu', scaling='rms_forces_scaling', avg_num_neighbors=54.184029281139374, compute_avg_num_neighbors=False, compute_stress=True, compute_forces=True, train_file='/global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/train_debug8', valid_file='/global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/val', valid_fraction=0.1, test_file=None, test_dir=None, multi_processed_test=False, num_workers=8, pin_memory=True, atomic_numbers='[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 89, 90, 91, 92, 93, 94]', mean=-3.814699526876211, std=1.5658278409391642, statistics_file='/global/u1/t/twarford/dev/mace-scf/matpes_fit/processed_r2scan_split/statistics.json', les_arguments=None, E0s='{1: -1.12256101, 2: -0.32636788, 3: -0.77574867, 4: -0.55505964, 5: -1.1719562, 6: -2.37153267, 7: -4.42722573, 8: -3.22079709, 9: -2.24667956, 10: -1.87587063, 11: -2.47916288, 12: -2.46009842, 13: -3.13610691, 14: -4.10417318, 15: -5.58350445, 16: -5.11758869, 17: -4.8080844, 18: -4.81548181, 19: -5.1619833, 20: -4.96437348, 21: -7.3758385, 22: -7.89348124, 23: -9.39933491, 24: -11.58612906, 25: -11.62153053, 26: -9.75123742, 27: -8.06962288, 28: -7.33886001, 29: -6.96372255, 30: -7.44297004, 31: -8.61531029, 32: -10.00138965, 33: -11.8352409, 34: -11.78712055, 35: -11.94318729, 36: -12.53125178, 37: -13.16897743, 38: -13.3079222, 39: -16.17722027, 40: -16.68644557, 41: -17.68512895, 42: -20.43632183, 43: -19.6789338, 44: -18.30519319, 45: -18.30000869, 46: -18.77913604, 47: -18.47864697, 48: -19.04302934, 49: -20.18193266, 50: -21.36410117, 51: -23.14770657, 52: -23.14988811, 53: -23.31069583, 54: -23.80420774, 55: -24.33703294, 56: -25.72952087, 57: -25.77726829, 58: -26.70836462, 59: -28.03128505, 60: -30.12134597, 61: -31.83328727, 62: -34.20690699, 63: -37.50571106, 64: -37.09642203, 65: -35.36334319, 66: -35.18798673, 67: -34.4915607, 68: -33.45594441, 69: -32.87419661, 70: -33.50674037, 71: -33.75240649, 72: -38.72151641, 73: -40.45435788, 74: -43.42146831, 75: -45.01003731, 76: -44.9549781, 77: -45.21733442, 78: -45.78349652, 79: -47.17549869, 80: -48.91051649, 81: -51.09730432, 82: -53.33681477, 83: -56.1998466, 89: -65.08565284, 90: -67.22815256, 91: -70.10833751, 92: -74.35431907, 93: -78.24114297, 94: -82.93460559}', pseudolabel_replay=False, foundation_filter_elements=True, multiheads_finetuning=True, foundation_head=None, weight_pt_head=1.0, real_pt_data_ratio_threshold=0.1, num_samples_pt=10000, force_mh_ft_lr=False, subselect_pt='random', filter_type_pt='none', allow_random_padding_pt=True, pt_train_file=None, pt_valid_file=None, foundation_model_elements=False, keep_isolated_atoms=False, energy_key=None, forces_key=None, virials_key=None, stress_key=None, dipole_key=None, polarizability_key=None, head_key=None, charges_key=None, elec_temp_key=None, total_spin_key=None, total_charge_key=None, embedding_specs=None, skip_evaluate_heads='pt_head', forces_weight=100.0, swa_forces_weight=100.0, energy_weight=1.0, swa_energy_weight=1000.0, virials_weight=1.0, swa_virials_weight=10.0, stress_weight=1.0, swa_stress_weight=10.0, dipole_weight=1.0, swa_dipole_weight=1.0, swa_polarizability_weight=1.0, polarizability_weight=1.0, config_type_weights={'Default': 1.0}, huber_delta=0.01, beta=0.9, batch_size=32, valid_batch_size=64, lr=0.01, swa_lr=0.001, weight_decay=5e-07, amsgrad=True, scheduler='ReduceLROnPlateau', lr_factor=0.8, scheduler_patience=50, lr_scheduler_gamma=0.9993, swa=False, start_swa=None, lbfgs=False, ema=True, ema_decay=0.99, max_num_epochs=2048, patience=2048, foundation_model=None, foundation_model_readout=True, eval_interval=1, keep_checkpoints=False, save_all_checkpoints=False, save_cpu=True, clip_grad=100.0, dry_run=False, enable_cueq=True, only_cueq=False, enable_oeq=False, wandb=True, wandb_dir='/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/wandb', wandb_project='matpes-lsc-comparison', wandb_entity='', wandb_name='matpes_lsc_multipole_debug', wandb_log_hypers=['lr', 'batch_size', 'r_max', 'weight_decay', 'max_num_epochs'], atomic_multipoles_key=None, electrostatic_potentials_key=None, external_field_key=None, fermi_level_key=None, include_local_electron_energy=True, atomic_multipoles_max_l=1, atomic_multipoles_smearing_width=1.5, kspace_cutoff_factor=1.25, atomic_formal_charges='{}', formal_charges_from_data=True, formal_charge_noise_sigma=None, field_feature_max_l=1, field_feature_widths='[1.0, 2.0]', dont_include_pbc_corrections=False, include_electrostatic_self_interaction=True, valid_set_seed=1, quadrupole_feature_corrections=False, electrostatic_pbc_method='pbc', allow_low_density_pbc=False, override_pbc_checks=False, low_density_pbc_max_volume_per_atom=100.0, static_bond_transfer_block='OxidationDependentSymmetricPredictionSourceBlock', oxidation_state_mixer='SumOxidationStateMixer', return_electrostatic_potentials=False, train_schedule=[{'name': 'stage1', 'start': 0, 'end': 49, 'loss': {'energy_per_atom': {'weight': 1.0}, 'forces': {'weight': 100.0}, 'stress': {'weight': 1.0}, 'atomic_multipoles': {'weight': 100.0}}, 'lr': 0.01}, {'name': 'stage2', 'start': 50, 'end': 89, 'loss': {'energy_per_atom': {'weight': 100.0}, 'forces': {'weight': 20.0}, 'stress': {'weight': 1.0}, 'atomic_multipoles': {'weight': 10.0}}, 'lr': 0.001}], fixedpoint_update_config={'type': <class 'mace_scf.electrostatics.field_blocks.OneBodyVariableUpdate'>, 'potential_embedding_cls': <class 'mace_scf.electrostatics.field_blocks.BiasedLinearPotentialEmbedding'>, 'nonlinearity_cls': <class 'mace_scf.electrostatics.field_blocks.NoNonLinearity'>}, field_readout_config={'type': <class 'mace_scf.electrostatics.field_blocks.StrictQuadraticFieldEnergyReadout'>}, field_block_weight_decay=5e-07, local_charges_weight_decay=5e-07, field_feature_norms='average', fermi_level_offset=None, field_norm_factor=1.0, oxidation_state_range='(-8.0, 8.0)', polarizable_charges=False, beta_two=0.999, log_on_test_sets=False, scf_convergence_summary=False, use_linear_final_readout=False, include_field_si=False, use_linear_local_charges=False, atom_density_scaling='None', wandb_watch='gradients', wandb_watch_log_freq=25, debug_log_grad_summary=True, log_all_ranks=False, fixedpoint_initial_charge_head_scale=0.01, heads={'default': {'info_keys': {'energy': 'REF_energy', 'total_charge': 'REF_total_charge', 'stress': 'REF_stress', 'head': 'head'}, 'arrays_keys': {'forces': 'REF_forces', 'charges': 'REF_formal_charges', 'atomic_multipoles': 'REF_multipoles'}}}, error_table='PerAtomRMSEstressvirials', compute_polarizability=False, restart_latest=True, model='LocalSplitCharges', optimizer='adam', qeq_charges='autograd', train_hardness=False, read_enegs=False, read_hardness=False, enegs_key=None, default_hardness=2.0)
+2026-09-18 16:01:40.662 INFO: Using the key specifications to parse data:
+2026-09-18 16:01:40.662 INFO: KeySpecification(info_keys={'energy': 'REF_energy', 'total_charge': 'REF_total_charge', 'stress': 'REF_stress', 'head': 'head'}, arrays_keys={'forces': 'REF_forces', 'charges': 'REF_formal_charges', 'atomic_multipoles': 'REF_multipoles'})
+2026-09-18 16:01:40.664 INFO: Loading preprocessed .h5 input; its checks ran at preprocess time.
+2026-09-18 16:01:40.665 INFO: Isolated Atomic Energies (E0s) not in training file, using command line argument
+2026-09-18 16:01:43.190 INFO: AtomicNumberTable: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 89, 90, 91, 92, 93, 94)
+2026-09-18 16:01:43.200 INFO: Total number of configurations: train=45352, valid=11254, tests=[]
+2026-09-18 16:01:43.200 INFO: Atomic energies: [-1.12256101, -0.32636788, -0.77574867, -0.55505964, -1.1719562, -2.37153267, -4.42722573, -3.22079709, -2.24667956, -1.87587063, -2.47916288, -2.46009842, -3.13610691, -4.10417318, -5.58350445, -5.11758869, -4.8080844, -4.81548181, -5.1619833, -4.96437348, -7.3758385, -7.89348124, -9.39933491, -11.58612906, -11.62153053, -9.75123742, -8.06962288, -7.33886001, -6.96372255, -7.44297004, -8.61531029, -10.00138965, -11.8352409, -11.78712055, -11.94318729, -12.53125178, -13.16897743, -13.3079222, -16.17722027, -16.68644557, -17.68512895, -20.43632183, -19.6789338, -18.30519319, -18.30000869, -18.77913604, -18.47864697, -19.04302934, -20.18193266, -21.36410117, -23.14770657, -23.14988811, -23.31069583, -23.80420774, -24.33703294, -25.72952087, -25.77726829, -26.70836462, -28.03128505, -30.12134597, -31.83328727, -34.20690699, -37.50571106, -37.09642203, -35.36334319, -35.18798673, -34.4915607, -33.45594441, -32.87419661, -33.50674037, -33.75240649, -38.72151641, -40.45435788, -43.42146831, -45.01003731, -44.9549781, -45.21733442, -45.78349652, -47.17549869, -48.91051649, -51.09730432, -53.33681477, -56.1998466, -65.08565284, -67.22815256, -70.10833751, -74.35431907, -78.24114297, -82.93460559]
+2026-09-18 16:01:43.201 INFO: Average number of neighbors: 54.184029281139374
+2026-09-18 16:01:43.201 INFO: charged models: taking formal charges per config from data
+2026-09-18 16:01:43.202 INFO: Fermi level offset is only used by FixedPoint; skipping the training-set scan for model LocalSplitCharges
+2026-09-18 16:01:43.202 INFO: using Fermi level offset 0.0
+2026-09-18 16:01:43.203 INFO: Ignoring field_feature_norms='average' for model LocalSplitCharges; field features are only used by FixedPoint.
+2026-09-18 16:01:43.207 INFO: using normalization for field features None
+2026-09-18 16:01:43.212 INFO: using atom density scaling factors [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.]
+2026-09-18 16:01:43.212 INFO: Building model
+2026-09-18 16:01:43.213 INFO: Hidden irreps: 128x0e + 128x1o
+2026-09-18 16:01:43.213 INFO: Using cuequivariance: CuEquivarianceConfig(enabled=True, layout=(mul,irrep), layout_str='mul_ir', group=<class 'mace.tools.cg.O3_e3nn'>, optimize_all=True, optimize_linear=False, optimize_channelwise=False, optimize_symmetric=False, optimize_fctp=False, conv_fusion=False)
+2026-09-18 16:01:47.145 WARNING: Cannot find checkpoint with tag 'matpes_lsc_multipole_run-1_stage1' in '/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/checkpoints'
+2026-09-18 16:01:47.155 INFO: Using Weights and Biases for logging
+2026-09-18 16:01:50.276 INFO: LocalSplitCharges(
+  (node_embedding): LinearNodeEmbeddingBlock(
+    (linear): Linear(
+      shared_weights=True, internal_weights=True, weight_numel=11392
+      (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+      (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+      (f): ╭ a=[11392:1⨯(89,128)] b=[89:1⨯(1,89)] -> C=[128:1⨯(1,128)]
+      ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=1 i=1 u=89 v=128
+      SegmentedPolynomial(
+        (m): SegmentedPolynomialNaive(
+          (graphs): ModuleList(
+            (0): uv,iu,iv operands=[(89, 128)],[(1, 89)],[(1, 128)] paths=[op0[0]*op1[0]*op2[0]*0.11]
+          )
+        )
+      )
+    )
+  )
+  (radial_embedding): RadialEmbeddingBlock(
+    (bessel_fn): BesselBasis(r_max=6.0, num_basis=8, trainable=False)
+    (cutoff_fn): PolynomialCutoff(p=5, r_max=6.0)
+  )
+  (spherical_harmonics): SphericalHarmonics()
+  (atomic_energies_fn): AtomicEnergiesBlock(energies=[[-1.1226, -0.3264, -0.7757, -0.5551, -1.1720, -2.3715, -4.4272, -3.2208, -2.2467, -1.8759, -2.4792, -2.4601, -3.1361, -4.1042, -5.5835, -5.1176, -4.8081, -4.8155, -5.1620, -4.9644, -7.3758, -7.8935, -9.3993, -11.5861, -11.6215, -9.7512, -8.0696, -7.3389, -6.9637, -7.4430, -8.6153, -10.0014, -11.8352, -11.7871, -11.9432, -12.5313, -13.1690, -13.3079, -16.1772, -16.6864, -17.6851, -20.4363, -19.6789, -18.3052, -18.3000, -18.7791, -18.4786, -19.0430, -20.1819, -21.3641, -23.1477, -23.1499, -23.3107, -23.8042, -24.3370, -25.7295, -25.7773, -26.7084, -28.0313, -30.1213, -31.8333, -34.2069, -37.5057, -37.0964, -35.3633, -35.1880, -34.4916, -33.4559, -32.8742, -33.5067, -33.7524, -38.7215, -40.4544, -43.4215, -45.0100, -44.9550, -45.2173, -45.7835, -47.1755, -48.9105, -51.0973, -53.3368, -56.1998, -65.0857, -67.2282, -70.1083, -74.3543, -78.2411, -82.9346]])
+  (interactions): ModuleList(
+    (0): RealAgnosticResidualInteractionBlock(
+      (linear_up): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=16384
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[16384:1⨯(128,128)] b=[128:1⨯(1,128)] -> C=[128:1⨯(1,128)]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=1 i=1 u=128 v=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv operands=[(128, 128)],[(1, 128)],[(1, 128)] paths=[op0[0]*op1[0]*op2[0]*0.09]
+            )
+          )
+        )
+      )
+      (conv_tp): ChannelWiseTensorProduct(
+        shared_weights=False, internal_weights=False, weight_numel=512
+        (transpose_in1): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_in2): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[512:4⨯(128,1)] b=[128:1⨯(1,128)] c=[16:(1,1)+(3,1)+(5,1)+...] -> D=[2048:(1,128,1)+(3,128,1)+...]
+        ╰─ [ijk]·a[uv]·b[iu]·c[jv]➜D[kuv] ─ num_paths=4 i=1 j={1, 3, 5, 7} k={1, 3, 5, 7} u=128 v=1
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialFromUniform1dJit()
+        )
+      )
+      (conv_tp_weights): FullyConnectedNet[8, 64, 64, 64, 512]
+      (linear): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=65536
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[65536:4⨯(128,128)] b=[2048:(1,128)+(3,128)+...] -> C=[2048:(1,128)+(3,128)+...]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=4 i={1, 3, 5, 7} u=128 v=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv sizes=65536,2048,2048 num_segments=4,4,4 num_paths=4 i={1, 3, 5, 7} u=128 v=128
+            )
+          )
+        )
+      )
+      (skip_tp): FullyConnectedTensorProduct(
+        shared_weights=True, internal_weights=True, weight_numel=1458176
+        (transpose_in1): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_in2): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[1458176:1⨯(128,89,128)] b=[128:1⨯(1,128)] c=[89:1⨯(1,89)] -> D=[512:(1,128)+(3,128)]
+        ╰─ [ijk]·a[uvw]·b[iu]·c[jv]➜D[kw] ─ num_paths=1 i=1 j=1 k={1, 3} u=128 v=89 w=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uvw,iu,jv,kw+ijk sizes=1458176,128,89,512 num_segments=1,1,1,2 num_paths=1 i=1 j=1 k={1, 3} u=128 v=89 w=128
+            )
+          )
+        )
+      )
+      (reshape): reshape_irreps()
+    )
+    (1): RealAgnosticResidualInteractionBlock(
+      (linear_up): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=32768
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[32768:2⨯(128,128)] b=[512:(1,128)+(3,128)] -> C=[512:(1,128)+(3,128)]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=2 i={1, 3} u=128 v=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv sizes=32768,512,512 num_segments=2,2,2 num_paths=2 i={1, 3} u=128 v=128
+            )
+          )
+        )
+      )
+      (conv_tp): ChannelWiseTensorProduct(
+        shared_weights=False, internal_weights=False, weight_numel=1280
+        (transpose_in1): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_in2): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[1280:10⨯(128,1)] b=[512:(1,128)+(3,128)] c=[16:(1,1)+(3,1)+(5,1)+...] -> D=[5120:(1,128,1)+(1,128,1)+...]
+        ╰─ [ijk]·a[uv]·b[iu]·c[jv]➜D[kuv] ─ num_paths=10 i={1, 3} j={1, 3, 5, 7} k={1, 3, 5, 7} u=128 v=1
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialFromUniform1dJit()
+        )
+      )
+      (conv_tp_weights): FullyConnectedNet[8, 64, 64, 64, 1280]
+      (linear): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=163840
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[163840:10⨯(128,128)] b=[5120:(1,128)+(1,128)+...] -> C=[2048:(1,128)+(3,128)+...]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=10 i={1, 3, 5, 7} u=128 v=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv sizes=163840,5120,2048 num_segments=10,10,4 num_paths=10 i={1, 3, 5, 7} u=128 v=128
+            )
+          )
+        )
+      )
+      (skip_tp): FullyConnectedTensorProduct(
+        shared_weights=True, internal_weights=True, weight_numel=2916352
+        (transpose_in1): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_in2): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[2916352:2⨯(128,89,128)] b=[512:(1,128)+(3,128)] c=[89:1⨯(1,89)] -> D=[512:(1,128)+(3,128)]
+        ╰─ [ijk]·a[uvw]·b[iu]·c[jv]➜D[kw] ─ num_paths=2 i={1, 3} j=1 k={1, 3} u=128 v=89 w=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uvw,iu,jv,kw+ijk sizes=2916352,512,89,512 num_segments=2,2,1,2 num_paths=2 i={1, 3} j=1 k={1, 3} u=128 v=89 w=128
+            )
+          )
+        )
+      )
+      (reshape): reshape_irreps()
+    )
+  )
+  (products): ModuleList(
+    (0-1): 2 x EquivariantProductBasisBlock(
+      (symmetric_contractions): SymmetricContraction(
+        contraction_degree=3, weight_shape=(86, 128)
+        (transpose_in): TransposeIrrepsLayout((irrep,mul) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[3712:29⨯(128)] b=[2048:16⨯(128)] -> C=[512:4⨯(128)]
+        │  []·a[u]·b[u]➜C[u] ─────────── num_paths=4 u=128
+        │  []·a[u]·b[u]·b[u]➜C[u] ────── num_paths=86 u=128
+        ╰─ []·a[u]·b[u]·b[u]·b[u]➜C[u] ─ num_paths=1949 u=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialFromUniform1dJit()
+        )
+      )
+      (linear): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=32768
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[32768:2⨯(128,128)] b=[512:(1,128)+(3,128)] -> C=[512:(1,128)+(3,128)]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=2 i={1, 3} u=128 v=128
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv sizes=32768,512,512 num_segments=2,2,2 num_paths=2 i={1, 3} u=128 v=128
+            )
+          )
+        )
+      )
+    )
+  )
+  (readouts): ModuleList(
+    (0): LinearReadoutBlock(
+      (linear): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=128
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[128:1⨯(128,1)] b=[512:(1,128)+(3,128)] -> C=[1:1⨯(1,1)]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=1 i={1, 3} u=128 v=1
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv sizes=128,512,1 num_segments=1,2,1 num_paths=1 i={1, 3} u=128 v=1
+            )
+          )
+        )
+      )
+    )
+    (1): NonLinearReadoutBlock(
+      (linear_1): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=2048
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[2048:1⨯(128,16)] b=[512:(1,128)+(3,128)] -> C=[16:1⨯(1,16)]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=1 i={1, 3} u=128 v=16
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv sizes=2048,512,16 num_segments=1,2,1 num_paths=1 i={1, 3} u=128 v=16
+            )
+          )
+        )
+      )
+      (non_linearity): Activation [x] (16x0e -> 16x0e)
+      (linear_2): Linear(
+        shared_weights=True, internal_weights=True, weight_numel=16
+        (transpose_in): TransposeIrrepsLayout((mul,irrep) -> (irrep,mul))
+        (transpose_out): TransposeIrrepsLayout((irrep,mul) -> (mul,irrep))
+        (f): ╭ a=[16:1⨯(16,1)] b=[16:1⨯(1,16)] -> C=[1:1⨯(1,1)]
+        ╰─ []·a[uv]·b[iu]➜C[iv] ─ num_paths=1 i=1 u=16 v=1
+        SegmentedPolynomial(
+          (m): SegmentedPolynomialNaive(
+            (graphs): ModuleList(
+              (0): uv,iu,iv operands=[(16, 1)],[(1, 16)],[(1, 1)] paths=[op0[0]*op1[0]*op2[0]*0.25]
+            )
+          )
+        )
+      )
+    )
+  )
+  (oxidation_state_mixer): SumOxidationStateMixer(
+    (ox_embedding): OxidationStateEmbeddingBlock(
+      (oxidation_basis): ChebychevBasis(r_max=16.0, num_basis=8,
+      (oxidation_state_linear): Linear(8x0e -> 128x0e | 1024 weights)
+    )
+  )
+  (formal_charges): PerAtomFormalChargesBlock()
+  (lr_source_maps): ModuleList(
+    (0-1): 2 x OxidationDependentSymmetricPredictionSourceBlock(
+      (multipole_block): EnvironmentDependentSourceBlock(
+        (linear): Linear(128x0e+128x1o -> 1x0e+1x1o | 256 weights)
+      )
+      (oxidation_basis): ChebychevBasis(r_max=8.0, num_basis=8,
+      (oxidation_state_linear): Linear(8x0e -> 128x0e | 1024 weights)
+      (oxidation_state_tp): TensorProduct(128x0e+128x1o x 128x0e -> 128x0e+128x1o | 32768 paths | 32768 weights)
+      (linear1): Linear(128x0e+128x1o -> 128x0e+128x1o | 32768 weights)
+      (linear2): Linear(128x0e+128x1o -> 128x0e+128x1o | 32768 weights)
+      (conv_tp): TensorProduct(128x0e+128x1o x 1x0e+1x1o+1x2e+1x3o -> 128x0e | 256 paths | 256 weights)
+      (conv_tp_weights): FullyConnectedNet[8, 32, 32, 32, 256]
+      (linear): Linear(128x0e -> 1x0e | 128 weights)
+    )
+  )
+  (coulomb_energy): GTOElectrostaticEnergy(
+    (density_basis): GTOBasis(
+      (radial_spline): RadialIntegralDirect()
+      (spherical_harmonics): SphericalHarmonics()
+    )
+    (self_interaction_terms): GTOSelfInteractionBlock()
+    (realspace_energy): RealSpaceFiniteDiffereneEnergy(
+      (self_interaction): GTOSelfInteractionBlock()
+    )
+    (monopole_dipole_correction): MonopoleDipoleCorrectionBlock()
+  )
+)
+2026-09-18 16:01:50.288 INFO: Number of parameters: 7045520
+2026-09-18 16:01:50.288 INFO: Optimizer: Adam (
+Parameter Group 0
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: embedding
+    weight_decay: 0.0
+
+Parameter Group 1
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: interactions_decay
+    weight_decay: 5e-07
+
+Parameter Group 2
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: interactions_no_decay
+    weight_decay: 0.0
+
+Parameter Group 3
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: products
+    weight_decay: 5e-07
+
+Parameter Group 4
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: readouts
+    weight_decay: 0.0
+
+Parameter Group 5
+    amsgrad: True
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.01
+    maximize: False
+    name: lr_source_maps
+    weight_decay: 0.0
+)
+2026-09-18 16:01:50.289 INFO: WeightedLoss(energy_per_atom_weight=1.0, forces_weight=100.0, stress_weight=1.0, atomic_multipoles_weight=100.0, )
+2026-09-18 16:01:50.808 INFO: Setting global learning rate to 0.01
+2026-09-18 16:01:50.812 WARNING: Cannot find checkpoint with tag 'matpes_lsc_multipole_run-1_stage1' in '/global/u1/t/twarford/dev/mace-scf/fit_matpes_lsc_multipole/checkpoints'
+2026-09-18 16:01:50.820 INFO: Using gradient clipping with tolerance=100.000
+2026-09-18 16:03:46.832 INFO: Epoch 0: loss=685.6426, RMSE_E_per_atom=3182.4 meV, RMSE_F=2569.7 meV / A, RMSE_stress_per_atom=19.2 meV / A^3
+2026-09-18 16:04:39.296 INFO: Epoch 1: loss=491.8869, RMSE_E_per_atom=2879.7 meV, RMSE_F=2177.2 meV / A, RMSE_stress_per_atom=13.6 meV / A^3

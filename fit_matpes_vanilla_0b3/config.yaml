@@ -1,0 +1,40 @@
+# Vanilla ScaleShiftMACE on the MACE-MatPES (0b3) backbone: the no-electrostatics control.
+# Key names are inert for .h5 input (parsing happened at preprocess time) but check_and_fix_heads still requires them.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+
+# Loss schedule held identical to fit_matpes_lsc_baseline so the only variable is the backbone.
+# stress is constant across stages so only the energy/force balance changes. Weights must be floats: 100 parses as int and raises.
+#
+# lr is 3x the 0b3 recipe. mace_example_scripts/0b3.sh uses lr=0.005 at --batch_size 16;
+# train.sh runs 32 ranks at the same per-rank 16, so the effective batch is 512 against
+# the 128-256 of 0b3's 8-16 GPUs, i.e. 2-4x. 3x is the conservative middle:
+#   stage1 0.005 -> 0.015,  stage2 (0.1x stage1) 0.0005 -> 0.0015.
+# Revert both alongside the rank count if this ever goes back to 8 ranks.
+train_schedule:
+  0:
+    name: stage1
+    start: 0
+    end: 49
+    loss:
+      energy_per_atom: 1.0
+      forces: 100.0
+      stress: 1.0
+    lr: 0.015
+  1:
+    name: stage2
+    start: 50
+    end: 89
+    loss:
+      energy_per_atom: 100.0
+      forces: 20.0
+      stress: 1.0
+    lr: 0.0015

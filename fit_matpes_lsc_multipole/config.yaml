@@ -1,0 +1,37 @@
+# MatPES R2SCAN LocalSplitCharges with DDEC6 multipoles in the loss: energy + forces + stress + multipoles.
+# Key names are inert for .h5 input (parsing happened at preprocess time) but check_and_fix_heads still requires them.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+
+# Same schedule as fit_matpes_lsc_baseline, plus the atomic_multipoles weight from the mace-scf training docs.
+# Stage 2 keeps a reduced multipole weight rather than dropping it, so the charges cannot drift once energy dominates.
+# Weights must be floats: 100 parses as int and raises.
+train_schedule:
+  0:
+    name: stage1
+    start: 0
+    end: 49
+    loss:
+      energy_per_atom: 1.0
+      forces: 100.0
+      stress: 1.0
+      atomic_multipoles: 100.0
+    lr: 0.01
+  1:
+    name: stage2
+    start: 50
+    end: 89
+    loss:
+      energy_per_atom: 100.0
+      forces: 20.0
+      stress: 1.0
+      atomic_multipoles: 10.0
+    lr: 0.001

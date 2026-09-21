@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=matpes_lsc_baseline_debug
+#SBATCH --job-name=matpes_lsc_0b3_debug
 #SBATCH --constraint=gpu
 #SBATCH --qos=debug
 #SBATCH --nodes=2
@@ -11,19 +11,19 @@
 #SBATCH --time=00:30:00
 #SBATCH --account=matgen_g
 #SBATCH --open-mode=append
-#SBATCH --output=fit_matpes_lsc_baseline/logs/%x_%j.out
-#SBATCH --error=fit_matpes_lsc_baseline/logs/%x_%j.err
+#SBATCH --output=fit_matpes_lsc_0b3/logs/%x_%j.out
+#SBATCH --error=fit_matpes_lsc_0b3/logs/%x_%j.err
 
-# From-scratch LocalSplitCharges fit on the preprocessed MatPES R2SCAN shards.
+# LocalSplitCharges on the MACE-MatPES (0b3) backbone, preprocessed MatPES R2SCAN shards.
 #
-#   sbatch fit_matpes_lsc_baseline/train.sh                       # 2-node debug smoke test
-#   sbatch --job-name=matpes_lsc_baseline \
+#   sbatch fit_matpes_lsc_0b3/train.sh                       # 2-node debug smoke test
+#   sbatch --job-name=matpes_lsc_0b3 \
 #          --qos=regular --time=12:00:00 \
-#          fit_matpes_lsc_baseline/train.sh                       # production, full 64-shard train set
+#          fit_matpes_lsc_0b3/train.sh                       # production, full 64-shard train set
 #
 # TRAIN_DIR overrides the train set and must stay out of production runs: the
 # baseline is only comparable to the data-augmentation fit on the same data.
-#   sbatch --export=ALL,TRAIN_DIR fit_matpes_lsc_baseline/train.sh # 8-shard subset, smoke tests only
+#   sbatch --export=ALL,TRAIN_DIR fit_matpes_lsc_0b3/train.sh # 8-shard subset, smoke tests only
 #
 # The job name is the W&B run id, so resubmissions under --restart_latest append to one run.
 
@@ -45,11 +45,11 @@ echo "repo root: $ROOT"
 # SLURM resolves #SBATCH --output/--error against the submit dir before this runs, so those two files follow it.
 if [ "${SLURM_SUBMIT_DIR:-$ROOT}" != "$ROOT" ]; then
     echo "note: submitted from ${SLURM_SUBMIT_DIR}, so the SLURM .out/.err for this job are" >&2
-    echo "      under that directory, not $ROOT/fit_matpes_lsc_baseline/logs/" >&2
+    echo "      under that directory, not $ROOT/fit_matpes_lsc_0b3/logs/" >&2
 fi
 
 # Absolute, so nothing downstream depends on the working directory.
-W="$ROOT/fit_matpes_lsc_baseline"
+W="$ROOT/fit_matpes_lsc_0b3"
 DATA="$ROOT/matpes_fit/processed_r2scan_split"
 # Always the full training set; ~5.8 min/epoch on 8 GPUs, so two epochs fit the debug window.
 TRAIN_DIR="${TRAIN_DIR:-$DATA/train}"
@@ -74,7 +74,7 @@ mkdir -p "$WANDB_DIR"
 
 # E0s, atomic_numbers and avg_num_neighbors are deliberately not passed: statistics.json supplies them.
 srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/run_train.py \
-    --name matpes_lsc_baseline \
+    --name matpes_lsc_0b3 \
     --config "$W/config.yaml" \
     --work_dir "$W" \
     --log_dir "$W/logs" \
@@ -92,6 +92,14 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --atomic_multipoles_smearing_width 1.5 \
     --kspace_cutoff_factor 1.25 \
     --hidden_irreps '128x0e + 128x1o' \
+    --interaction_first RealAgnosticDensityInteractionBlock \
+    --interaction RealAgnosticDensityResidualInteractionBlock \
+    --num_interactions 2 \
+    --correlation 3 \
+    --max_ell 3 \
+    --num_radial_basis 10 \
+    --MLP_irreps 16x0e \
+    --weight_decay 1e-8 \
     --r_max 6.0 \
     --batch_size 32 \
     --valid_batch_size 64 \
@@ -101,7 +109,7 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --optimizer adam \
     --amsgrad \
     --ema \
-    --ema_decay 0.99 \
+    --ema_decay 0.99999 \
     --compute_polarizability False \
     --compute_stress True \
     --default_dtype float64 \
@@ -112,7 +120,7 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --clip_grad 100 \
     --debug-log-grad-summary \
     --wandb \
-    --wandb_project matpes-lsc-baseline \
+    --wandb_project matpes-lsc-comparison \
     --wandb_name "$SLURM_JOB_NAME" \
     --wandb_dir "$WANDB_DIR" \
     --wandb_log_hypers lr batch_size r_max weight_decay max_num_epochs \
