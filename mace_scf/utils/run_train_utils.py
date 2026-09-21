@@ -113,11 +113,17 @@ def build_model(
             interaction_cls_first=mace.modules.interaction_classes[
                 args.interaction_first
             ],
+            pair_repulsion=args.pair_repulsion,
         )
     elif args.model == "ScaleShiftMACE":
-        mean, std = mace.modules.scaling_classes[args.scaling](
-            train_loader, atomic_energies
-        )
+        if args.mean is not None and args.std is not None:
+            # Pinned like avg_num_neighbors; recomputing walks the whole training set.
+            logging.info("using mean %s and std %s from the statistics file", args.mean, args.std)
+            mean, std = args.mean, args.std
+        else:
+            mean, std = mace.modules.scaling_classes[args.scaling](
+                train_loader, atomic_energies
+            )
         model = mace.modules.ScaleShiftMACE(
             **model_config,
             interaction_cls_first=mace.modules.interaction_classes[
@@ -125,6 +131,7 @@ def build_model(
             ],
             atomic_inter_scale=std,
             atomic_inter_shift=mean,
+            pair_repulsion=args.pair_repulsion,
         )
     elif args.model == "FixedChargeBaselinedMACE":
         formal_charges = ast.literal_eval(args.atomic_formal_charges)
