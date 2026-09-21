@@ -95,6 +95,7 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --compute_polarizability False \
     --compute_stress True \
     --default_dtype float64 \
+    --enable_cueq True \
     --device cuda \
     --distributed \
     --seed 1 \
