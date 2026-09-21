@@ -79,7 +79,10 @@ W="$ROOT/fit_matpes_vanilla_0b3"
 DATA="$ROOT/matpes_fit/processed_r2scan_split"
 # Always the full training set.
 TRAIN_DIR="${TRAIN_DIR:-$DATA/train}"
-mkdir -p "$W/logs" "$W/checkpoints" "$W/results"
+# Scale goes in the run name: --restart_latest resumes by tag, so a shared one would make
+# the 8- and 32-GPU runs resume each other's checkpoints.
+NAME="matpes_vanilla_0b3_g${SLURM_NTASKS}"
+mkdir -p "$W/logs" "$W/checkpoints/$NAME" "$W/results/$NAME"
 
 # Kernel-assigned free port on the batch host, which is the MASTER_ADDR nodelist[0] (fixed ports hit EADDRINUSE, job 58245266).
 MASTER_PORT=$(python3 -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()' 2>/dev/null \
@@ -94,19 +97,19 @@ export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
 # Compute nodes have no outbound network; sync offline runs with ion_conductivity/fits/warmup_check/wandb_import.py.
 export WANDB_MODE=offline
 export WANDB_DIR="$W/wandb"
-export WANDB_RUN_ID="$SLURM_JOB_NAME"
+export WANDB_RUN_ID="$NAME"
 export WANDB_RESUME=allow
 mkdir -p "$WANDB_DIR"
 
 # E0s, atomic_numbers and avg_num_neighbors are deliberately not passed: statistics.json supplies them.
 srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/run_train.py \
-    --name matpes_vanilla_0b3 \
+    --name "$NAME" \
     --config "$W/config.yaml" \
     --work_dir "$W" \
     --log_dir "$W/logs" \
     --model_dir "$W" \
-    --checkpoints_dir "$W/checkpoints" \
-    --results_dir "$W/results" \
+    --checkpoints_dir "$W/checkpoints/$NAME" \
+    --results_dir "$W/results/$NAME" \
     --train_file "$TRAIN_DIR" \
     --valid_file "$DATA/val" \
     --statistics_file "$DATA/statistics.json" \
@@ -136,6 +139,7 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --compute_polarizability False \
     --compute_stress True \
     --default_dtype float64 \
+    --enable_cueq True \
     --device cuda \
     --distributed \
     --seed 1 \
@@ -144,7 +148,7 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --debug-log-grad-summary \
     --wandb \
     --wandb_project matpes-lsc-comparison \
-    --wandb_name "$SLURM_JOB_NAME" \
+    --wandb_name "$NAME" \
     --wandb_dir "$WANDB_DIR" \
     --wandb_log_hypers lr batch_size r_max weight_decay max_num_epochs \
     --wandb-watch gradients \
