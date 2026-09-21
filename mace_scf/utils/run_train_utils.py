@@ -14,6 +14,19 @@ from mace.tools import torch_tools
 from mace.modules.wrapper_ops import CuEquivarianceConfig
 
 
+# Models whose MACE blocks thread cueq_config all the way down. Everything else must
+# refuse --enable_cueq rather than silently build a plain e3nn model.
+CUEQ_SUPPORTED_MODELS = frozenset(
+    {
+        "MACE",
+        "ScaleShiftMACE",
+        "LocalSplitCharges",
+        "LocalCharges",
+        "FixedChargeBaselinedMACE",
+    }
+)
+
+
 # needed for torchopt
 @contextmanager
 def disable_e3nn_codegen():
@@ -74,9 +87,10 @@ def build_model(
 
     cueq_config = None
     if args.enable_cueq:
-        if args.model != "LocalSplitCharges":
+        if args.model not in CUEQ_SUPPORTED_MODELS:
             raise NotImplementedError(
-                f"--enable_cueq is only wired up for LocalSplitCharges, not {args.model}"
+                f"--enable_cueq is not wired up for {args.model}; "
+                f"supported: {sorted(CUEQ_SUPPORTED_MODELS)}"
             )
         # mul_ir rather than upstream's ir_mul
         cueq_config = CuEquivarianceConfig(
@@ -113,6 +127,11 @@ def build_model(
             interaction_cls_first=mace.modules.interaction_classes[
                 args.interaction_first
             ],
+            # MACE's class default is True but --use_reduced_cg defaults to False, so the
+            # flag is silently ignored unless it is passed on; mace_scf's own models leave
+            # it unset and get the original MACE basis, so follow the flag here too
+            use_reduced_cg=args.use_reduced_cg,
+            cueq_config=cueq_config,
         )
     elif args.model == "ScaleShiftMACE":
         mean, std = mace.modules.scaling_classes[args.scaling](
@@ -125,6 +144,8 @@ def build_model(
             ],
             atomic_inter_scale=std,
             atomic_inter_shift=mean,
+            use_reduced_cg=args.use_reduced_cg,  # see the MACE branch above
+            cueq_config=cueq_config,
         )
     elif args.model == "FixedChargeBaselinedMACE":
         formal_charges = ast.literal_eval(args.atomic_formal_charges)
@@ -141,6 +162,7 @@ def build_model(
             include_electrostatic_self_interaction=args.include_electrostatic_self_interaction,
             use_linear_final_readout=args.use_linear_final_readout,
             pbc_handling=args.electrostatic_pbc_method,
+            cueq_config=cueq_config,
         )
     elif args.model == "LocalSplitCharges":
         formal_charges = ast.literal_eval(args.atomic_formal_charges)
@@ -175,6 +197,7 @@ def build_model(
             atomic_multipoles_smearing_width=args.atomic_multipoles_smearing_width,
             include_electrostatic_self_interaction=args.include_electrostatic_self_interaction,
             pbc_handling=args.electrostatic_pbc_method,
+            cueq_config=cueq_config,
         )
     elif args.model == "FixedPoint":
         with disable_e3nn_codegen():

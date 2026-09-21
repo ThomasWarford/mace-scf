@@ -134,9 +134,11 @@ def transfer_e3nn_to_cueq(source, target, correlation: int) -> None:
     * the symmetric contraction stayed e3nn (``optimize_symmetric`` off) -- the tensors
       line up by name, but upstream would still write cueq-format keys, so copy directly.
 
-    ``use_reduced_cg`` is False because mace_scf never passes it down: the product block
-    forwards ``None``, e3nn builds the original MACE basis and cueq gets
-    ``original_mace=True``, so no basis projection is needed.
+    ``use_reduced_cg`` is False because every model here builds the original MACE basis:
+    mace_scf's own models leave it unset, so the product block forwards ``None``, and the
+    MACE branch passes ``args.use_reduced_cg``, whose command-line default is False.
+    e3nn then builds the original basis and cueq gets ``original_mace=True``, so no basis
+    projection is needed. ``_build_pair`` asserts that this still holds.
     """
     target_sd = target.state_dict()
     source_sd = source.state_dict()
@@ -208,6 +210,11 @@ def _build_pair(case: ModelCase, device: str):
 
     seed_torch(0)
     e3nn_model = build_model(args_e3nn, z_table, atomic_energies, charges, train_loader=None)
+    # the weight transfer and contraction_grad both assume the original MACE CG basis
+    assert not getattr(e3nn_model, "use_reduced_cg", False), (
+        f"{case.model} built the reduced CG basis; the parity transfer would need "
+        "symmetric_contraction_proj on both the weights and the gradients"
+    )
     try:
         cueq_model = build_model(
             _args(case, True, device), z_table, atomic_energies, charges, train_loader=None

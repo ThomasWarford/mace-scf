@@ -613,6 +613,7 @@ class LocalCharges(_LocalSourceModelBase):
         include_electrostatic_self_interaction: bool = False,
         pbc_handling: str = "mixed_periodic",
         heads: Optional[List[str]] = None,
+        cueq_config=None,
     ):
         super().__init__()
         self._init_local_model(
@@ -634,6 +635,7 @@ class LocalCharges(_LocalSourceModelBase):
             radial_MLP=radial_MLP,
             radial_type=radial_type,
             heads=heads,
+            cueq_config=cueq_config,
         )
 
         self.charges_irreps = o3.Irreps.spherical_harmonics(atomic_multipoles_max_l)
@@ -854,6 +856,7 @@ class FixedChargeBaselinedMACE(_LocalSourceModelBase):
         pbc_handling: str = "mixed_periodic",
         heads: Optional[List[str]] = None,
         use_linear_final_readout: bool = False,
+        cueq_config=None,
     ):
         super().__init__()
         self._init_local_model(
@@ -876,6 +879,7 @@ class FixedChargeBaselinedMACE(_LocalSourceModelBase):
             radial_type=radial_type,
             heads=heads,
             use_linear_final_readout=use_linear_final_readout,
+            cueq_config=cueq_config,
         )
 
         # charge prediction
