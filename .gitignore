@@ -47,3 +47,9 @@ process_matpes/analysis/*.png
 
 # per-fit scratch notes
 TODO.md
+
+# Training run output: regenerable, and checkpoints are ~280 MB each.
+fit_matpes_*/checkpoints/
+fit_matpes_*/logs/
+fit_matpes_*/results/
+fit_matpes_*/wandb/
