@@ -11,15 +11,15 @@
 #SBATCH --time=00:30:00
 #SBATCH --account=matgen_g
 #SBATCH --open-mode=append
-#SBATCH --output=fit_matpes_vanilla_0b3/logs/%x_%j.out
-#SBATCH --error=fit_matpes_vanilla_0b3/logs/%x_%j.err
+#SBATCH --output=fit_matpes_vanilla_0b3_lr02/logs/%x_%j.out
+#SBATCH --error=fit_matpes_vanilla_0b3_lr02/logs/%x_%j.err
 
 # Vanilla ScaleShiftMACE on the MACE-MatPES (0b3) backbone: the no-electrostatics control.
 #
-#   sbatch fit_matpes_vanilla_0b3/train.sh                       # 8-node debug run (debug caps at 8 nodes / 30 min)
+#   sbatch fit_matpes_vanilla_0b3_lr02/train.sh                       # 8-node debug run (debug caps at 8 nodes / 30 min)
 #   sbatch --job-name=matpes_vanilla_0b3 \
 #          --qos=regular --time=12:00:00 \
-#          fit_matpes_vanilla_0b3/train.sh                       # production, full 64-shard train set
+#          fit_matpes_vanilla_0b3_lr02/train.sh                       # production, full 64-shard train set
 #
 # 8 nodes x 4 ranks = 32 ranks. --batch_size is PER RANK, so the effective batch is
 # 16 x 32 = 512, against the ~128-256 of the 0b3 reference fit. config.yaml carries a
@@ -54,7 +54,7 @@
 #
 # TRAIN_DIR overrides the train set and must stay out of production runs: the
 # baseline is only comparable to the data-augmentation fit on the same data.
-#   sbatch --export=ALL,TRAIN_DIR fit_matpes_vanilla_0b3/train.sh # 8-shard subset, smoke tests only
+#   sbatch --export=ALL,TRAIN_DIR fit_matpes_vanilla_0b3_lr02/train.sh # 8-shard subset, smoke tests only
 #
 # The job name is the W&B run id, so resubmissions under --restart_latest append to one run.
 
@@ -79,17 +79,17 @@ echo "repo root: $ROOT"
 # SLURM resolves #SBATCH --output/--error against the submit dir before this runs, so those two files follow it.
 if [ "${SLURM_SUBMIT_DIR:-$ROOT}" != "$ROOT" ]; then
     echo "note: submitted from ${SLURM_SUBMIT_DIR}, so the SLURM .out/.err for this job are" >&2
-    echo "      under that directory, not $ROOT/fit_matpes_vanilla_0b3/logs/" >&2
+    echo "      under that directory, not $ROOT/fit_matpes_vanilla_0b3_lr02/logs/" >&2
 fi
 
 # Absolute, so nothing downstream depends on the working directory.
-W="$ROOT/fit_matpes_vanilla_0b3"
+W="$ROOT/fit_matpes_vanilla_0b3_lr02"
 DATA="$ROOT/matpes_fit/processed_r2scan_split"
 # Always the full training set.
 TRAIN_DIR="${TRAIN_DIR:-$DATA/train}"
 # Scale goes in the run name: --restart_latest resumes by tag, so a shared one would make
 # the 8- and 32-GPU runs resume each other's checkpoints.
-NAME="matpes_vanilla_0b3_g${SLURM_NTASKS}"
+NAME="matpes_vanilla_0b3_lr02_g${SLURM_NTASKS}"
 mkdir -p "$W/logs" "$W/checkpoints/$NAME" "$W/results/$NAME"
 
 # Kernel-assigned free port on the batch host, which is the MASTER_ADDR nodelist[0] (fixed ports hit EADDRINUSE, job 58245266).

@@ -90,7 +90,7 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --valid_batch_size 64 \
     --num_workers 8 \
     --eval_interval 1 \
-    --error_table PerAtomRMSEstressvirials \
+    --error_table PerAtomMAERMSEstress \
     --scheduler_patience 10 \
     --optimizer adam \
     --amsgrad \

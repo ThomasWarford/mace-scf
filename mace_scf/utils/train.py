@@ -222,6 +222,7 @@ def train(
                         "valid_rmse_e_per_atom": eval_metrics["rmse_e_per_atom"],
                         "valid_rmse_f": eval_metrics["rmse_f"],
                         "valid_mae_f": eval_metrics["mae_f"],
+                        "valid_mae_e_per_atom": eval_metrics["mae_e_per_atom"],
                     }
                     if "rmse_dma" in eval_metrics:
                         wandb_log_dict["valid_rmse_dma"] = eval_metrics["rmse_dma"]
@@ -489,7 +490,23 @@ def valid_err_log(
     eval_metrics["epoch"] = epoch
     logger.log(eval_metrics)
 
-    if log_errors == "PerAtomRMSE":
+    if log_errors == "PerAtomMAERMSEstress":
+        # RMSE/MAE on this data runs ~2.1 and rising: the tail and the bulk move apart,
+        # so printing only one of them hides half the story. Stress stays RMSE-only.
+        mae_e = eval_metrics["mae_e_per_atom"] * 1e3
+        rmse_e = eval_metrics["rmse_e_per_atom"] * 1e3
+        mae_f = eval_metrics["mae_f"] * 1e3
+        rmse_f = eval_metrics["rmse_f"] * 1e3
+        stress = eval_metrics.get("rmse_stress_per_atom")
+        stress_str = (
+            f", RMSE_stress_per_atom={stress * 1e3:.1f} meV / A^3" if stress is not None else ""
+        )
+        logging.info(
+            f"Epoch {epoch}: loss={valid_loss:.4f}, "
+            f"MAE_E_per_atom={mae_e:.1f} meV, RMSE_E_per_atom={rmse_e:.1f} meV, "
+            f"MAE_F={mae_f:.1f} meV / A, RMSE_F={rmse_f:.1f} meV / A" + stress_str
+        )
+    elif log_errors == "PerAtomRMSE":
         error_e = eval_metrics["rmse_e_per_atom"] * 1e3
         error_f = eval_metrics["rmse_f"] * 1e3
         logging.info(

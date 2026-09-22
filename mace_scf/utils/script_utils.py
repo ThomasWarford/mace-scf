@@ -57,7 +57,17 @@ def create_error_table(
         import wandb
     table = PrettyTable()
 
-    if table_type == "DensityCoefficientsRMSE":
+    if table_type == "PerAtomMAERMSEstress":
+        table.field_names = [
+            "config_type",
+            "MAE E / meV / atom",
+            "RMSE E / meV / atom",
+            "MAE F / meV / A",
+            "RMSE F / meV / A",
+            "relative F RMSE %",
+            "RMSE stress / meV / A^3",
+        ]
+    elif table_type == "DensityCoefficientsRMSE":
         table.field_names = [
             "config_type", 
             "RMSE DMA / e A^l", 
@@ -151,6 +161,9 @@ def create_error_table(
             "rmse_e_per_atom",
             "rmse_f",
             "rel_rmse_f",
+            "mae_e_per_atom",
+            "mae_f",
+            "rmse_stress_per_atom",
             "rmse_dma",
             "rel_rmse_dma",
             "rmse_charges",
@@ -171,7 +184,19 @@ def create_error_table(
                 metrics[metric_name] = f"{metrics[metric_name]:.2f}"
         
         # add new tables here...
-        if table_type == "DensityCoefficientsRMSE":
+        if table_type == "PerAtomMAERMSEstress":
+            table.add_row(
+                [
+                    name,
+                    metrics["mae_e_per_atom"],
+                    metrics["rmse_e_per_atom"],
+                    metrics["mae_f"],
+                    metrics["rmse_f"],
+                    metrics["rel_rmse_f"],
+                    metrics["rmse_stress_per_atom"],
+                ]
+            )
+        elif table_type == "DensityCoefficientsRMSE":
             table.add_row(
                 [
                     name,
