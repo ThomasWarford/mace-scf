@@ -25,6 +25,7 @@ from mace_scf.utils.load_data import (
     get_atomic_number_table_from_zs,
     log_dataset_summary,
     validate_xyz_collections,
+    filter_xyz_collections,
     validate_xyz_paths,
     fermi_level_offset_from_configurations,
 )
@@ -168,6 +169,7 @@ def main():
 
     )
     validate_xyz_collections(collections, args)
+    collections = filter_xyz_collections(collections, args)
 
     # Atomic number table
     # yapf: disable
@@ -234,6 +236,9 @@ def main():
         "atomic_numbers": str(list(z_table.zs)),
         "r_max": args.r_max,
         "fermi_level_offset": fermi_level_offset,
+        # Provenance: how these shards were filtered. Nothing reads them back.
+        "max_force": args.max_force,
+        "require_finite_multipoles": args.require_finite_multipoles,
     }
     
     with open(args.h5_prefix + "statistics.json", "w") as f:

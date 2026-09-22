@@ -217,6 +217,52 @@ def validate_xyz_collections(collections, args):
     )
 
 
+def filter_xyz_collections(collections, args):
+    """Drop unusable configurations from train and valid.
+
+    Filtering belongs at preprocess time: once the data is .h5 shards, training reads the
+    configurations back without ever seeing the .xyz these predicates need. Tests are left
+    alone so their metrics stay comparable across runs.
+    """
+    max_force = getattr(args, "max_force", None)
+    require_finite_multipoles = getattr(args, "require_finite_multipoles", False)
+    if max_force is None and not require_finite_multipoles:
+        return collections
+
+    for split_name, configs in _named_config_splits(collections):
+        if split_name.startswith("test:"):
+            continue
+        kept = [
+            config
+            for config in configs
+            if _config_is_usable(config, max_force, require_finite_multipoles)
+        ]
+        dropped = len(configs) - len(kept)
+        logging.info(
+            "%s: dropped %d of %d configurations (max_force=%s, require_finite_multipoles=%s)",
+            split_name,
+            dropped,
+            len(configs),
+            max_force,
+            require_finite_multipoles,
+        )
+        setattr(collections, split_name, kept)
+    return collections
+
+
+def _config_is_usable(config, max_force, require_finite_multipoles) -> bool:
+    """A config missing the property it would be judged on is kept, not dropped."""
+    if max_force is not None:
+        forces = config.properties.get("forces")
+        if forces is not None and np.abs(np.asarray(forces)).max() > max_force:
+            return False
+    if require_finite_multipoles:
+        multipoles = config.properties.get("atomic_multipoles")
+        if multipoles is not None and not np.all(np.isfinite(np.asarray(multipoles))):
+            return False
+    return True
+
+
 def check_low_density_periodic_configs(
     collections,
     *,

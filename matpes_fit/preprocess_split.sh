@@ -6,6 +6,10 @@
 # mp-id, different ionic step / volume scaling) across train and valid.
 # One array task per functional (task 0 = PBE, task 1 = R2SCAN).
 #
+# --require_finite_multipoles drops MatPES's has_ddec6=F frames (5.2%), which is exactly the
+# NaN-REF_multipoles set: their SCF converged to the wrong state, so cohesive energies reach
+# +54 eV/atom against +1.3 for the rest. --max_force=20 removes the few exploding-force frames.
+#
 # --allow_low_density_pbc: ~3% of MatPES frames exceed the 100 A^3/atom default and
 # would abort the run. They are real MatPES content, not clusters mislabelled as
 # periodic -- the extreme cases (3443 A^3/atom, one atom in a ~15 A box) are the
@@ -23,6 +27,7 @@
 #SBATCH --time=00:30:00
 #SBATCH --account=matgen
 #SBATCH --output=matpes_fit/logs/preprocess_split_%A_%a.out
+#SBATCH --error=matpes_fit/logs/preprocess_split_%A_%a.err
 
 set -euo pipefail
 mkdir -p matpes_fit/logs
@@ -38,6 +43,8 @@ SEED=123
 train_file="${XYZ_DIR}/MatPES-${functional}-charges-quick-train.xyz"
 valid_file="${XYZ_DIR}/MatPES-${functional}-charges-quick-valid.xyz"
 h5_prefix="matpes_fit/processed_${functional,,}_split/"
+# MatPES ships several single-atom frames per element; only the ~3443 A^3 box is a free
+# atom, the rest are one-atom elemental crystals. This file already takes the free atom.
 e0s=$(cat "e0s_matpes_${functional,,}.txt")
 heads='{"default": {"info_keys": {"energy": "REF_energy", "total_charge": "REF_total_charge", "stress": "REF_stress"}, "arrays_keys": {"forces": "REF_forces", "charges": "REF_formal_charges", "atomic_multipoles": "REF_multipoles"}}}'
 
@@ -52,4 +59,6 @@ conda run --live-stream -n mace_scf python -u scripts/preprocess_data.py \
     --num_process="${NUM_PROCESS}" \
     --seed="${SEED}" \
     --allow_low_density_pbc \
+    --max_force=20.0 \
+    --require_finite_multipoles \
     --shuffle=True

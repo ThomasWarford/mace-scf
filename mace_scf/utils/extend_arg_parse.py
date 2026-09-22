@@ -65,6 +65,21 @@ def add_data_validation_args(parser: argparse.ArgumentParser) -> None:
 def preprocess_extended_arg_parser() -> argparse.ArgumentParser:
     parser = build_preprocess_arg_parser()
     add_data_validation_args(parser)
+    # Filtering happens only here: run_train never re-reads the .xyz behind .h5 shards.
+    # MatPES carries unconverged frames whose forces reach hundreds of eV/A.
+    parser.add_argument(
+        "--max_force",
+        type=float,
+        default=None,
+        help="Drop configurations whose largest force component exceeds this, in eV/A.",
+    )
+    # NaN multipoles mark MatPES's has_ddec6=F frames, whose energies are unreliable too.
+    parser.add_argument(
+        "--require_finite_multipoles",
+        action="store_true",
+        default=False,
+        help="Drop configurations whose reference atomic multipoles are not all finite.",
+    )
     # overwrite all key defaults to None - mace_scf only uses the config file for keys
     for item in parser._actions:
         if item.option_strings[0][-4:] == "_key":
