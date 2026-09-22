@@ -26,6 +26,7 @@ from mace.modules import (
     LinearReadoutBlock,
     NonLinearReadoutBlock,
     RadialEmbeddingBlock,
+    ZBLBasis,
 )
 from .bonded_blocks import (
     PerSpeciesFormalChargesBlock,
@@ -83,6 +84,8 @@ class _LocalSourceModelBase(torch.nn.Module):
         gate: Optional[Callable],
         radial_MLP: Optional[List[int]] = None,
         radial_type: Optional[str] = "bessel",
+        distance_transform: str = "None",
+        pair_repulsion: bool = False,
         heads: Optional[List[str]] = None,
         use_linear_final_readout: bool = False,
         cueq_config=None,
@@ -116,7 +119,13 @@ class _LocalSourceModelBase(torch.nn.Module):
             num_bessel=num_bessel,
             num_polynomial_cutoff=num_polynomial_cutoff,
             radial_type=radial_type,
+            distance_transform=distance_transform,
         )
+
+        if pair_repulsion:
+            self.pair_repulsion_fn = ZBLBasis(p=num_polynomial_cutoff)
+            self.pair_repulsion = True
+
         self.edge_feats_irreps = o3.Irreps(f"{self.radial_embedding.out_dim}x0e")
 
         self.sh_irreps = o3.Irreps.spherical_harmonics(max_ell)
@@ -272,6 +281,8 @@ class LocalSplitCharges(_LocalSourceModelBase):
         gate: Optional[Callable],
         radial_MLP: Optional[List[int]] = None,
         radial_type: Optional[str] = "bessel",
+        distance_transform: str = "None",
+        pair_repulsion: bool = False,
         atomic_formal_charges: Optional[np.ndarray] = None,
         kspace_cutoff_factor: float = 1.5,
         atomic_multipoles_max_l: int = 0,
@@ -305,6 +316,8 @@ class LocalSplitCharges(_LocalSourceModelBase):
             gate=gate,
             radial_MLP=radial_MLP,
             radial_type=radial_type,
+            distance_transform=distance_transform,
+            pair_repulsion=pair_repulsion,
             heads=heads,
             use_linear_final_readout=use_linear_final_readout,
             cueq_config=cueq_config,
@@ -459,6 +472,27 @@ class LocalSplitCharges(_LocalSourceModelBase):
         # Interactions
         energies = [e0]
         node_energies_list = [node_e0]
+
+        # ZBL pair repulsion, from the raw lengths rather than the transformed ones, and
+        # unscaled: no mace_scf model applies an atomic_inter_scale, so this follows plain
+        # mace.modules.MACE rather than ScaleShiftMACE. Appended only when enabled, unlike
+        # upstream, which always seeds a zero column: `contributions` is written out as
+        # BO_contributions by scripts/eval_local_charges.py, so an unconditional column
+        # would change that array's width for every model trained without ZBL.
+        if hasattr(self, "pair_repulsion"):
+            pair_node_energy = self.pair_repulsion_fn(
+                lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
+            )
+            energies.append(
+                scatter_sum(
+                    src=pair_node_energy,
+                    index=data["batch"],
+                    dim=-1,
+                    dim_size=num_graphs,
+                )
+            )
+            node_energies_list.append(pair_node_energy)
+
         polarizabilities = []
         for layer_i, (interaction, product, readout, charge_map) in enumerate(zip(
             self.interactions, self.products, self.readouts, self.lr_source_maps
@@ -607,6 +641,8 @@ class LocalCharges(_LocalSourceModelBase):
         gate: Optional[Callable],
         radial_MLP: Optional[List[int]] = None,
         radial_type: Optional[str] = "bessel",
+        distance_transform: str = "None",
+        pair_repulsion: bool = False,
         kspace_cutoff_factor: float = 1.5,
         atomic_multipoles_max_l: int = 0,
         atomic_multipoles_smearing_width: float = 1.0,
@@ -634,6 +670,8 @@ class LocalCharges(_LocalSourceModelBase):
             gate=gate,
             radial_MLP=radial_MLP,
             radial_type=radial_type,
+            distance_transform=distance_transform,
+            pair_repulsion=pair_repulsion,
             heads=heads,
             cueq_config=cueq_config,
         )
@@ -741,6 +779,27 @@ class LocalCharges(_LocalSourceModelBase):
         # Interactions
         energies = [e0]
         node_energies_list = [node_e0]
+
+        # ZBL pair repulsion, from the raw lengths rather than the transformed ones, and
+        # unscaled: no mace_scf model applies an atomic_inter_scale, so this follows plain
+        # mace.modules.MACE rather than ScaleShiftMACE. Appended only when enabled, unlike
+        # upstream, which always seeds a zero column: `contributions` is written out as
+        # BO_contributions by scripts/eval_local_charges.py, so an unconditional column
+        # would change that array's width for every model trained without ZBL.
+        if hasattr(self, "pair_repulsion"):
+            pair_node_energy = self.pair_repulsion_fn(
+                lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
+            )
+            energies.append(
+                scatter_sum(
+                    src=pair_node_energy,
+                    index=data["batch"],
+                    dim=-1,
+                    dim_size=num_graphs,
+                )
+            )
+            node_energies_list.append(pair_node_energy)
+
         for interaction, product, readout, charge_map in zip(
             self.interactions, self.products, self.readouts, self.lr_source_maps
         ):
@@ -849,6 +908,8 @@ class FixedChargeBaselinedMACE(_LocalSourceModelBase):
         gate: Optional[Callable],
         radial_MLP: Optional[List[int]] = None,
         radial_type: Optional[str] = "bessel",
+        distance_transform: str = "None",
+        pair_repulsion: bool = False,
         atomic_formal_charges: Optional[np.ndarray] = None,
         kspace_cutoff_factor: float = 1.5,
         atomic_multipoles_smearing_width: float = 1.0,
@@ -877,6 +938,8 @@ class FixedChargeBaselinedMACE(_LocalSourceModelBase):
             gate=gate,
             radial_MLP=radial_MLP,
             radial_type=radial_type,
+            distance_transform=distance_transform,
+            pair_repulsion=pair_repulsion,
             heads=heads,
             use_linear_final_readout=use_linear_final_readout,
             cueq_config=cueq_config,
@@ -979,6 +1042,27 @@ class FixedChargeBaselinedMACE(_LocalSourceModelBase):
         # Interactions
         energies = [e0]
         node_energies_list = [node_e0]
+
+        # ZBL pair repulsion, from the raw lengths rather than the transformed ones, and
+        # unscaled: no mace_scf model applies an atomic_inter_scale, so this follows plain
+        # mace.modules.MACE rather than ScaleShiftMACE. Appended only when enabled, unlike
+        # upstream, which always seeds a zero column: `contributions` is written out as
+        # BO_contributions by scripts/eval_local_charges.py, so an unconditional column
+        # would change that array's width for every model trained without ZBL.
+        if hasattr(self, "pair_repulsion"):
+            pair_node_energy = self.pair_repulsion_fn(
+                lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
+            )
+            energies.append(
+                scatter_sum(
+                    src=pair_node_energy,
+                    index=data["batch"],
+                    dim=-1,
+                    dim_size=num_graphs,
+                )
+            )
+            node_energies_list.append(pair_node_energy)
+
         for interaction, product, readout in zip(
             self.interactions, self.products, self.readouts
         ):

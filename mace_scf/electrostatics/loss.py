@@ -10,6 +10,7 @@ from mace.modules.loss import (
     weighted_mean_squared_error_energy,
     mean_squared_error_forces,
     weighted_mean_squared_stress,
+    conditional_huber_forces,
     reduce_loss # required for DDP
 )
 from .utils import compute_effective_index
@@ -252,6 +253,89 @@ class FixedPointStability(torch.nn.Module):
         return reduce_loss(self.activation(output_norms / perturbation_norms - self.offset), ddp)
 
 
+# The 0b3 / `universal` recipe, decomposed into per-term entries so it composes with the
+# rest of the registry. Together these reproduce mace.modules.loss.UniversalLoss exactly
+# (its fourth, magforces term is guarded on a `magforces` key mace_scf never predicts).
+#
+# Two properties of UniversalLoss are load-bearing and mirrored deliberately:
+#   * the weights are applied INSIDE the huber, which is not the same as scaling the loss
+#     afterwards, because huber is non-linear;
+#   * the forces term bins by ||ref_forces|| at 100/200/300 eV/A with deltas
+#     huber_delta * [1.0, 0.7, 0.4, 0.1] -- reused from upstream rather than reimplemented,
+#     so a retune there follows through here.
+#
+# Deviation from UniversalLoss: these also carry `ref.weight`, the per-config weight, which
+# UniversalLoss omits. It is 1.0 for every config by default, so the two agree on ordinary
+# data; but WeightedLoss.forward multiplies ref.weight by `loss_weight_modifier` to discount
+# non-converged SCF configs, and dropping it would silently make that mechanism a no-op for
+# FixedPoint training. Where per-config weights are non-uniform the two therefore differ,
+# and not by a simple rescaling.
+#
+# These are plain classes, not nn.Modules: WeightedLoss.loss_fns is a plain dict, not a
+# ModuleDict, so an nn.Module stored there would never be registered (no .to(device), no
+# state dict). They hold only a float, so there is nothing to register.
+class HuberEnergyPerAtom:
+    def __init__(self, huber_delta: float = 0.01):
+        self.huber_delta = huber_delta
+
+    def __call__(
+        self, ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+    ) -> torch.Tensor:
+        num_atoms = ref.ptr[1:] - ref.ptr[:-1]  # [n_graphs, ]
+        configs_weight = ref.weight * ref.energy_weight  # [n_graphs, ]
+        raw_loss = torch.nn.functional.huber_loss(
+            configs_weight * ref["energy"] / num_atoms,
+            configs_weight * pred["energy"] / num_atoms,
+            reduction="none",
+            delta=self.huber_delta,
+        )
+        return reduce_loss(raw_loss, ddp)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(huber_delta={self.huber_delta})"
+
+
+class ConditionalHuberForces:
+    def __init__(self, huber_delta: float = 0.01):
+        self.huber_delta = huber_delta
+
+    def __call__(
+        self, ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+    ) -> torch.Tensor:
+        configs_weight = torch.repeat_interleave(
+            ref.weight * ref.forces_weight, ref.ptr[1:] - ref.ptr[:-1]
+        ).unsqueeze(-1)  # [n_atoms, 1]
+        return conditional_huber_forces(
+            configs_weight * ref["forces"],
+            configs_weight * pred["forces"],
+            huber_delta=self.huber_delta,
+            ddp=ddp,
+        )
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(huber_delta={self.huber_delta})"
+
+
+class HuberStress:
+    def __init__(self, huber_delta: float = 0.01):
+        self.huber_delta = huber_delta
+
+    def __call__(
+        self, ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+    ) -> torch.Tensor:
+        configs_weight = (ref.weight * ref.stress_weight).view(-1, 1, 1)
+        raw_loss = torch.nn.functional.huber_loss(
+            configs_weight * ref["stress"],
+            configs_weight * pred["stress"],
+            reduction="none",
+            delta=self.huber_delta,
+        )
+        return reduce_loss(raw_loss, ddp)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(huber_delta={self.huber_delta})"
+
+
 _LOSS_FUNCTIONS = {
     "energy_per_atom": weighted_mean_squared_error_energy,
     "forces": mean_squared_error_forces,
@@ -272,6 +356,10 @@ _LOSS_FUNCTIONS = {
     "fermi_level_gradient": fermi_level_gradient_function,
     "final_terms_fixedpoint_scf_stability": final_terms_fixedpoint_scf_stability,
     "field_features": weighted_mean_squared_error_field_feats,
+    # the 0b3 / `universal` recipe; these take a `huber_delta` option
+    "energy_per_atom_huber": HuberEnergyPerAtom,
+    "forces_huber": ConditionalHuberForces,
+    "stress_huber": HuberStress,
 }
 
 
@@ -293,6 +381,14 @@ class WeightedLoss(torch.nn.Module):
                 self.loss_fns[name] = _LOSS_FUNCTIONS[name](**options)
             else:
                 self.loss_fns[name] = _LOSS_FUNCTIONS[name]
+            # A class-valued entry reached through the bare `name: weight` form would be
+            # stored uncalled, and forward() would then build an instance instead of
+            # returning a tensor -- silently, and only at the first training step.
+            if isinstance(self.loss_fns[name], type):
+                raise ValueError(
+                    f"loss term `{name}` is configured by a class and needs the dict form, "
+                    f"e.g. `{name}: {{weight: 1.0}}`, not a bare weight"
+                )
         
     def forward(self, ref: Batch, pred: TensorDict) -> torch.Tensor:
         loss = 0.

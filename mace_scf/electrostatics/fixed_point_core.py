@@ -18,6 +18,7 @@ from mace.modules import (
     LinearReadoutBlock,
     NonLinearReadoutBlock,
     RadialEmbeddingBlock,
+    ZBLBasis,
 )
 
 from graph_longrange.kspace import compute_k_vectors_flat
@@ -60,6 +61,8 @@ class FixedPointCore(torch.nn.Module):
         atom_density_scaling: np.ndarray,
         radial_MLP: Optional[List[int]] = None,
         radial_type: Optional[str] = "bessel",
+        distance_transform: str = "None",
+        pair_repulsion: bool = False,
         kspace_cutoff_factor: float = 1.5,
         atomic_multipoles_max_l: int = 0,
         atomic_multipoles_smearing_width: float = 1.0,
@@ -145,7 +148,13 @@ class FixedPointCore(torch.nn.Module):
             num_bessel=num_bessel,
             num_polynomial_cutoff=num_polynomial_cutoff,
             radial_type=radial_type,
+            distance_transform=distance_transform,
         )
+
+        if pair_repulsion:
+            self.pair_repulsion_fn = ZBLBasis(p=num_polynomial_cutoff)
+            self.pair_repulsion = True
+
         edge_feats_irreps = o3.Irreps(f"{self.radial_embedding.out_dim}x0e")
 
         sh_irreps = o3.Irreps.spherical_harmonics(max_ell)
@@ -433,6 +442,23 @@ class FixedPointCore(torch.nn.Module):
 
         # Interaction layers
         energies = [e0]
+
+        # ZBL pair repulsion. Charge-independent and purely geometric, so it is computed
+        # once here in the SCF-independent local pass and never inside the SCF cycle.
+        # Appended only when enabled -- see the note in localsources.py on `contributions`.
+        if hasattr(self, "pair_repulsion"):
+            pair_node_energy = self.pair_repulsion_fn(
+                lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
+            )
+            energies.append(
+                scatter_sum(
+                    src=pair_node_energy,
+                    index=data["batch"],
+                    dim=-1,
+                    dim_size=num_graphs,
+                )
+            )
+
         features = []
         charge_density = torch.zeros(
             (data["batch"].size(-1), self.charges_irreps.dim),

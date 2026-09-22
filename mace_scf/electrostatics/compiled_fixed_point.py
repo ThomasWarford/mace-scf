@@ -89,6 +89,10 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
         self.atomic_energies_fn = model.atomic_energies_fn
         self.node_embedding = model.node_embedding
         self.radial_embedding = model.radial_embedding
+        # Guarded on the submodule itself, as upstream's extract_config_mace_model does.
+        # Unguarded, this would raise AttributeError on every pre-ZBL checkpoint.
+        if hasattr(model, "pair_repulsion_fn"):
+            self.pair_repulsion_fn = model.pair_repulsion_fn
         self.spherical_harmonics = model.spherical_harmonics
         self.interactions = model.interactions
         self.products = model.products
@@ -134,7 +138,7 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
         positions: torch.Tensor,
         edge_index: torch.Tensor,
         shifts: torch.Tensor,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         vectors, lengths = get_edge_vectors_and_lengths(
             positions=positions,
             edge_index=edge_index,
@@ -151,7 +155,7 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
             edge_index,
             self.atomic_numbers,
         )
-        return edge_attrs, edge_feats
+        return edge_attrs, edge_feats, lengths
 
     def _compute_external_field_features(
         self,
@@ -261,7 +265,7 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
         )
 
         node_feats = _call_module(self.node_embedding, node_attrs)
-        edge_attrs, edge_feats = self._compute_geometry_features(
+        edge_attrs, edge_feats, lengths = self._compute_geometry_features(
             node_attrs=node_attrs,
             positions=positions,
             edge_index=edge_index,
@@ -269,6 +273,27 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
         )
 
         energies = [e0]
+
+        # ZBL pair repulsion, mirroring FixedPointCore.local_part: charge-independent and
+        # purely geometric, so computed once outside the SCF cycle. Appended only when
+        # enabled -- see the note in localsources.py on `contributions`.
+        if hasattr(self, "pair_repulsion_fn"):
+            pair_node_energy = _call_module(
+                self.pair_repulsion_fn,
+                lengths,
+                node_attrs,
+                edge_index,
+                self.atomic_numbers,
+            )
+            energies.append(
+                self._sum_nodes(
+                    src=pair_node_energy,
+                    batch=batch,
+                    num_graphs=num_graphs,
+                    dim=-1,
+                )
+            )
+
         features = []
         charge_density = torch.zeros(
             (batch.size(0), self.charges_dim),

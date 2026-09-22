@@ -27,6 +27,12 @@ CUEQ_SUPPORTED_MODELS = frozenset(
 )
 
 
+# --apply_cutoff False makes RadialEmbeddingBlock hand the cutoff back for the interaction
+# blocks to apply. Only the upstream MACE models do that; every mace_scf forward discards
+# it, so the flag would silently train a model with no radial cutoff at all.
+APPLY_CUTOFF_SUPPORTED_MODELS = frozenset({"MACE", "ScaleShiftMACE"})
+
+
 # needed for torchopt
 @contextmanager
 def disable_e3nn_codegen():
@@ -83,6 +89,11 @@ def build_model(
         MLP_irreps=o3.Irreps(args.MLP_irreps),
         radial_MLP=ast.literal_eval(args.radial_MLP),
         radial_type=args.radial_type,
+        distance_transform=args.distance_transform,
+        pair_repulsion=args.pair_repulsion,
+    )
+    logging.info(
+        "Distance transform for radial basis functions: %s", args.distance_transform
     )
 
     cueq_config = None
@@ -103,6 +114,13 @@ def build_model(
         if not cueq_config.enabled:
             raise RuntimeError("--enable_cueq requested but cuequivariance is not available")
         logging.info(f"Using cuequivariance: {cueq_config}")
+
+    if not args.apply_cutoff and args.model not in APPLY_CUTOFF_SUPPORTED_MODELS:
+        raise NotImplementedError(
+            f"--apply_cutoff False is not wired up for {args.model}; its forward discards "
+            f"the cutoff instead of passing it to the interaction blocks. "
+            f"Supported: {sorted(APPLY_CUTOFF_SUPPORTED_MODELS)}"
+        )
 
     model: torch.nn.Module
 
@@ -127,7 +145,7 @@ def build_model(
             interaction_cls_first=mace.modules.interaction_classes[
                 args.interaction_first
             ],
-            pair_repulsion=args.pair_repulsion,
+            apply_cutoff=args.apply_cutoff,
             # MACE's class default is True but --use_reduced_cg defaults to False, so the
             # flag is silently ignored unless it is passed on; mace_scf's own models leave
             # it unset and get the original MACE basis, so follow the flag here too
@@ -150,7 +168,7 @@ def build_model(
             ],
             atomic_inter_scale=std,
             atomic_inter_shift=mean,
-            pair_repulsion=args.pair_repulsion,
+            apply_cutoff=args.apply_cutoff,
             use_reduced_cg=args.use_reduced_cg,  # see the MACE branch above
             cueq_config=cueq_config,
         )

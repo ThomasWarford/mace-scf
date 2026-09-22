@@ -38,9 +38,14 @@
 # is periodic inorganic data like MPtrj. The OMol-era models (omol.sh, MACE-POLAR-1) drop
 # ZBL and Agnesi together, but they also change block, loss, optimizer and dataset at once.
 #
-# Still not tracked: 0b3's 'universal' loss (conditional Huber; every _LOSS_FUNCTIONS entry
-# here is MSE) and --distance_transform Agnesi. The loss stays pinned to
-# fit_matpes_lsc_baseline on purpose, so the backbone is the only variable.
+# --distance_transform Agnesi now tracks 0b3 too. Like --pair_repulsion it needed a code
+# change as well as the flag: args.distance_transform reached no model at all, so it parsed,
+# landed in the W&B params blob, and did nothing.
+#
+# Still not tracked: 0b3's 'universal' loss. The conditional-Huber terms now exist as
+# energy_per_atom_huber / forces_huber / stress_huber, but the loss stays pinned to
+# fit_matpes_lsc_baseline on purpose, so the backbone is the only variable. Switch
+# config.yaml's loss blocks over if you want to move that axis too.
 #
 # 0b3's --keep_checkpoints/--save_all_checkpoints are deliberately NOT set: checkpoints
 # land in $HOME, which had 6.7 GiB free against ~150 MB per checkpoint. Keeping every
@@ -126,6 +131,7 @@ srun --cpu-bind=cores conda run -n mace_scf --no-capture-output python scripts/r
     --max_ell 3 \
     --num_radial_basis 10 \
     --pair_repulsion \
+    --distance_transform Agnesi \
     --MLP_irreps 16x0e \
     --weight_decay 1e-8 \
     --r_max 6.0 \

@@ -24,6 +24,32 @@ def _call_module(module, *args, **kwargs):
     return module(*args, **kwargs)
 
 
+def _seed_energy_lists(core, e0, node_e0, lengths, node_attrs, edge_index, batch, num_graphs):
+    """Seed the energy accumulators, adding the ZBL term when the eager model carried one.
+
+    Mirrors the conditional append in localsources.py: the term is only appended when
+    pair repulsion is enabled, so `contributions` keeps its historical width for every
+    model trained without it.
+    """
+    energies = [e0]
+    node_energies_list = [node_e0]
+    if hasattr(core, "pair_repulsion_fn"):
+        pair_node_energy = _call_module(
+            core.pair_repulsion_fn,
+            lengths,
+            node_attrs,
+            edge_index,
+            core.atomic_numbers,
+        )
+        energies.append(
+            scatter_sum(
+                src=pair_node_energy, index=batch, dim=-1, dim_size=num_graphs
+            )
+        )
+        node_energies_list.append(pair_node_energy)
+    return energies, node_energies_list
+
+
 class CompiledLocalSourceOptions(NamedTuple):
     backend: str
     mode: str
@@ -52,6 +78,10 @@ class LocalSplitChargesCompiledCore(torch.nn.Module):
         self.atomic_energies_fn = model.atomic_energies_fn
         self.node_embedding = model.node_embedding
         self.radial_embedding = model.radial_embedding
+        # Guarded on the submodule itself, as upstream's extract_config_mace_model does.
+        # Unguarded, this would raise AttributeError on every pre-ZBL checkpoint.
+        if hasattr(model, "pair_repulsion_fn"):
+            self.pair_repulsion_fn = model.pair_repulsion_fn
         self.spherical_harmonics = model.spherical_harmonics
         self.interactions = model.interactions
         self.products = model.products
@@ -331,6 +361,9 @@ class LocalSplitChargesCompiledCore(torch.nn.Module):
             node_feats,
             formal_charges,
         )
+        energies, node_energies_list = _seed_energy_lists(
+            self, e0, node_e0, lengths, node_attrs, edge_index, batch, num_graphs
+        )
         (
             contributions,
             node_energy,
@@ -349,8 +382,8 @@ class LocalSplitChargesCompiledCore(torch.nn.Module):
             formal_charges=formal_charges,
             charge_density=charge_density,
             edge_fluxes=edge_fluxes,
-            energies=[e0],
-            node_energies_list=[node_e0],
+            energies=energies,
+            node_energies_list=node_energies_list,
         )
 
         total_energy = torch.sum(contributions, dim=-1)
@@ -394,6 +427,10 @@ class LocalChargesCompiledCore(torch.nn.Module):
         self.atomic_energies_fn = model.atomic_energies_fn
         self.node_embedding = model.node_embedding
         self.radial_embedding = model.radial_embedding
+        # Guarded on the submodule itself, as upstream's extract_config_mace_model does.
+        # Unguarded, this would raise AttributeError on every pre-ZBL checkpoint.
+        if hasattr(model, "pair_repulsion_fn"):
+            self.pair_repulsion_fn = model.pair_repulsion_fn
         self.spherical_harmonics = model.spherical_harmonics
         self.interactions = model.interactions
         self.products = model.products
@@ -583,7 +620,7 @@ class LocalChargesCompiledCore(torch.nn.Module):
         node_heads = head[batch]
 
         node_feats = _call_module(self.node_embedding, node_attrs)
-        edge_attrs, edge_feats, _ = self._compute_geometry_features(
+        edge_attrs, edge_feats, lengths = self._compute_geometry_features(
             node_attrs=node_attrs,
             positions=positions,
             edge_index=edge_index,
@@ -600,6 +637,9 @@ class LocalChargesCompiledCore(torch.nn.Module):
             device=batch.device,
             dtype=positions.dtype,
         )
+        energies, node_energies_list = _seed_energy_lists(
+            self, e0, node_e0, lengths, node_attrs, edge_index, batch, num_graphs
+        )
         contributions, node_energy, charge_density = (
             self._run_local_interactions_and_sources(
                 node_attrs=node_attrs,
@@ -611,8 +651,8 @@ class LocalChargesCompiledCore(torch.nn.Module):
                 num_graphs=num_graphs,
                 node_heads=node_heads,
                 charge_density=charge_density,
-                energies=[e0],
-                node_energies_list=[node_e0],
+                energies=energies,
+                node_energies_list=node_energies_list,
             )
         )
 

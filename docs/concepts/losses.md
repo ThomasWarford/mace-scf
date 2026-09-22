@@ -29,6 +29,29 @@ Basic loss terms:
 - `forces`
 - `stress` (currently only supported for local-source models)
 
+The conditional-Huber terms of MACE's `universal` loss, as used by the MACE-MP-0b3 recipe.
+Each takes a `huber_delta` option (0.01 upstream), so they need the dict form:
+
+- `energy_per_atom_huber`
+- `forces_huber` -- bins by force magnitude at 100/200/300 eV/A, with deltas
+  `huber_delta * [1.0, 0.7, 0.4, 0.1]`
+- `stress_huber`
+
+```yaml
+loss:
+  energy_per_atom_huber: {weight: 1.0,  huber_delta: 0.01}
+  forces_huber:          {weight: 10.0, huber_delta: 0.01}
+  stress_huber:          {weight: 10.0, huber_delta: 0.01}
+```
+
+Together these reproduce `mace.modules.loss.UniversalLoss` exactly on ordinary data. They
+differ from it in one documented respect: they also carry `weight`, the per-configuration
+weight, which `UniversalLoss` ignores. That weight is 1.0 by default, but the training loop
+multiplies it by a modifier that discounts non-converged SCF configurations, so dropping it
+would make that mechanism a silent no-op for fixed-point models. Where per-configuration
+weights are not uniform the two therefore disagree, and because Huber is non-linear the
+difference is not a simple rescaling.
+
 new losses useful for electrostatic models:
 - `atomic_multipoles`
 - `total_charge`

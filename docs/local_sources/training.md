@@ -93,6 +93,19 @@ These settings are shared by local-source models:
 - `--electrostatic_pbc_method`
   selects the electrostatic boundary handling used during training. See
   [boundary conditions](../concepts/boundary_conditions.md).
+- `--distance_transform`
+  applies a transform to the interatomic distance before the radial basis is evaluated.
+  `Agnesi` and `Soft` come from MACE and are element-aware through the covalent radii;
+  the default `None` registers no transform. The polynomial cutoff is always evaluated on
+  the untransformed distance -- only the Bessel argument is transformed.
+- `--pair_repulsion`
+  adds MACE's ZBL short-range pair repulsion. Its cutoff is per pair,
+  `r_cov(Z_u) + r_cov(Z_v)`, not `--r_max`, and its polynomial order follows
+  `--num_cutoff_basis`. The term is unscaled, has no trainable parameters, and appears as
+  an extra column in the model's energy `contributions`. Note that the ZBL energy diverges
+  as the separation goes to zero and the envelope only cuts it off from above, so a
+  configuration with overlapping atoms will produce a non-finite energy where it
+  previously produced a finite one.
 
 
 For homogeneous datasets, use a fixed boundary mode such as `pbc`, `slab`, or
