@@ -316,6 +316,37 @@ def log_dataset_summary(z_table, train_set, valid_set, tests=()) -> None:
     )
 
 
+def check_formal_charges_in_oxidation_state_range(collections, oxidation_state_range) -> None:
+    """Warn about per-atom formal charges outside the oxidation-state embedding's range.
+    """
+    lower, upper = oxidation_state_range
+    assert lower < upper, f"oxidation_state_range={oxidation_state_range} is invalid"
+    for split_name, configs in _named_config_splits(collections):
+        num_atoms = 0
+        num_outside = 0
+        min_charge = np.inf
+        max_charge = -np.inf
+        for config in configs:
+            charges = (getattr(config, "properties", {}) or {}).get("charges")
+            if charges is None:
+                continue
+            charges = np.asarray(charges, dtype=float).reshape(-1)
+            num_atoms += charges.size
+            num_outside += int(np.count_nonzero((charges < lower) | (charges > upper)))
+            if charges.size:
+                min_charge = min(min_charge, float(charges.min()))
+                max_charge = max(max_charge, float(charges.max()))
+        if num_outside == 0:
+            continue
+        logging.warning(
+            f"{num_outside}/{num_atoms} atoms ({100 * num_outside / num_atoms:.2f}%) in "
+            f"split={split_name} have formal charges outside oxidation_state_range="
+            f"({lower:g}, {upper:g}); observed range=({min_charge:g}, {max_charge:g}). "
+            "Their oxidation-state features will be unbounded; consider widening "
+            "--oxidation_state_range."
+        )
+
+
 def load_train_valid_sets_from_xyz(args: argparse.Namespace,  config_type_weights: Dict):
     # data
     validate_xyz_paths(args)
@@ -330,6 +361,10 @@ def load_train_valid_sets_from_xyz(args: argparse.Namespace,  config_type_weight
         key_specification=args.key_specification,
     )
     validate_xyz_collections(collections, args)
+    if args.model == "LocalSplitCharges" and args.formal_charges_from_data:
+        check_formal_charges_in_oxidation_state_range(
+            collections, ast.literal_eval(args.oxidation_state_range)
+        )
 
     # Atomic number table
     z_table = get_atomic_number_table_from_zs(
