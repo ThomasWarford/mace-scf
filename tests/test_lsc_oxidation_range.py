@@ -117,3 +117,58 @@ def test_loading_is_silent_when_charges_are_in_range(caplog):
     with caplog.at_level("WARNING"):
         check_formal_charges_in_oxidation_state_range(collections, RANGE)
     assert not [r for r in caplog.records if r.levelname == "WARNING"]
+
+
+def test_preprocessed_data_warns_about_a_recorded_range_outside(caplog):
+    """.h5 shards carry no configurations at train time; statistics.json's range stands in."""
+    from mace_scf.utils.load_data import check_statistics_formal_charge_range
+
+    with caplog.at_level("WARNING"):
+        check_statistics_formal_charge_range((-3.0, 7.0), (-4.0, 4.0))
+    warnings = [r.getMessage() for r in caplog.records if r.levelname == "WARNING"]
+    assert len(warnings) == 1
+    assert "span (-3, 7)" in warnings[0] and "oxidation_state_range=(-4, 4)" in warnings[0]
+
+
+def test_preprocessed_data_is_silent_when_the_recorded_range_fits(caplog):
+    from mace_scf.utils.load_data import check_statistics_formal_charge_range
+
+    with caplog.at_level("WARNING"):
+        check_statistics_formal_charge_range((-8.0, 7.0), RANGE)
+    assert not [r for r in caplog.records if r.levelname == "WARNING"]
+
+
+def test_preprocessed_data_says_when_it_cannot_check(caplog):
+    """Statistics files written before the range was recorded must not pass silently."""
+    from mace_scf.utils.load_data import check_statistics_formal_charge_range
+
+    with caplog.at_level("WARNING"):
+        check_statistics_formal_charge_range(None, RANGE)
+    warnings = [r.getMessage() for r in caplog.records if r.levelname == "WARNING"]
+    assert len(warnings) == 1 and "Re-run preprocessing" in warnings[0]
+
+
+def test_statistics_file_carries_the_range_to_args(tmp_path):
+    import argparse
+    import json
+
+    from mace_scf.utils.check_args import load_statistics_file
+
+    statistics = {
+        "atomic_energies": "{1: -1.0}", "avg_num_neighbors": 5.0, "mean": 0.0, "std": 1.0,
+        "atomic_numbers": "[1]", "r_max": 5.0, "formal_charge_range": [-7.0, 7.0],
+    }
+    path = tmp_path / "statistics.json"
+    path.write_text(json.dumps(statistics))
+    args = argparse.Namespace(
+        statistics_file=str(path), atomic_numbers=None, E0s=None, avg_num_neighbors=1,
+        compute_avg_num_neighbors=True, mean=None, std=None, fermi_level_offset=None,
+        r_max=5.0,
+    )
+    load_statistics_file(args)
+    assert args.formal_charge_range == (-7.0, 7.0)
+
+    statistics.pop("formal_charge_range")
+    path.write_text(json.dumps(statistics))
+    load_statistics_file(args)
+    assert args.formal_charge_range is None

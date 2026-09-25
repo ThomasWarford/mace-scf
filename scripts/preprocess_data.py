@@ -28,6 +28,7 @@ from mace_scf.utils.load_data import (
     filter_xyz_collections,
     validate_xyz_paths,
     fermi_level_offset_from_configurations,
+    observed_formal_charge_range,
 )
 from mace_scf.utils.extend_arg_parse import preprocess_extended_arg_parser
 from mace.data import save_configurations_as_HDF5, HDF5Dataset
@@ -239,6 +240,11 @@ def main():
         # Provenance: how these shards were filtered. Nothing reads them back.
         "max_force": args.max_force,
         "require_finite_multipoles": args.require_finite_multipoles,
+        # Checked against --oxidation_state_range at train time, which never holds the
+        # shards' configurations; None when no configuration carries formal charges.
+        "formal_charge_range": observed_formal_charge_range(
+            list(collections.train) + list(collections.valid)
+        ),
     }
     
     with open(args.h5_prefix + "statistics.json", "w") as f:

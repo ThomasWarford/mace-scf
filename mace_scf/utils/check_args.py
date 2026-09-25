@@ -277,9 +277,14 @@ def load_statistics_file(args: argparse.Namespace):
     args.avg_num_neighbors = statistics["avg_num_neighbors"]
     args.compute_avg_num_neighbors = False
 
-    # Only MACE/ScaleShiftMACE read these; LocalSplitCharges has no scale/shift term.
+    # Read by ScaleShiftMACE, and by LocalSplitCharges under --local_scale_shift.
     args.mean = statistics["mean"]
     args.std = statistics["std"]
+
+    # Absent from files written before preprocess_data.py recorded it; the .h5 loader
+    # then says it cannot check the formal charges against --oxidation_state_range.
+    formal_charge_range = statistics.get("formal_charge_range")
+    args.formal_charge_range = tuple(formal_charge_range) if formal_charge_range else None
 
     # Absent from files written before the offset moved into preprocessing; FixedPoint then measures it at startup.
     if args.fermi_level_offset is None:

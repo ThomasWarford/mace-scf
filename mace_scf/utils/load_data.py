@@ -316,6 +316,45 @@ def log_dataset_summary(z_table, train_set, valid_set, tests=()) -> None:
     )
 
 
+def observed_formal_charge_range(configs) -> Optional[Tuple[float, float]]:
+    """(min, max) of the per-atom formal charges over configs, or None if none carries any."""
+    lower, upper = np.inf, -np.inf
+    for config in configs:
+        charges = (getattr(config, "properties", {}) or {}).get("charges")
+        if charges is None:
+            continue
+        charges = np.asarray(charges, dtype=float).reshape(-1)
+        if charges.size:
+            lower, upper = min(lower, float(charges.min())), max(upper, float(charges.max()))
+    return None if lower > upper else (lower, upper)
+
+
+def check_statistics_formal_charge_range(formal_charge_range, oxidation_state_range) -> None:
+    """The .h5 counterpart of check_formal_charges_in_oxidation_state_range.
+
+    Training never holds the shards' configurations in memory, so it compares the range
+    preprocess_data.py recorded in statistics.json instead.
+    """
+    lower, upper = oxidation_state_range
+    assert lower < upper, f"oxidation_state_range={oxidation_state_range} is invalid"
+    if formal_charge_range is None:
+        logging.warning(
+            "Cannot check formal charges against oxidation_state_range: the statistics "
+            "file records no formal_charge_range (written before preprocess_data.py "
+            "recorded it, or no configuration carries charges). Re-run preprocessing "
+            "to enable the check."
+        )
+        return
+    observed_lower, observed_upper = formal_charge_range
+    if observed_lower < lower or observed_upper > upper:
+        logging.warning(
+            f"Formal charges in the preprocessed data span ({observed_lower:g}, "
+            f"{observed_upper:g}), outside oxidation_state_range=({lower:g}, {upper:g}). "
+            "Their oxidation-state features will be unbounded; consider widening "
+            "--oxidation_state_range."
+        )
+
+
 def check_formal_charges_in_oxidation_state_range(collections, oxidation_state_range) -> None:
     """Warn about per-atom formal charges outside the oxidation-state embedding's range.
     """
@@ -433,6 +472,12 @@ def load_train_valid_sets_from_preprocessed(args: argparse.Namespace):
             z_table=z_table,
             atomic_dataclass=ExtAtomicData,
             atomic_multipoles_max_l=args.atomic_multipoles_max_l,
+        )
+
+    if args.model == "LocalSplitCharges" and args.formal_charges_from_data:
+        check_statistics_formal_charge_range(
+            getattr(args, "formal_charge_range", None),
+            ast.literal_eval(args.oxidation_state_range),
         )
 
     train_set = load(args.train_file)

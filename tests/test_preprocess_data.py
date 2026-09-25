@@ -31,7 +31,7 @@ HEADS = json.dumps(
 )
 
 
-def write_configs(path, *, pbc, cell_size=5.0, num_images=4):
+def write_configs(path, *, pbc, cell_size=5.0, num_images=4, formal_charges=None):
     images = []
     for index in range(num_images):
         atoms = Atoms(
@@ -43,14 +43,23 @@ def write_configs(path, *, pbc, cell_size=5.0, num_images=4):
         atoms.info["REF_energy"] = -24.0 - 0.1 * index
         atoms.info["total_charge"] = 0.0
         atoms.arrays["REF_forces"] = np.zeros((2, 3))
+        if formal_charges is not None:
+            atoms.arrays["REF_formal_charges"] = np.asarray(formal_charges[index], dtype=float)
         images.append(atoms)
     write(path, images, format="extxyz")
     return path
 
 
-def run_preprocess(tmp_path, *, pbc=(True, True, True), cell_size=5.0, extra_args=()):
-    train_file = write_configs(tmp_path / "train.xyz", pbc=pbc, cell_size=cell_size)
-    valid_file = write_configs(tmp_path / "valid.xyz", pbc=pbc, cell_size=cell_size)
+def run_preprocess(
+    tmp_path, *, pbc=(True, True, True), cell_size=5.0, extra_args=(), formal_charges=None,
+    heads=HEADS,
+):
+    train_file = write_configs(
+        tmp_path / "train.xyz", pbc=pbc, cell_size=cell_size, formal_charges=formal_charges
+    )
+    valid_file = write_configs(
+        tmp_path / "valid.xyz", pbc=pbc, cell_size=cell_size, formal_charges=formal_charges
+    )
     h5_prefix = f"{tmp_path / 'h5'}/"
     return subprocess.run(
         [
@@ -61,7 +70,7 @@ def run_preprocess(tmp_path, *, pbc=(True, True, True), cell_size=5.0, extra_arg
             f"--h5_prefix={h5_prefix}",
             "--r_max=4.0",
             f"--E0s={E0S}",
-            f"--heads={HEADS}",
+            f"--heads={heads}",
             "--num_process=1",
             "--shuffle=False",
             "--seed=1",
@@ -98,6 +107,29 @@ def test_statistics_json_is_machine_readable(default_run):
 
     for key in ("avg_num_neighbors", "mean", "std", "r_max"):
         assert isinstance(statistics[key], float)
+
+
+def test_statistics_record_no_formal_charge_range_without_charges(default_run):
+    statistics = json.loads(Path(default_run + "statistics.json").read_text())
+    assert statistics["formal_charge_range"] is None
+
+
+def test_statistics_record_the_formal_charge_range(tmp_path):
+    """Training reads .h5 shards without their configurations, so the range it checks
+    --oxidation_state_range against has to be recorded here."""
+    heads = json.dumps(
+        {
+            "Default": {
+                "info_keys": {"energy": "REF_energy", "total_charge": "total_charge"},
+                "arrays_keys": {"forces": "REF_forces", "charges": "REF_formal_charges"},
+            }
+        }
+    )
+    charges = [[1.0, -1.0], [7.0, -7.0], [0.0, 0.0], [2.0, -2.0]]
+    process, h5_prefix = run_preprocess(tmp_path, formal_charges=charges, heads=heads)
+    assert process.returncode == 0, process.stderr[-4000:]
+    statistics = json.loads(Path(h5_prefix + "statistics.json").read_text())
+    assert statistics["formal_charge_range"] == [-7.0, 7.0]
 
 
 def test_shards_are_written(default_run):
