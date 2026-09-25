@@ -501,10 +501,22 @@ def valid_err_log(
         stress_str = (
             f", RMSE_stress_per_atom={stress * 1e3:.1f} meV / A^3" if stress is not None else ""
         )
+        # multipole errors, for the models that predict them, whether or not they are fitted
+        multipole_str = ""
+        if "mae_charges" in eval_metrics:
+            multipole_str += (
+                f", MAE_q={eval_metrics['mae_charges'] * 1e3:.1f} me"
+                f", RMSE_q={eval_metrics['rmse_charges'] * 1e3:.1f} me"
+            )
+        if "mae_local_dipoles" in eval_metrics:
+            multipole_str += (
+                f", MAE_mu={eval_metrics['mae_local_dipoles'] * 1e3:.1f} me A"
+                f", RMSE_mu={eval_metrics['rmse_local_dipoles'] * 1e3:.1f} me A"
+            )
         logging.info(
             f"Epoch {epoch}: loss={valid_loss:.4f}, "
             f"MAE_E_per_atom={mae_e:.1f} meV, RMSE_E_per_atom={rmse_e:.1f} meV, "
-            f"MAE_F={mae_f:.1f} meV / A, RMSE_F={rmse_f:.1f} meV / A" + stress_str
+            f"MAE_F={mae_f:.1f} meV / A, RMSE_F={rmse_f:.1f} meV / A" + stress_str + multipole_str
         )
     elif log_errors == "PerAtomRMSE":
         error_e = eval_metrics["rmse_e_per_atom"] * 1e3

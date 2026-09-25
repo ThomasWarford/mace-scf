@@ -223,6 +223,15 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         action='store_true'
     )
     parser.add_argument(
+        "--local_scale_shift",
+        help=(
+            "Scale the local energy (ZBL + readouts) by std and shift it by mean per atom, "
+            "as ScaleShiftMACE does; mean and std come from --statistics_file"
+        ),
+        type=strict_str2bool,
+        default=False,
+    )
+    parser.add_argument(
         "--include_field_si",
         action='store_true',
         default=False
@@ -289,6 +298,7 @@ def extended_arg_parser() -> argparse.ArgumentParser:
             "--compute_polarizability",
             "--compute_atomic_dipole",
             "--restart_latest",
+            "--amsgrad",
         ],
     )
     parser.add_argument("--heads", required=True)
@@ -298,6 +308,15 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         help="Select True to compute polarizability",
         type=strict_str2bool,
         default=True,
+    )
+    # upstream's --amsgrad is store_true with default True, so it can never be switched off;
+    # AMSGrad keeps the running max of the second moment, and electrostatic models whose
+    # first steps see huge (clipped) gradients then train at a permanently reduced lr
+    parser.add_argument(
+        "--amsgrad",
+        help="use AMSGrad with Adam/AdamW (--no-amsgrad to disable)",
+        default=True,
+        action=argparse.BooleanOptionalAction,
     )
     parser.add_argument(
         "--restart_latest",
@@ -324,6 +343,12 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         choices=["adam", "adamw", "schedulefree"],
         type=str,
         default="schedulefree",
+    )
+    parser.add_argument(
+        "--warmup_steps_schedulefree",
+        help="linear lr warmup steps for --optimizer schedulefree (ignored otherwise)",
+        type=int,
+        default=0,
     )
 
     # QEq arguments

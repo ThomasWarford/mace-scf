@@ -48,6 +48,20 @@ requires_gpu = pytest.mark.skipif(
 )
 
 
+@pytest.fixture(autouse=True)
+def float64_default_dtype():
+    """Every model in this file is built in float64, the configuration tests' included.
+
+    Building a cueq model under pytest's float32 default first leaves state behind that the
+    later float64 pairs pick up: e3nn and cueq then disagree by ~1e-9 (rel ~1e-6) instead
+    of ~1e-14, which reads as tolerance noise but is not. The dtype is restored after.
+    """
+    previous = torch.get_default_dtype()
+    torch.set_default_dtype(torch.float64)
+    yield
+    torch.set_default_dtype(previous)
+
+
 @dataclass(frozen=True)
 class ModelCase:
     """One --model value plus the flags it needs and the outputs worth comparing."""
@@ -55,6 +69,11 @@ class ModelCase:
     model: str
     extra_argv: Tuple[str, ...] = ()
     outputs: Tuple[str, ...] = ("energy", "forces")
+    name: str = ""  # test id; defaults to the model
+
+    @property
+    def id(self) -> str:
+        return self.name or self.model
 
 
 ELECTROSTATIC_ARGV = (
@@ -65,6 +84,15 @@ ELECTROSTATIC_ARGV = (
 )
 # water is H/O, so every charged model needs formal charges for both
 FORMAL_CHARGES_ARGV = ("--atomic_formal_charges", "{1: 1.0, 8: -2.0}")
+POLAR_BACKBONE_ARGV = (
+    "--interaction_first", "RealAgnosticResidualNonLinearInteractionBlock",
+    "--interaction", "RealAgnosticResidualNonLinearInteractionBlock",
+    "--hidden_irreps", "8x0e + 8x1o",
+    "--edge_irreps", "4x0e + 4x1o",
+    "--use_agnostic_product", "True",
+    "--pair_repulsion",
+    "--distance_transform", "Agnesi",
+)
 
 CASES = [
     ModelCase(
@@ -80,8 +108,22 @@ CASES = [
         ("energy", "forces", "stress"),
     ),
     ModelCase("MACE", (), ("energy", "forces", "stress")),
+    # the MACE-Polar / OMol backbone: NonLinear blocks, node width decoupled from the
+    # edge width, element-agnostic product, plus 0b3's ZBL + Agnesi. Hidden and edge
+    # widths differ so a dropped --edge_irreps cannot pass by coincidence.
+    ModelCase("MACE", POLAR_BACKBONE_ARGV, ("energy", "forces", "stress"),
+              name="MACE-polar-backbone"),
+    # the same backbone under LocalSplitCharges, with ScaleShiftMACE's scale/shift, as the
+    # R2-backbone LSC fits run it
+    ModelCase(
+        "LocalSplitCharges",
+        FORMAL_CHARGES_ARGV + ELECTROSTATIC_ARGV + POLAR_BACKBONE_ARGV
+        + ("--local_scale_shift", "True", "--mean", "-1.5", "--std", "0.7"),
+        ("energy", "forces", "stress", "density_coefficients", "dipole"),
+        name="LocalSplitCharges-polar-backbone",
+    ),
 ]
-CASE_IDS = [case.model for case in CASES]
+CASE_IDS = [case.id for case in CASES]
 
 
 def _args(case: ModelCase, enable_cueq: bool, device: str):
@@ -352,3 +394,38 @@ def test_gradients_match_e3nn(case):
         compared += 1
 
     assert compared > 0, f"{case.model}: no gradients were compared"
+
+
+@pytest.mark.cueq
+@requires_cuet
+@requires_gpu
+def test_nonlinear_gate_transposes_break_parity_under_mul_ir():
+    """Pins why build_model drops the NonLinear block's Gate transposes: put them back
+    and the cueq model stops matching e3nn. If upstream ever makes them layout-aware
+    this test fails, and _disable_mul_ir_nonlinear_transposes can go."""
+    from mace.modules.blocks import RealAgnosticResidualNonLinearInteractionBlock
+    from mace.modules.wrapper_ops import TransposeIrrepsLayoutWrapper
+
+    case = next(c for c in CASES if c.id == "MACE-polar-backbone")
+    e3nn_model, cueq_model, atoms = _build_pair(case, "cuda")
+    restored = 0
+    for block in cueq_model.modules():
+        if isinstance(block, RealAgnosticResidualNonLinearInteractionBlock):
+            assert block.transpose_mul_ir is None and block.transpose_ir_mul is None
+            block.transpose_mul_ir = TransposeIrrepsLayoutWrapper(
+                irreps=block.irreps_nonlin, source="ir_mul", target="mul_ir",
+                cueq_config=block.cueq_config,
+            ).to("cuda")
+            block.transpose_ir_mul = TransposeIrrepsLayoutWrapper(
+                irreps=block.irreps_out, source="mul_ir", target="ir_mul",
+                cueq_config=block.cueq_config,
+            ).to("cuda")
+            restored += 1
+    assert restored == 2
+
+    batch = _batch(atoms, "cuda")
+    e3nn_model.eval()
+    cueq_model.eval()
+    reference = e3nn_model(batch.to_dict(), training=False, compute_force=True)
+    actual = cueq_model(batch.to_dict(), training=False, compute_force=True)
+    assert not torch.allclose(actual["forces"], reference["forces"], atol=1e-6, rtol=0)

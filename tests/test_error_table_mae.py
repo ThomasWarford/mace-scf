@@ -50,3 +50,24 @@ def test_final_table_is_populated_not_empty():
 
     src = inspect.getsource(create_error_table)
     assert src.count("PerAtomMAERMSEstress") == 2, "needs both a header and a row branch"
+
+
+def test_log_line_carries_multipole_errors_when_predicted(caplog):
+    """Models that predict multipoles report q and dipole errors, fitted or not."""
+    metrics = _metrics(
+        mae_charges=0.0912, rmse_charges=0.1453,
+        mae_local_dipoles=0.0265, rmse_local_dipoles=0.0460,
+    )
+    with caplog.at_level(logging.INFO):
+        valid_err_log(0.02, metrics, _Logger(), "PerAtomMAERMSEstress", 31)
+
+    line = caplog.text
+    assert "MAE_q=91.2 me, RMSE_q=145.3 me" in line
+    assert "MAE_mu=26.5 me A, RMSE_mu=46.0 me A" in line
+
+
+def test_log_line_omits_multipole_errors_for_plain_mace(caplog):
+    with caplog.at_level(logging.INFO):
+        valid_err_log(0.02, _metrics(), _Logger(), "PerAtomMAERMSEstress", 3)
+
+    assert "MAE_q" not in caplog.text and "MAE_mu" not in caplog.text

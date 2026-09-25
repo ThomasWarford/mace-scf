@@ -33,6 +33,45 @@ CUEQ_SUPPORTED_MODELS = frozenset(
 APPLY_CUTOFF_SUPPORTED_MODELS = frozenset({"MACE", "ScaleShiftMACE"})
 
 
+# --edge_irreps and --use_agnostic_product reach upstream MACE's constructor and the
+# mace_scf models built on _LocalSourceModelBase. FixedPoint and MACEQEq re-implement the
+# backbone without either, so there the flags would parse and then silently build the
+# default architecture.
+BACKBONE_OPTION_MODELS = frozenset(
+    {
+        "MACE",
+        "ScaleShiftMACE",
+        "LocalSplitCharges",
+        "LocalCharges",
+        "FixedChargeBaselinedMACE",
+    }
+)
+
+
+# --local_scale_shift: ScaleShiftMACE's per-atom scale/shift, for the mace_scf models that
+# implement it. The other models have no scale_shift block and would ignore it.
+LOCAL_SCALE_SHIFT_MODELS = frozenset({"LocalSplitCharges"})
+
+
+def _disable_mul_ir_nonlinear_transposes(model: torch.nn.Module, cueq_config) -> int:
+    """Drop RealAgnosticResidualNonLinearInteractionBlock's layout transposes under mul_ir.
+
+    The block hard-codes an ir_mul -> mul_ir transpose before its e3nn Gate and the reverse
+    after it, which is right for upstream's ir_mul cueq layout. This repo runs cueq in
+    mul_ir, where the features are already in the Gate's layout, so the transposes would
+    scramble every l > 0 channel. The block's forward skips a transpose that is None.
+    """
+    if cueq_config is None or not cueq_config.enabled or cueq_config.layout_str != "mul_ir":
+        return 0
+    n = 0
+    for module in model.modules():
+        if isinstance(module, mace.modules.blocks.RealAgnosticResidualNonLinearInteractionBlock):
+            module.transpose_mul_ir = None
+            module.transpose_ir_mul = None
+            n += 1
+    return n
+
+
 # needed for torchopt
 @contextmanager
 def disable_e3nn_codegen():
@@ -115,6 +154,37 @@ def build_model(
             raise RuntimeError("--enable_cueq requested but cuequivariance is not available")
         logging.info(f"Using cuequivariance: {cueq_config}")
 
+    edge_irreps = getattr(args, "edge_irreps", None)
+    use_agnostic_product = getattr(args, "use_agnostic_product", False)
+    if (edge_irreps or use_agnostic_product) and args.model not in BACKBONE_OPTION_MODELS:
+        raise NotImplementedError(
+            f"--edge_irreps / --use_agnostic_product are not wired up for {args.model}; "
+            f"supported: {sorted(BACKBONE_OPTION_MODELS)}"
+        )
+    backbone_options = dict(
+        edge_irreps=o3.Irreps(edge_irreps) if edge_irreps else None,
+        use_agnostic_product=use_agnostic_product,
+    )
+
+    local_scale_shift_options = {}
+    if getattr(args, "local_scale_shift", False):
+        if args.model not in LOCAL_SCALE_SHIFT_MODELS:
+            raise NotImplementedError(
+                f"--local_scale_shift is not wired up for {args.model}; "
+                f"supported: {sorted(LOCAL_SCALE_SHIFT_MODELS)}"
+            )
+        if args.mean is None or args.std is None:
+            raise ValueError(
+                "--local_scale_shift needs mean and std, from --statistics_file or "
+                "--mean/--std"
+            )
+        logging.info(
+            "local scale/shift: std %s and mean %s from the statistics file", args.std, args.mean
+        )
+        local_scale_shift_options = dict(
+            atomic_inter_scale=args.std, atomic_inter_shift=args.mean
+        )
+
     if not args.apply_cutoff and args.model not in APPLY_CUTOFF_SUPPORTED_MODELS:
         raise NotImplementedError(
             f"--apply_cutoff False is not wired up for {args.model}; its forward discards "
@@ -151,6 +221,7 @@ def build_model(
             # it unset and get the original MACE basis, so follow the flag here too
             use_reduced_cg=args.use_reduced_cg,
             cueq_config=cueq_config,
+            **backbone_options,
         )
     elif args.model == "ScaleShiftMACE":
         if args.mean is not None and args.std is not None:
@@ -171,6 +242,7 @@ def build_model(
             apply_cutoff=args.apply_cutoff,
             use_reduced_cg=args.use_reduced_cg,  # see the MACE branch above
             cueq_config=cueq_config,
+            **backbone_options,
         )
     elif args.model == "FixedChargeBaselinedMACE":
         formal_charges = ast.literal_eval(args.atomic_formal_charges)
@@ -188,6 +260,7 @@ def build_model(
             use_linear_final_readout=args.use_linear_final_readout,
             pbc_handling=args.electrostatic_pbc_method,
             cueq_config=cueq_config,
+            **backbone_options,
         )
     elif args.model == "LocalSplitCharges":
         formal_charges = ast.literal_eval(args.atomic_formal_charges)
@@ -210,6 +283,8 @@ def build_model(
             use_linear_final_readout=args.use_linear_final_readout,
             pbc_handling=args.electrostatic_pbc_method,
             cueq_config=cueq_config,
+            **backbone_options,
+            **local_scale_shift_options,
         )
     elif args.model == "LocalCharges":
         model = electrostatics.LocalCharges(
@@ -223,6 +298,7 @@ def build_model(
             include_electrostatic_self_interaction=args.include_electrostatic_self_interaction,
             pbc_handling=args.electrostatic_pbc_method,
             cueq_config=cueq_config,
+            **backbone_options,
         )
     elif args.model == "FixedPoint":
         with disable_e3nn_codegen():
@@ -287,7 +363,31 @@ def build_model(
     else:
         raise RuntimeError(f"Unknown model: '{args.model}'")
 
+    n_fixed = _disable_mul_ir_nonlinear_transposes(model, cueq_config)
+    if n_fixed:
+        logging.info(
+            "Disabled the ir_mul<->mul_ir Gate transposes in %d NonLinear interaction "
+            "block(s): cueq runs in mul_ir here",
+            n_fixed,
+        )
+
     return model
+
+
+def build_optimizer(param_options, args) -> torch.optim.Optimizer:
+    if args.optimizer == "adamw":
+        return torch.optim.AdamW(**param_options)
+    if args.optimizer == "schedulefree":
+        try:
+            from schedulefree import adamw_schedulefree
+        except ImportError as exc:
+            raise ImportError(
+                "`schedulefree` is not installed. Please install it via `pip install schedulefree` or `pip install mace-torch[schedulefree]`"
+            ) from exc
+        _param_options = {k: v for k, v in param_options.items() if k != "amsgrad"}
+        _param_options["warmup_steps"] = args.warmup_steps_schedulefree
+        return adamw_schedulefree.AdamWScheduleFree(**_param_options)
+    return torch.optim.Adam(**param_options)
 
 
 def get_param_options(model, args):

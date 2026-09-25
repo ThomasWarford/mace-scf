@@ -492,7 +492,9 @@
       "rmse_mu": 15.253552579990696,
       "rmse_mu_per_atom": 0.947027327308698,
       "rmse_spread_e_per_atom": 0.7636887213105119,
-      "rmse_total_charge": 2.461737137273171
+      "rmse_total_charge": 2.461737137273171,
+      "mae_charges": 0.26820654130396065,
+      "mae_local_dipoles": 0.05538172180832367
     },
     {
       "epoch": 0,
@@ -530,7 +532,9 @@
       "rmse_mu": 15.253552579990696,
       "rmse_mu_per_atom": 0.947027327308698,
       "rmse_spread_e_per_atom": 0.7636887213105119,
-      "rmse_total_charge": 2.461737137273171
+      "rmse_total_charge": 2.461737137273171,
+      "mae_charges": 0.26820654130396065,
+      "mae_local_dipoles": 0.05538172180832367
     },
     {
       "epoch": 1,
@@ -943,7 +947,9 @@
       "rmse_mu": 9.144058899902301,
       "rmse_mu_per_atom": 0.7016748342128982,
       "rmse_spread_e_per_atom": 0.7461969360111558,
-      "rmse_total_charge": 1.4710032293812694
+      "rmse_total_charge": 1.4710032293812694,
+      "mae_charges": 0.2825431472050776,
+      "mae_local_dipoles": 0.04088382053695803
     },
     {
       "epoch": 1,
@@ -981,7 +987,9 @@
       "rmse_mu": 9.144058899902301,
       "rmse_mu_per_atom": 0.7016748342128982,
       "rmse_spread_e_per_atom": 0.7461969360111558,
-      "rmse_total_charge": 1.4710032293812694
+      "rmse_total_charge": 1.4710032293812694,
+      "mae_charges": 0.2825431472050776,
+      "mae_local_dipoles": 0.04088382053695803
     }
   ],
   "model": {

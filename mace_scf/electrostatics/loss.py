@@ -336,6 +336,68 @@ class HuberStress:
         return f"{self.__class__.__name__}(huber_delta={self.huber_delta})"
 
 
+# Huber counterpart of `atomic_multipoles` (weighted_mean_squared_error_dma), per component
+# over q and the atomic dipoles. The weight multiplies the loss, as in the MSE term, rather
+# than both arguments as above: density_coefficients_weight is the 0/1 mask for MatPES's
+# NaN-DDEC6 frames, and a masked frame must contribute nothing. Below huber_delta this is
+# half the MSE term, so a Huber weight of 2w matches an MSE weight of w on small errors.
+class HuberMultipoles:
+    def __init__(self, huber_delta: float = 0.01):
+        self.huber_delta = huber_delta
+
+    def __call__(
+        self, ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+    ) -> torch.Tensor:
+        num_atoms = ref.ptr[1:] - ref.ptr[:-1]
+        configs_weight = torch.repeat_interleave(
+            ref.weight * ref.density_coefficients_weight, num_atoms
+        ).unsqueeze(-1)  # [n_atoms, 1]
+        assert ref["density_coefficients"].shape == pred["density_coefficients"].shape
+        raw_loss = configs_weight * torch.nn.functional.huber_loss(
+            pred["density_coefficients"],
+            ref["density_coefficients"],
+            reduction="none",
+            delta=self.huber_delta,
+        )  # [n_atoms, (max_l+1)**2]
+        return reduce_loss(raw_loss, ddp)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(huber_delta={self.huber_delta})"
+
+
+# The MACE-Polar / OMol `l1l2energyforces` recipe: MAE of the per-atom energy plus the mean
+# Euclidean norm of the per-atom force error, extended with an MAE stress term because
+# MatPES carries stress and Polar does not. Unlike upstream's mean_normed_error_forces,
+# the force term honours ref.weight * ref.forces_weight like every other term here.
+def weighted_mean_absolute_error_energy_per_atom(
+    ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+) -> torch.Tensor:
+    num_atoms = ref.ptr[1:] - ref.ptr[:-1]  # [n_graphs, ]
+    configs_weight = ref.weight * ref.energy_weight  # [n_graphs, ]
+    raw_loss = configs_weight * torch.abs((ref["energy"] - pred["energy"]) / num_atoms)
+    return reduce_loss(raw_loss, ddp)
+
+
+def weighted_mean_normed_error_forces(
+    ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+) -> torch.Tensor:
+    configs_weight = torch.repeat_interleave(
+        ref.weight * ref.forces_weight, ref.ptr[1:] - ref.ptr[:-1]
+    )  # [n_atoms, ]
+    raw_loss = configs_weight * torch.linalg.vector_norm(
+        ref["forces"] - pred["forces"], ord=2, dim=-1
+    )
+    return reduce_loss(raw_loss, ddp)
+
+
+def weighted_mean_absolute_error_stress(
+    ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+) -> torch.Tensor:
+    configs_weight = (ref.weight * ref.stress_weight).view(-1, 1, 1)
+    raw_loss = configs_weight * torch.abs(ref["stress"] - pred["stress"])
+    return reduce_loss(raw_loss, ddp)
+
+
 _LOSS_FUNCTIONS = {
     "energy_per_atom": weighted_mean_squared_error_energy,
     "forces": mean_squared_error_forces,
@@ -360,6 +422,11 @@ _LOSS_FUNCTIONS = {
     "energy_per_atom_huber": HuberEnergyPerAtom,
     "forces_huber": ConditionalHuberForces,
     "stress_huber": HuberStress,
+    "atomic_multipoles_huber": HuberMultipoles,
+    # the MACE-Polar `l1l2energyforces` recipe, plus stress
+    "energy_per_atom_l1": weighted_mean_absolute_error_energy_per_atom,
+    "forces_l2norm": weighted_mean_normed_error_forces,
+    "stress_l1": weighted_mean_absolute_error_stress,
 }
 
 

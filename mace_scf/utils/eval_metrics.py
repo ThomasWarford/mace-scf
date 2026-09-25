@@ -237,8 +237,10 @@ class MaceSCFLoss(Metric):
             self._add_error_stats(aux, "dma", delta_dmas, ref=dmas)
             if delta_dmas.shape[0] > 0:
                 aux["rmse_charges"] = compute_rmse(delta_dmas[:, 0:1])
+                aux["mae_charges"] = compute_mae(delta_dmas[:, 0:1])
             if delta_dmas.shape[1] > 1:
                 aux["rmse_local_dipoles"] = compute_rmse(delta_dmas[:, 1:4])
+                aux["mae_local_dipoles"] = compute_mae(delta_dmas[:, 1:4])
         if self.esps_computed:
             delta_esps = self.convert(self.delta_esps)
             esps = self.convert(self.esps)

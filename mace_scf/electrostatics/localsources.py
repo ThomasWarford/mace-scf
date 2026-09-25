@@ -26,6 +26,7 @@ from mace.modules import (
     LinearReadoutBlock,
     NonLinearReadoutBlock,
     RadialEmbeddingBlock,
+    ScaleShiftBlock,
     ZBLBasis,
 )
 from .bonded_blocks import (
@@ -88,6 +89,8 @@ class _LocalSourceModelBase(torch.nn.Module):
         pair_repulsion: bool = False,
         heads: Optional[List[str]] = None,
         use_linear_final_readout: bool = False,
+        edge_irreps: Optional[o3.Irreps] = None,
+        use_agnostic_product: bool = False,
         cueq_config=None,
     ) -> None:
         self.register_buffer(
@@ -160,6 +163,7 @@ class _LocalSourceModelBase(torch.nn.Module):
             correlation=correlation,
             num_elements=num_elements,
             use_sc=use_sc_first,
+            use_agnostic_product=use_agnostic_product,
             cueq_config=cueq_config,
         )
         self.products = torch.nn.ModuleList([prod])
@@ -176,6 +180,8 @@ class _LocalSourceModelBase(torch.nn.Module):
                 target_irreps=self.interaction_irreps,
                 hidden_irreps=hidden_irreps,
                 avg_num_neighbors=avg_num_neighbors,
+                # layers 2+ only, as upstream MACE: layer 1's input is the scalar embedding
+                edge_irreps=edge_irreps,
                 radial_MLP=radial_MLP,
                 cueq_config=cueq_config,
             )
@@ -187,6 +193,7 @@ class _LocalSourceModelBase(torch.nn.Module):
                     correlation=correlation,
                     num_elements=num_elements,
                     use_sc=True,
+                    use_agnostic_product=use_agnostic_product,
                     cueq_config=cueq_config,
                 )
             )
@@ -295,6 +302,10 @@ class LocalSplitCharges(_LocalSourceModelBase):
         heads: Optional[List[str]] = None,
         compute_polarizability: bool = False,
         use_linear_final_readout: bool = False,
+        atomic_inter_scale: Optional[float] = None,
+        atomic_inter_shift: Optional[float] = None,
+        edge_irreps: Optional[o3.Irreps] = None,
+        use_agnostic_product: bool = False,
         cueq_config=None,
     ):
         super().__init__()
@@ -320,8 +331,19 @@ class LocalSplitCharges(_LocalSourceModelBase):
             pair_repulsion=pair_repulsion,
             heads=heads,
             use_linear_final_readout=use_linear_final_readout,
+            edge_irreps=edge_irreps,
+            use_agnostic_product=use_agnostic_product,
             cueq_config=cueq_config,
         )
+
+        # ScaleShiftMACE's per-atom scale/shift of the local energy (ZBL + readouts), so the
+        # R2 backbone learns the same per-atom target. Created only when asked for, so models
+        # and checkpoints trained without it are unchanged.
+        if atomic_inter_scale is not None or atomic_inter_shift is not None:
+            self.scale_shift = ScaleShiftBlock(
+                scale=1.0 if atomic_inter_scale is None else atomic_inter_scale,
+                shift=0.0 if atomic_inter_shift is None else atomic_inter_shift,
+            )
 
         # embedding of oxidation states
         self.oxidation_state_mixer = oxidation_state_mixers[oxidation_state_mixer](
@@ -474,6 +496,15 @@ class LocalSplitCharges(_LocalSourceModelBase):
         energies = [e0]
         node_energies_list = [node_e0]
 
+        # As ScaleShiftMACE: ZBL and every readout are scaled, the shift is added once per
+        # atom, and E0 and the electrostatics are left alone. The shift is its own
+        # contribution column, appended at the end and only when enabled (see ZBL below).
+        node_scale = torch.ones_like(node_e0)
+        node_shift = torch.zeros_like(node_e0)
+        if hasattr(self, "scale_shift"):
+            node_scale = torch.atleast_1d(self.scale_shift.scale)[node_heads]
+            node_shift = torch.atleast_1d(self.scale_shift.shift)[node_heads]
+
         # ZBL pair repulsion, from the raw lengths rather than the transformed ones, and
         # unscaled: no mace_scf model applies an atomic_inter_scale, so this follows plain
         # mace.modules.MACE rather than ScaleShiftMACE. Appended only when enabled, unlike
@@ -484,6 +515,8 @@ class LocalSplitCharges(_LocalSourceModelBase):
             pair_node_energy = self.pair_repulsion_fn(
                 lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
             )
+            if hasattr(self, "scale_shift"):
+                pair_node_energy = node_scale * pair_node_energy
             energies.append(
                 scatter_sum(
                     src=pair_node_energy,
@@ -512,6 +545,8 @@ class LocalSplitCharges(_LocalSourceModelBase):
             )
             node_energies = readout(node_feats, node_heads)
             node_energies = torch.gather(node_energies, dim=1, index=node_heads.view(-1,1)).squeeze(-1)
+            if hasattr(self, "scale_shift"):
+                node_energies = node_scale * node_energies
             energy = scatter_sum(
                 src=node_energies, index=data["batch"], dim=-1, dim_size=num_graphs
             )  # [n_graphs,]
@@ -537,6 +572,14 @@ class LocalSplitCharges(_LocalSourceModelBase):
             # polarizabilities
             if hasattr(self, "polarizability_readouts"):
                 polarizabilities.append(self.polarizability_readouts[layer_i](node_feats))
+
+        if hasattr(self, "scale_shift"):
+            energies.append(
+                scatter_sum(
+                    src=node_shift, index=data["batch"], dim=-1, dim_size=num_graphs
+                )
+            )
+            node_energies_list.append(node_shift)
 
         # Sum over energy contributions
         contributions = torch.stack(energies, dim=-1)
@@ -650,6 +693,8 @@ class LocalCharges(_LocalSourceModelBase):
         include_electrostatic_self_interaction: bool = False,
         pbc_handling: str = "mixed_periodic",
         heads: Optional[List[str]] = None,
+        edge_irreps: Optional[o3.Irreps] = None,
+        use_agnostic_product: bool = False,
         cueq_config=None,
     ):
         super().__init__()
@@ -674,6 +719,8 @@ class LocalCharges(_LocalSourceModelBase):
             distance_transform=distance_transform,
             pair_repulsion=pair_repulsion,
             heads=heads,
+            edge_irreps=edge_irreps,
+            use_agnostic_product=use_agnostic_product,
             cueq_config=cueq_config,
         )
 
@@ -918,6 +965,8 @@ class FixedChargeBaselinedMACE(_LocalSourceModelBase):
         pbc_handling: str = "mixed_periodic",
         heads: Optional[List[str]] = None,
         use_linear_final_readout: bool = False,
+        edge_irreps: Optional[o3.Irreps] = None,
+        use_agnostic_product: bool = False,
         cueq_config=None,
     ):
         super().__init__()
@@ -943,6 +992,8 @@ class FixedChargeBaselinedMACE(_LocalSourceModelBase):
             pair_repulsion=pair_repulsion,
             heads=heads,
             use_linear_final_readout=use_linear_final_readout,
+            edge_irreps=edge_irreps,
+            use_agnostic_product=use_agnostic_product,
             cueq_config=cueq_config,
         )
 

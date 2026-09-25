@@ -264,22 +264,8 @@ def main() -> None:
 
     # Optimizer
     param_options = mace_scf.utils.run_train_utils.get_param_options(model, args)
-    optimizer: torch.optim.Optimizer
-    if args.optimizer == "adamw":
-        optimizer = torch.optim.AdamW(**param_options)
-    elif args.optimizer == "schedulefree":
-        try:
-            from schedulefree import adamw_schedulefree
-        except ImportError as exc:
-            raise ImportError(
-                "`schedulefree` is not installed. Please install it via `pip install schedulefree` or `pip install mace-torch[schedulefree]`"
-            ) from exc
-        _param_options = {k: v for k, v in param_options.items() if (k != "amsgrad" and k != "betas")}
-        _param_options["betas"] = (param_options["betas"][0], param_options["betas"][1])
-        optimizer = adamw_schedulefree.AdamWScheduleFree(**_param_options)
-    else:
-        optimizer = torch.optim.Adam(**param_options)
-    
+    optimizer = mace_scf.utils.run_train_utils.build_optimizer(param_options, args)
+
     lr_scheduler = build_lr_scheduler(optimizer, args)
 
     assert not "batch_positions" in dict(model.named_parameters()), "batch_positions should not be a parameter of the model"
