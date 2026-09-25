@@ -34,6 +34,11 @@ NEW_TABLE_TYPES = [
     "DensityCoefficientsRMSE", 
     "DensityEnergyRMSE", 
     "PerAtomRMSE",
+    # Has render branches below (the header at ~60, the rows at ~187) but was never listed
+    # here, so create_error_table's assert rejected it. Only reachable once a fit runs its
+    # schedule to completion, which is why it survived until job 58794209 finished 90 epochs
+    # and then died on the final table with every epoch already trained.
+    "PerAtomMAERMSEstress",
     "DipoleRMSE",
     "DensityDipoleRMSE",
     "EnergyDensityDipoleRMSE",
