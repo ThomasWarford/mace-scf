@@ -23,6 +23,8 @@ CUEQ_SUPPORTED_MODELS = frozenset(
         "LocalSplitCharges",
         "LocalCharges",
         "FixedChargeBaselinedMACE",
+        # backbone only: the SCF field blocks stay e3nn and read the mul_ir features as is
+        "FixedPoint",
     }
 )
 
@@ -325,6 +327,7 @@ def build_model(
                 atom_density_scaling=args.atom_density_scaling,
                 pbc_handling=args.electrostatic_pbc_method,
                 fermi_level_offset=args.fermi_level_offset,
+                cueq_config=cueq_config,
             )
         fixedpoint_initial_charge_head_scale = getattr(
             args,

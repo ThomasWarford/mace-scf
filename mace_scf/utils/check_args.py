@@ -39,6 +39,13 @@ def check_config_conflicts(args: argparse.Namespace):
                     "fixed-point mode 'implicit' is not tested with "
                     "--distributed."
                 )
+            # not attempted: the dense linearization is fragile enough under e3nn alone
+            mode = train_stage["fixed_point_training_options"].mode
+            if args.enable_cueq and mode == "linearize_solve":
+                raise NotImplementedError(
+                    "fixed-point mode 'linearize_solve' is not supported with --enable_cueq; "
+                    "use 'direct', 'unroll_scf' or 'implicit'."
+                )
     else:
         for train_stage in args.train_schedule:
             assert "scf_training_options" not in train_stage, f"scf_training_options should not be set for model={args.model}"

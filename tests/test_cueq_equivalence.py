@@ -12,7 +12,7 @@ double-backward paths are exercised in float64.
 
 import importlib.util
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Tuple
 
 import numpy as np
@@ -23,10 +23,19 @@ import mace.cli.convert_e3nn_cueq as e3nn_cueq
 import mace.tools
 import mace_scf.utils
 from mace_scf.utils.check_args import check_config_conflicts
-from mace_scf.utils.run_train_utils import build_model, get_formal_charges
+from mace_scf.utils.model_training_wrappers import make_model_wrapper
+from mace_scf.utils.run_train_utils import (
+    build_model,
+    get_atom_density_scaling,
+    get_fermi_level_offset,
+    get_field_feature_norms,
+    get_formal_charges,
+)
 from tests.utils import dataset_from_atoms, seed_torch, water_configs
 
 CUET_AVAILABLE = importlib.util.find_spec("cuequivariance_torch") is not None
+TORCHOPT_AVAILABLE = importlib.util.find_spec("torchopt") is not None
+Z_TABLE = mace.tools.get_atomic_number_table_from_zs([1, 8])  # water_configs()
 ATOL = float(os.environ.get("CUEQ_ATOL", "1e-9"))
 RTOL = float(os.environ.get("CUEQ_RTOL", "1e-7"))
 
@@ -69,11 +78,13 @@ class ModelCase:
     model: str
     extra_argv: Tuple[str, ...] = ()
     outputs: Tuple[str, ...] = ("energy", "forces")
-    name: str = ""  # test id; defaults to the model
+    name: str = ""  # test id; defaults to the model and fixed-point mode
+    # FixedPoint only: the training mode its stage, and so its FixedPointWrapper, runs in
+    fixed_point_mode: str = ""
 
     @property
     def id(self) -> str:
-        return self.name or self.model
+        return self.name or "-".join(filter(None, (self.model, self.fixed_point_mode)))
 
 
 ELECTROSTATIC_ARGV = (
@@ -84,14 +95,26 @@ ELECTROSTATIC_ARGV = (
 )
 # water is H/O, so every charged model needs formal charges for both
 FORMAL_CHARGES_ARGV = ("--atomic_formal_charges", "{1: 1.0, 8: -2.0}")
-POLAR_BACKBONE_ARGV = (
+NONLINEAR_ZBL_AGNESI_ARGV = (
     "--interaction_first", "RealAgnosticResidualNonLinearInteractionBlock",
     "--interaction", "RealAgnosticResidualNonLinearInteractionBlock",
+    "--pair_repulsion",
+    "--distance_transform", "Agnesi",
+)
+POLAR_BACKBONE_ARGV = NONLINEAR_ZBL_AGNESI_ARGV + (
     "--hidden_irreps", "8x0e + 8x1o",
     "--edge_irreps", "4x0e + 4x1o",
     "--use_agnostic_product", "True",
-    "--pair_repulsion",
-    "--distance_transform", "Agnesi",
+)
+
+# FixedPoint has no forward of its own; the parity tests drive it through FixedPointWrapper
+# in each supported mode. linearize_solve is refused under --enable_cueq (check_args).
+FIXED_POINT_OUTPUTS = ("energy", "forces", "density_coefficients", "dipole", "fermi_level")
+# run_train scans the data for these when unset; pin them (non-trivially) instead. Two
+# field widths and field_feature_max_l = atomic_multipoles_max_l = 1 make four norms.
+FIXED_POINT_ARGV = ELECTROSTATIC_ARGV + (
+    "--fermi_level_offset", "-0.5",
+    "--field_feature_norms", "[0.8, 1.2, 0.9, 1.1]",
 )
 
 CASES = [
@@ -122,17 +145,57 @@ CASES = [
         ("energy", "forces", "stress", "density_coefficients", "dipole"),
         name="LocalSplitCharges-polar-backbone",
     ),
+    *[
+        ModelCase("FixedPoint", FIXED_POINT_ARGV, FIXED_POINT_OUTPUTS, fixed_point_mode=mode)
+        for mode in ("direct", "unroll_scf", "implicit")
+    ],
+    # NonLinear blocks, so the mul_ir Gate-transpose fix is exercised (FixedPoint has no
+    # --edge_irreps / --use_agnostic_product). The backbone runs once, before the SCF, so
+    # "direct" covers it; the SCF modes are covered above.
+    ModelCase(
+        "FixedPoint",
+        FIXED_POINT_ARGV + NONLINEAR_ZBL_AGNESI_ARGV,
+        FIXED_POINT_OUTPUTS,
+        name="FixedPoint-polar-backbone",
+        fixed_point_mode="direct",
+    ),
 ]
 CASE_IDS = [case.id for case in CASES]
+# the configuration tests only need each distinct model once; FixedPoint's mode is a
+# training option and does not change what build_model returns
+BUILD_CASES = [c for c in CASES if c.fixed_point_mode in ("", "direct")]
+BUILD_CASE_IDS = [case.id for case in BUILD_CASES]
+
+
+def _schedule(fixed_point_mode: str) -> str:
+    if not fixed_point_mode:
+        return SCHEDULE
+    options = {"mode": fixed_point_mode}
+    if fixed_point_mode != "direct":
+        options["scf"] = {
+            "num_scf_steps": 40,
+            "scf_tolerance": 1e-8,
+            "mixing_parameter": 0.5,
+            "constant_charge": True,
+            "initial_density": "from_data",
+            "initial_fermi_level": "from_data",
+        }
+    return (
+        '{0: {"name": "stage1", "start": 0, "end": 1,'
+        ' "loss": {"energy_per_atom": 1.0, "forces": 10.0}, "lr": 0.01,'
+        f' "fixed_point_training_options": {options!r}}}}}'
+    )
 
 
 def _args(case: ModelCase, enable_cueq: bool, device: str):
     """Parse a minimal but real argv, as run_train would see it."""
+    if case.fixed_point_mode == "implicit" and not TORCHOPT_AVAILABLE:
+        pytest.skip("implicit mode needs torchopt")  # even to parse the schedule
     argv = [
         "--name", "cueq_test",
         "--train_file", "unused.xyz",  # only the suffix is checked; never read here
         "--heads", HEADS,
-        "--train_schedule", SCHEDULE,
+        "--train_schedule", _schedule(case.fixed_point_mode),
         "--error_table", "PerAtomRMSE",
         "--model", case.model,
         "--hidden_irreps", "4x0e + 4x1o",
@@ -151,7 +214,37 @@ def _args(case: ModelCase, enable_cueq: bool, device: str):
     ]
     args = mace_scf.utils.extended_arg_parser().parse_args(argv)
     check_config_conflicts(args)
+    # what run_train resolves next from the data; every value here is explicit, so the
+    # (absent) loader is never read
+    args.fermi_level_offset = get_fermi_level_offset(None, args, device)
+    args.field_feature_norms = get_field_feature_norms(
+        None, args, device, fermi_level_offset=args.fermi_level_offset
+    )
+    args.atom_density_scaling = get_atom_density_scaling(None, args, device, Z_TABLE)
     return args
+
+
+def _build(args):
+    return build_model(
+        args,
+        Z_TABLE,
+        np.zeros(len(Z_TABLE)),
+        get_formal_charges(
+            args.model, args.formal_charges_from_data, args.atomic_formal_charges, Z_TABLE
+        ),
+        train_loader=None,
+    )
+
+
+def _run(model, case: ModelCase, args, batch, training: bool):
+    """Forward through the wrapper run_train puts around the model for this stage."""
+    wrapper = make_model_wrapper(
+        model,
+        optimizer=torch.optim.SGD(model.parameters(), lr=0.0),
+        output_args={"forces": True, "virials": False, "stress": "stress" in case.outputs},
+        fixed_point_training_options=args.train_schedule[0].get("fixed_point_training_options"),
+    )
+    return wrapper(batch.to_dict(), training=training)
 
 
 def _cueq_config_of(model):
@@ -241,36 +334,53 @@ def _build_pair(case: ModelCase, device: str):
     """An e3nn model and its cueq twin holding identical weights."""
     torch.set_default_dtype(torch.float64)
     atoms = water_configs()
-    z_table = mace.tools.get_atomic_number_table_from_zs(
-        sorted(set(atoms[0].get_atomic_numbers()))
-    )
-    atomic_energies = np.zeros(len(z_table))
     args_e3nn = _args(case, False, device)
-    charges = get_formal_charges(
-        case.model, args_e3nn.formal_charges_from_data, args_e3nn.atomic_formal_charges, z_table
-    )
 
     seed_torch(0)
-    e3nn_model = build_model(args_e3nn, z_table, atomic_energies, charges, train_loader=None)
+    e3nn_model = _build(args_e3nn)
     # the weight transfer and contraction_grad both assume the original MACE CG basis
     assert not getattr(e3nn_model, "use_reduced_cg", False), (
         f"{case.model} built the reduced CG basis; the parity transfer would need "
         "symmetric_contraction_proj on both the weights and the gradients"
     )
     try:
-        cueq_model = build_model(
-            _args(case, True, device), z_table, atomic_energies, charges, train_loader=None
-        )
+        cueq_model = _build(_args(case, True, device))
     except NotImplementedError as exc:
         pytest.skip(f"{case.model} has no cuequivariance support yet: {exc}")
 
     e3nn_model, cueq_model = e3nn_model.to(device), cueq_model.to(device)
     transfer_e3nn_to_cueq(e3nn_model, cueq_model, correlation=args_e3nn.correlation)
-    return e3nn_model, cueq_model, atoms
+    return e3nn_model, cueq_model, args_e3nn, atoms
 
 
-def _batch(atoms, device: str, n: int = 2):
-    dataset = dataset_from_atoms(atoms[:n], cutoff=3.0, atomic_multipoles_max_l=1)
+def _with_scf_inputs(atoms):
+    """Copies carrying the reference density, Fermi level and field FixedPoint reads.
+
+    Left unset these all default to zero, which would make "direct" compare the field
+    update at a trivial input.
+    """
+    rng = np.random.default_rng(0)
+    out = []
+    for at in atoms:
+        at = at.copy()
+        at.arrays["REF_multipoles"] = 0.1 * rng.standard_normal((len(at), 4))
+        at.info["REF_fermi_level"] = -0.7
+        at.info["REF_external_field"] = np.array([0.02, -0.01, 0.03])
+        out.append(at)
+    return out
+
+
+def _batch(atoms, device: str, n: int = 2, scf_inputs: bool = False):
+    atoms = atoms[:n]
+    kwargs = {}
+    if scf_inputs:
+        atoms = _with_scf_inputs(atoms)
+        kwargs = dict(
+            atomic_multipoles_key="REF_multipoles",
+            fermi_level_key="REF_fermi_level",
+            external_field_key="REF_external_field",
+        )
+    dataset = dataset_from_atoms(atoms, cutoff=3.0, atomic_multipoles_max_l=1, **kwargs)
     loader = mace.tools.torch_geometric.dataloader.DataLoader(
         dataset=dataset, batch_size=n, shuffle=False
     )
@@ -279,20 +389,11 @@ def _batch(atoms, device: str, n: int = 2):
 
 @pytest.mark.cueq
 @requires_cuet
-@pytest.mark.parametrize("case", CASES, ids=CASE_IDS)
+@pytest.mark.parametrize("case", BUILD_CASES, ids=BUILD_CASE_IDS)
 def test_enable_cueq_is_never_silently_ignored(case):
     """--enable_cueq must either build cueq modules or refuse; never a plain e3nn model."""
     try:
-        model = build_model(
-            _args(case, True, "cpu"),
-            mace.tools.get_atomic_number_table_from_zs([1, 8]),
-            np.zeros(2),
-            get_formal_charges(
-                case.model, False, _args(case, True, "cpu").atomic_formal_charges,
-                mace.tools.get_atomic_number_table_from_zs([1, 8]),
-            ),
-            train_loader=None,
-        )
+        model = _build(_args(case, True, "cpu"))
     except NotImplementedError:
         pytest.skip(f"{case.model} has no cuequivariance support yet")
     assert any(
@@ -302,7 +403,7 @@ def test_enable_cueq_is_never_silently_ignored(case):
 
 @pytest.mark.cueq
 @requires_cuet
-@pytest.mark.parametrize("case", CASES, ids=CASE_IDS)
+@pytest.mark.parametrize("case", BUILD_CASES, ids=BUILD_CASE_IDS)
 def test_cueq_config_is_safe(case):
     """Guard the two settings that silently corrupt this model family.
 
@@ -313,16 +414,7 @@ def test_cueq_config_is_safe(case):
     which assume e3nn's mul_ir ordering.
     """
     try:
-        model = build_model(
-            _args(case, True, "cpu"),
-            mace.tools.get_atomic_number_table_from_zs([1, 8]),
-            np.zeros(2),
-            get_formal_charges(
-                case.model, False, _args(case, True, "cpu").atomic_formal_charges,
-                mace.tools.get_atomic_number_table_from_zs([1, 8]),
-            ),
-            train_loader=None,
-        )
+        model = _build(_args(case, True, "cpu"))
     except NotImplementedError:
         pytest.skip(f"{case.model} has no cuequivariance support yet")
     cfg = _cueq_config_of(model)
@@ -336,12 +428,16 @@ def test_cueq_config_is_safe(case):
 @requires_gpu
 @pytest.mark.parametrize("case", CASES, ids=CASE_IDS)
 def test_forward_matches_e3nn(case):
-    e3nn_model, cueq_model, atoms = _build_pair(case, "cuda")
-    batch = _batch(atoms, "cuda")
+    e3nn_model, cueq_model, args, atoms = _build_pair(case, "cuda")
+    batch = _batch(atoms, "cuda", scf_inputs=bool(case.fixed_point_mode))
     e3nn_model.eval()
     cueq_model.eval()
-    reference = e3nn_model(batch.to_dict(), training=False, compute_force=True, compute_stress=True)
-    actual = cueq_model(batch.to_dict(), training=False, compute_force=True, compute_stress=True)
+    reference = _run(e3nn_model, case, args, batch, training=False)
+    actual = _run(cueq_model, case, args, batch, training=False)
+    if case.fixed_point_mode not in ("", "direct"):
+        # a diverging SCF matches only in noise; the fixture must converge to mean anything
+        history = reference["charges_history"]
+        assert (history[..., -1] - history[..., -2]).abs().max() < 1e-6, "e3nn SCF did not converge"
     for key in case.outputs:
         assert reference.get(key) is not None, f"{case.model}: e3nn produced no {key}"
         torch.testing.assert_close(
@@ -354,14 +450,14 @@ def test_forward_matches_e3nn(case):
 @requires_gpu
 @pytest.mark.parametrize("case", CASES, ids=CASE_IDS)
 def test_gradients_match_e3nn(case):
-    e3nn_model, cueq_model, atoms = _build_pair(case, "cuda")
-    batch = _batch(atoms, "cuda")
+    e3nn_model, cueq_model, args, atoms = _build_pair(case, "cuda")
+    batch = _batch(atoms, "cuda", scf_inputs=bool(case.fixed_point_mode))
 
     def grads(model):
         for param in model.parameters():
             param.grad = None
         model.train()
-        out = model(batch.to_dict(), training=True, compute_force=True, compute_stress=True)
+        out = _run(model, case, args, batch, training=True)
         loss = out["energy"].sum() + out["forces"].pow(2).sum()
         if out.get("stress") is not None:
             loss = loss + out["stress"].pow(2).sum()
@@ -407,7 +503,7 @@ def test_nonlinear_gate_transposes_break_parity_under_mul_ir():
     from mace.modules.wrapper_ops import TransposeIrrepsLayoutWrapper
 
     case = next(c for c in CASES if c.id == "MACE-polar-backbone")
-    e3nn_model, cueq_model, atoms = _build_pair(case, "cuda")
+    e3nn_model, cueq_model, _, atoms = _build_pair(case, "cuda")
     restored = 0
     for block in cueq_model.modules():
         if isinstance(block, RealAgnosticResidualNonLinearInteractionBlock):
@@ -429,3 +525,11 @@ def test_nonlinear_gate_transposes_break_parity_under_mul_ir():
     reference = e3nn_model(batch.to_dict(), training=False, compute_force=True)
     actual = cueq_model(batch.to_dict(), training=False, compute_force=True)
     assert not torch.allclose(actual["forces"], reference["forces"], atol=1e-6, rtol=0)
+
+
+@pytest.mark.cueq
+def test_fixed_point_linearize_solve_is_refused_under_cueq():
+    case = replace(next(c for c in CASES if c.model == "FixedPoint"), fixed_point_mode="linearize_solve")
+    _args(case, False, "cpu")  # fine without cueq
+    with pytest.raises(NotImplementedError, match="linearize_solve"):
+        _args(case, True, "cpu")

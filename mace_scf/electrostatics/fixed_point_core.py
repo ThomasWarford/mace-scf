@@ -82,6 +82,7 @@ class FixedPointCore(torch.nn.Module):
         fixedpoint_update_config: Dict[str, Any],
         field_readout_config: Dict[str, Any],
         use_linear_local_charges: bool = False,
+        cueq_config=None,
     ):
         super().__init__()
         self.register_buffer(
@@ -141,7 +142,9 @@ class FixedPointCore(torch.nn.Module):
             [(hidden_irreps.count(o3.Irrep(0, 1)), (0, 1))]
         )
         self.node_embedding = LinearNodeEmbeddingBlock(
-            irreps_in=node_attr_irreps, irreps_out=node_feats_irreps
+            irreps_in=node_attr_irreps,
+            irreps_out=node_feats_irreps,
+            cueq_config=cueq_config,
         )
         self.radial_embedding = RadialEmbeddingBlock(
             r_max=r_max,
@@ -177,6 +180,7 @@ class FixedPointCore(torch.nn.Module):
             hidden_irreps=hidden_irreps,
             avg_num_neighbors=avg_num_neighbors,
             radial_MLP=radial_MLP,
+            cueq_config=cueq_config,
         )
         self.interactions = torch.nn.ModuleList([inter])
 
@@ -191,12 +195,15 @@ class FixedPointCore(torch.nn.Module):
             correlation=correlation,
             num_elements=num_elements,
             use_sc=use_sc_first,
+            cueq_config=cueq_config,
         )
         self.products = torch.nn.ModuleList([prod])
 
         self.readouts = torch.nn.ModuleList()
         self.readouts.append(
-            LinearReadoutBlock(hidden_irreps, o3.Irreps(f"{len(heads)}x0e"))
+            LinearReadoutBlock(
+                hidden_irreps, o3.Irreps(f"{len(heads)}x0e"), cueq_config=cueq_config
+            )
         )
 
         # Electrostatic field features
@@ -253,6 +260,7 @@ class FixedPointCore(torch.nn.Module):
                 hidden_irreps=hidden_irreps_out,
                 avg_num_neighbors=avg_num_neighbors,
                 radial_MLP=radial_MLP,
+                cueq_config=cueq_config,
             )
             self.interactions.append(inter)
             prod = EquivariantProductBasisBlock(
@@ -261,6 +269,7 @@ class FixedPointCore(torch.nn.Module):
                 correlation=correlation,
                 num_elements=num_elements,
                 use_sc=True,
+                cueq_config=cueq_config,
             )
             self.products.append(prod)
             if i == num_interactions - 2:
@@ -271,12 +280,15 @@ class FixedPointCore(torch.nn.Module):
                         gate,
                         o3.Irreps(f"{len(heads)}x0e"),
                         len(heads),
+                        cueq_config=cueq_config,
                     )
                 )
             else:
                 self.readouts.append(
                     LinearReadoutBlock(
-                        hidden_irreps, o3.Irreps(f"{len(heads)}x0e")
+                        hidden_irreps,
+                        o3.Irreps(f"{len(heads)}x0e"),
+                        cueq_config=cueq_config,
                     )
                 )
             if use_linear_local_charges:
