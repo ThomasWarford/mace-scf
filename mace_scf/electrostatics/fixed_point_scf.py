@@ -343,7 +343,6 @@ def converge_constant_charge(
         # Fermi level Newton update
         small_gradients = torch.abs(total_responses) < 1e-6
         delta_Q = target_charge - _total_charge
-        delta_Q[small_gradients] = 1.0
 
         delta_mu = torch.divide(delta_Q, total_responses)
         delta_mu[small_gradients] = -torch.sign(delta_Q[small_gradients])
