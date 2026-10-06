@@ -1,0 +1,59 @@
+# Smoke test of vanilla.yaml for CUEQ=1: direct 2 epochs then unroll 1 (linearize_solve is refused
+# under --enable_cueq). direct must end
+# after epoch 0: run_train.py skips a stage whose end <= the starting epoch (0 on a fresh run).
+# See ../train.sh.
+#
+# direct: R3/LSC stage-1 losses minus stress (FixedPoint returns none) with the multipole term the
+# LSC scan chose (hub_5), plus the docs' total-charge term (one update from the reference density
+# is not neutral by construction). SCF stages: the LSC stage-2 balance (energy 1 -> 100,
+# forces 10 -> 20, lr / 10), constant charge (all MatPES frames are neutral), started from the
+# reference density and Fermi level. Each stage resets the schedule-free optimizer (see
+# ../../fit_matpes_lsc_r2_full/configs/hub_5_s2.yaml for why). No dipole loss: PBC dipoles are
+# origin-dependent. No Fermi-level loss in this first fit.
+#
+# The fermi_level key is inert for .h5 input (FERMI in train.sh picks the preprocessed set), but
+# check_and_fix_heads still requires the heads block.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 1
+    loss:
+      energy_per_atom_huber: {weight: 1.0, huber_delta: 0.01}
+      forces_huber: {weight: 10.0, huber_delta: 0.01}
+      atomic_multipoles_huber: {weight: 5.0, huber_delta: 0.01}
+      total_charge_per_atom: 1000.0
+    lr: 0.01
+    fixed_point_training_options:
+      mode: direct
+  1:
+    name: unroll
+    start: 2
+    end: 2
+    reset_optimizer: True
+    loss:
+      energy_per_atom_huber: {weight: 100.0, huber_delta: 0.01}
+      forces_huber: {weight: 20.0, huber_delta: 0.01}
+      atomic_multipoles_huber: {weight: 5.0, huber_delta: 0.01}
+      total_charge_per_atom: 1000.0
+    lr: 0.001
+    fixed_point_training_options:
+      mode: unroll_scf
+      scf:
+        num_scf_steps: 10
+        mixing_parameter: 0.3
+        constant_charge: true
+        initial_density: from_data
+        initial_fermi_level: from_data
+        use_autograd_forces: true

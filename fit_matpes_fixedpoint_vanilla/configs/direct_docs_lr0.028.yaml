@@ -1,0 +1,28 @@
+# Step 3: 50-epoch direct stage on full MatPES-PBE, the docs' example direct-stage losses (all MSE;
+# dipole_per_atom dropped: no dipole in the h5), lr 0.028 (sqrt(BS) scaling of the overfit runs' 0.01 at B=2 -> 0.028 at B=16; sweep 0.02/0.028/0.04). Run with
+# CUEQ=1 BATCH=16. Overfit tests (overfit_docs.yaml) showed these weights fit the DDEC density,
+# unlike the Huber multipole + total-charge mix of vanilla.yaml. See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 49
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom: 10.0
+      forces: 100.0
+    lr: 0.028
+    fixed_point_training_options:
+      mode: direct

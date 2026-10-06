@@ -1,0 +1,29 @@
+# Overfit test: direct only, open-ended, on one small shard used as both train and "valid" set
+# (TRAIN_DIR=VALID_DIR), to see whether direct mode can fit the density and energies at all.
+# Losses: the docs' example direct stage (fixed_point_scf/training), MSE throughout, minus
+# dipole_per_atom (1e6): the h5 data has no dipole, so it would default to a zero target with
+# weight 1 on the origin-dependent PBC cell dipole. See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 999
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom: 10.0
+      forces: 100.0
+    lr: 0.01
+    fixed_point_training_options:
+      mode: direct

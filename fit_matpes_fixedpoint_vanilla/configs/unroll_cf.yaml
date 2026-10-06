@@ -1,0 +1,52 @@
+# Stage 2 from the lr0.028 direct model (direct_docs_lr0.028.yaml, whose stage 1 is repeated here
+# unchanged and skipped: seed this run's checkpoint dir with that run's direct_epoch-49 checkpoint,
+# renamed to this run's tag). Unroll stage: the docs' example unroll losses (all MSE; dipole_per_atom
+# dropped, no dipole in the h5), lr 0.001 sqrt(BS)-scaled to B=16 -> 0.0028, 10 steps, mixing 0.3,
+# from the reference density and Fermi level, fresh optimizer and EMA. Run with CUEQ=1 BATCH=16.
+# Constant Fermi level (mu fixed at the reference): no mu search, so no runaway; neutrality
+# is taught by total_charge_per_atom. See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 49
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom: 10.0
+      forces: 100.0
+    lr: 0.028
+    fixed_point_training_options:
+      mode: direct
+  1:
+    name: unroll
+    start: 50
+    end: 54
+    reset_optimizer: True
+    reset_ema: True
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom: 1000.0
+      forces: 100.0
+    lr: 0.0028
+    fixed_point_training_options:
+      mode: unroll_scf
+      scf:
+        num_scf_steps: 10
+        mixing_parameter: 0.3
+        constant_charge: false
+        initial_density: from_data
+        initial_fermi_level: from_data
+        use_autograd_forces: true
