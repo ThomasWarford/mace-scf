@@ -543,6 +543,14 @@ class OneBodyVariableUpdate(FieldUpdateBlock):
         local_charges: torch.Tensor,
         total_charges: torch.Tensor,
     ) -> torch.Tensor:
+        return self._multipoles(node_attrs, node_feats, potential_features)
+
+    def _multipoles(
+        self,
+        node_attrs: torch.Tensor,
+        node_feats: torch.Tensor,
+        potential_features: torch.Tensor,
+    ) -> torch.Tensor:
         mixed_feats = self.potential_embedding(
             potential_features,
             node_feats,
@@ -553,6 +561,116 @@ class OneBodyVariableUpdate(FieldUpdateBlock):
         new_feats = self.tp_out(node_feats, nonlin_feats)
         multipoles = self.element_select_out(new_feats, node_attrs)
         return multipoles
+
+
+def _inverse_softplus(s: float) -> float:
+    return s + float(np.log(-np.expm1(-s)))
+
+
+def _logit(s: float) -> float:
+    return float(np.log(s / (1.0 - s)))
+
+
+class TwoSigmoid(torch.nn.Module):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return 2.0 * torch.sigmoid(x)
+
+
+# name -> (activation module, its inverse used for initialisation, open range of S)
+SOFTNESS_ACTIVATIONS = {
+    "softplus": (torch.nn.Softplus, _inverse_softplus, (0.0, float("inf"))),
+    "sigmoid": (torch.nn.Sigmoid, _logit, (0.0, 1.0)),
+    "2sigmoid": (TwoSigmoid, lambda s: _logit(s / 2.0), (0.0, 2.0)),
+}
+
+
+@compile_mode("script")
+class OneBodyMonotoneChargeUpdate(OneBodyVariableUpdate):
+    """OneBodyVariableUpdate whose monopole cannot increase with the l=0 potential.
+
+    The Fermi level reaches the update only through the l=0 field features v_ik (one per
+    GTO width k), together with the l=0 part of the Hartree potential. In
+    OneBodyVariableUpdate the monopole is affine in them with a slope of arbitrary sign.
+    Here it is
+
+        q_i = a_i - sum_k S_ik v_ik,    S_ik = g(W h_i + b_{Z_i,k}) >= 0,
+
+    where a_i is the parent block's monopole evaluated with the l=0 features zeroed, so
+    dq_i/dmu <= 0 always. g is softplus (S unbounded), sigmoid (S < 1) or 2sigmoid
+    (S < 2). Dipoles and higher multipoles are the parent block's, unchanged.
+
+    The field features exclude each atom's own Coulomb potential by default (field_si
+    off), so nothing in the features resists an atom's own charge growing. The SCF then
+    only converges while S stays below roughly 1 / (own-site coefficient of the
+    normalised features), as for OneBodyVariableUpdate; hence the small softness_init.
+    """
+
+    def _setup(
+        self,
+        softness_activation: str = "softplus",
+        softness_init: float = 0.05,
+        **kwargs,
+    ) -> None:
+        super()._setup(**kwargs)
+        if softness_activation not in SOFTNESS_ACTIVATIONS:
+            raise ValueError(
+                f"softness_activation must be one of {sorted(SOFTNESS_ACTIVATIONS)}, "
+                f"got {softness_activation!r}"
+            )
+        activation_cls, inverse, (low, high) = SOFTNESS_ACTIVATIONS[softness_activation]
+        if not low < softness_init < high:
+            raise ValueError(
+                f"softness_init={softness_init} is outside the range ({low}, {high}) "
+                f"of softness_activation={softness_activation!r}"
+            )
+        self.softness_activation = activation_cls()
+
+        scalar = o3.Irrep(0, 1)
+        assert self.potential_irreps[0].ir == scalar and all(
+            mul_ir.ir != scalar for mul_ir in self.potential_irreps[1:]
+        ), f"expected the l=0 potential features first, got {self.potential_irreps}"
+        assert (
+            self.charges_irreps[0].mul == 1 and self.charges_irreps[0].ir == scalar
+        ), f"expected the monopole first, got {self.charges_irreps}"
+        self.num_scalar_potentials = self.potential_irreps[0].mul
+
+        self.softness_linear = o3.Linear(
+            self.node_feats_irreps, o3.Irreps(f"{self.num_scalar_potentials}x0e")
+        )
+        with torch.no_grad():
+            self.softness_linear.weight.zero_()
+        self.softness_bias = torch.nn.Parameter(
+            torch.full(
+                (self.node_attrs_irreps.dim, self.num_scalar_potentials),
+                inverse(softness_init),
+                dtype=torch.get_default_dtype(),
+            )
+        )
+
+    def softness(self, node_attrs: torch.Tensor, node_feats: torch.Tensor) -> torch.Tensor:
+        return self.softness_activation(
+            self.softness_linear(node_feats) + node_attrs @ self.softness_bias
+        )
+
+    def forward(
+        self,
+        node_attrs: torch.Tensor,
+        node_feats: torch.Tensor,
+        edge_attrs: torch.Tensor,
+        edge_feats: torch.Tensor,
+        edge_index: torch.Tensor,
+        potential_features: torch.Tensor,
+        local_charges: torch.Tensor,
+        total_charges: torch.Tensor,
+    ) -> torch.Tensor:
+        n0 = self.num_scalar_potentials
+        full = self._multipoles(node_attrs, node_feats, potential_features)
+        scalar_potentials = potential_features[:, :n0]
+        without_scalar_potentials = torch.nn.functional.pad(potential_features[:, n0:], (n0, 0))
+        a = self._multipoles(node_attrs, node_feats, without_scalar_potentials)[:, :1]
+        softness = self.softness(node_attrs, node_feats)
+        monopole = a - torch.sum(softness * scalar_potentials, dim=-1, keepdim=True)
+        return torch.cat([monopole, full[:, 1:]], dim=-1)
 
 
 @compile_mode("script")

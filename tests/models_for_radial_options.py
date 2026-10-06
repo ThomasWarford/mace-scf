@@ -154,44 +154,47 @@ def build_fixed_point_core(seed: int = 4, num_polynomial_cutoff: int = 5, **over
     interaction_cls = mace.modules.interaction_classes[
         "RealAgnosticResidualInteractionBlock"
     ]
+    # Overrides replace the defaults below (e.g. field_feature_widths or
+    # fixedpoint_update_config) rather than being passed alongside them.
+    kwargs = dict(
+        r_max=3.0,
+        num_bessel=8,
+        num_polynomial_cutoff=num_polynomial_cutoff,
+        max_ell=3,
+        interaction_cls=interaction_cls,
+        interaction_cls_first=interaction_cls,
+        num_interactions=1,
+        num_elements=len(z_table),
+        hidden_irreps=o3.Irreps("4x0e+4x1o"),
+        atomic_energies=np.array([-12.674624, -2041.039790]),
+        avg_num_neighbors=10.0,
+        atomic_numbers=z_table.zs,
+        correlation=3,
+        gate=mace.modules.gate_dict["silu"],
+        MLP_irreps=o3.Irreps("16x0e"),
+        radial_MLP=[64, 64, 64],
+        radial_type="bessel",
+        atom_density_scaling=np.ones(len(z_table)),
+        kspace_cutoff_factor=1.0,
+        atomic_multipoles_max_l=1,
+        atomic_multipoles_smearing_width=1.5,
+        field_feature_max_l=1,
+        field_feature_widths=[1.5],
+        include_electrostatic_self_interaction=True,
+        add_local_electron_energy=True,
+        fixedpoint_update_config={
+            "type": field_blocks.OneBodyVariableUpdate,
+            "potential_embedding_cls": field_blocks.BiasedLinearPotentialEmbedding,
+            "nonlinearity_cls": field_blocks.NoNonLinearity,
+        },
+        field_readout_config={
+            "type": field_blocks.StrictQuadraticFieldEnergyReadout
+        },
+        pbc_handling="pbc",
+    )
+    kwargs.update(overrides)
     with disable_e3nn_codegen():
-        return electrostatics.FixedPointCore(
-            r_max=3.0,
-            num_bessel=8,
-            num_polynomial_cutoff=num_polynomial_cutoff,
-            max_ell=3,
-            interaction_cls=interaction_cls,
-            interaction_cls_first=interaction_cls,
-            num_interactions=1,
-            num_elements=len(z_table),
-            hidden_irreps=o3.Irreps("4x0e+4x1o"),
-            atomic_energies=np.array([-12.674624, -2041.039790]),
-            avg_num_neighbors=10.0,
-            atomic_numbers=z_table.zs,
-            correlation=3,
-            gate=mace.modules.gate_dict["silu"],
-            MLP_irreps=o3.Irreps("16x0e"),
-            radial_MLP=[64, 64, 64],
-            radial_type="bessel",
-            atom_density_scaling=np.ones(len(z_table)),
-            kspace_cutoff_factor=1.0,
-            atomic_multipoles_max_l=1,
-            atomic_multipoles_smearing_width=1.5,
-            field_feature_max_l=1,
-            field_feature_widths=[1.5],
-            include_electrostatic_self_interaction=True,
-            add_local_electron_energy=True,
-            fixedpoint_update_config={
-                "type": field_blocks.OneBodyVariableUpdate,
-                "potential_embedding_cls": field_blocks.BiasedLinearPotentialEmbedding,
-                "nonlinearity_cls": field_blocks.NoNonLinearity,
-            },
-            field_readout_config={
-                "type": field_blocks.StrictQuadraticFieldEnergyReadout
-            },
-            pbc_handling="pbc",
-            **overrides,
-        )
+        return electrostatics.FixedPointCore(**kwargs)
 
 
 def build_qeq(seed: int = 4, num_polynomial_cutoff: int = 6, **overrides):
