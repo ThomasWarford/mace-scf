@@ -342,3 +342,42 @@ def test_monotone_model_constant_charge_scf_runs(activation):
     assert torch.all(torch.isfinite(result.density))
     assert result.status == "converged", (result.status, result.terminated_step)
     assert torch.allclose(total_charge, data["total_charge"], atol=1e-3), total_charge
+
+
+def _field_block_groups(model):
+    from types import SimpleNamespace
+
+    from mace_scf.utils.run_train_utils import get_param_options
+
+    args = SimpleNamespace(
+        model="FixedPointCore",
+        weight_decay=1e-8,
+        field_block_weight_decay=0.1,
+        local_charges_weight_decay=0.0,
+        lr=0.01,
+        amsgrad=False,
+        beta=0.9,
+        beta_two=0.999,
+    )
+    groups = get_param_options(model, args)["params"]
+    return [g for g in groups if g["name"] == "field_dependent_charges_map"]
+
+
+def test_softness_bias_is_not_weight_decayed():
+    model = _with_update_block(_base_model(), _monotone_block("softplus"))
+    block = model.field_dependent_charges_map
+    groups = _field_block_groups(model)
+    assert [g["weight_decay"] for g in groups] == [0.1, 0.0]
+    assert groups[1]["params"] == [block.softness_bias]
+    decayed = {id(p) for p in groups[0]["params"]}
+    others = {id(p) for name, p in block.named_parameters() if name != "softness_bias"}
+    assert decayed == others
+
+
+def test_default_block_param_group_unchanged():
+    model = _base_model()
+    groups = _field_block_groups(model)
+    assert len(groups) == 1 and groups[0]["weight_decay"] == 0.1
+    assert {id(p) for p in groups[0]["params"]} == {
+        id(p) for p in model.field_dependent_charges_map.parameters()
+    }
