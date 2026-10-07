@@ -27,10 +27,15 @@
 # `ab` (default) = REF_vasp_fermi_level_plus_alpha_bet, `raw` = REF_vasp_fermi_level. Direct mode
 # feeds it to the model as an input; the SCF stages use it as the initial guess.
 #
-# Differences from the LSC recipe (../fit_matpes_lsc_r2_full/train.sh), all forced by FixedPoint:
-# no cueq / agnostic product / edge_irreps / local_scale_shift (each raises for FixedPoint), no
-# formal charges or oxidation-state flags (ignored), and no stress (FixedPointCore returns none).
-# Optimizer and electrostatics are R3's / LSC's.
+# Differences from the LSC recipe (../fit_matpes_lsc_r2_full/train.sh): the 128x0e+128x1o default
+# backbone unless BACKBONE=r2 (below), no formal charges or oxidation-state flags (ignored), and
+# no stress (FixedPointCore returns none). Optimizer and electrostatics are R3's / LSC's.
+#
+# BACKBONE=r2: LSC's R2 (Polar-M) backbone -- 512x0e+512x1o, edge_irreps 128x0e+128x1o,
+# agnostic product, NonLinear interactions, 8 radial functions, ZBL, Agnesi and
+# --local_scale_shift -- with the SCF-side blocks kept at 128x0e+128x1o (--field_hidden_irreps),
+# so each SCF iteration costs what it does on the default backbone. Tags the run name _r2.
+# Memory was probed on the default backbone only: re-run PROBE=1 before trusting BATCH.
 #
 # BATCH_SIZE is one value for all three stages, chosen by the worst-case memory probe
 # (probe_batch_memory.py: the B largest train frames; MatPES runs to 243 atoms, median 5).
@@ -69,6 +74,24 @@ VALID_DIR="${VALID_DIR:-$DATA/val}"     # smoke tests only (full-val linsolve ev
 # linearize_solve stages, so use it with configs that have none (e.g. smoke_cueq).
 CUEQ_ARGS=(); CUEQ_TAG=""
 if [ -n "${CUEQ:-}" ]; then CUEQ_ARGS=(--enable_cueq True); CUEQ_TAG="_cueq"; fi
+BACKBONE_TAG=""
+case "${BACKBONE:-}" in
+    "") BACKBONE_ARGS=(--hidden_irreps '128x0e + 128x1o') ;;
+    r2) BACKBONE_ARGS=(
+            --hidden_irreps '512x0e + 512x1o'
+            --edge_irreps '128x0e + 128x1o'
+            --use_agnostic_product True
+            --interaction_first RealAgnosticResidualNonLinearInteractionBlock
+            --interaction RealAgnosticResidualNonLinearInteractionBlock
+            --num_radial_basis 8
+            --pair_repulsion
+            --distance_transform Agnesi
+            --local_scale_shift True
+            --field_hidden_irreps '128x0e + 128x1o'
+        )
+        BACKBONE_TAG="_r2" ;;
+    *) echo "BACKBONE must be empty or r2, got $BACKBONE" >&2; exit 1 ;;
+esac
 # NO_EMA=1: no weight EMA (e.g. overfit tests, where a 0.9998 EMA lags ~5000 steps behind)
 EMA_ARGS=(--ema --ema_decay 0.9998)
 [ -n "${NO_EMA:-}" ] && EMA_ARGS=()
@@ -82,7 +105,7 @@ CLIP_GRAD="${CLIP:-1.0}"; CLIP_TAG=""; [ -n "${CLIP:-}" ] && CLIP_TAG="_clip${CL
 # `average` over train_0.h5 (5.8k shuffled frames, FERMI=ab) in smoke job 59165031; hard-coded so
 # each chain link skips a full-data pass at startup.
 FIELD_NORMS="[16.85128938, 11.29358665, 0.45036201, 0.25651795]"
-NAME="fp_vanilla_fermi${FERMI}_${CASE}${CUEQ_TAG}${BATCH_TAG}${CLIP_TAG}_g${SLURM_NTASKS}"
+NAME="fp_vanilla_fermi${FERMI}_${CASE}${BACKBONE_TAG}${CUEQ_TAG}${BATCH_TAG}${CLIP_TAG}_g${SLURM_NTASKS}"
 CKPT="${PSCRATCH}/mace-scf/fit_matpes_fixedpoint_vanilla/checkpoints/$NAME"
 
 # Outputs live on $SCRATCH: logs/results/wandb/models are links into $ROOT/fits (a link to
@@ -99,7 +122,7 @@ RECIPE="$W/logs/recipes/${NAME}_${SLURM_JOB_ID}"
 mkdir -p "$RECIPE"
 cp "$0" "$RECIPE/train.sh"
 cp "$W/configs/$CASE.yaml" "$RECIPE/config.yaml"
-printf 'CLIP=%s\nBATCH=%s\nCUEQ=%s\nCASE=%s\nFERMI=%s\nTRAIN_DIR=%s\nVALID_DIR=%s\nEXTRA=%s\nDATA=%s\ngit=%s\n' "$CLIP_GRAD" "$BATCH_SIZE" "${CUEQ:-}" "$CASE" "$FERMI" "$TRAIN_DIR" "$VALID_DIR" "${EXTRA:-}" "$DATA" \
+printf 'BACKBONE=%s\nCLIP=%s\nBATCH=%s\nCUEQ=%s\nCASE=%s\nFERMI=%s\nTRAIN_DIR=%s\nVALID_DIR=%s\nEXTRA=%s\nDATA=%s\ngit=%s\n' "${BACKBONE:-}" "$CLIP_GRAD" "$BATCH_SIZE" "${CUEQ:-}" "$CASE" "$FERMI" "$TRAIN_DIR" "$VALID_DIR" "${EXTRA:-}" "$DATA" \
     "$(git -C "$ROOT" rev-parse HEAD 2>/dev/null)$(git -C "$ROOT" diff --quiet 2>/dev/null || echo ' (dirty)')" > "$RECIPE/settings.txt"
 
 MASTER_PORT=$(python3 -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()' 2>/dev/null \
@@ -140,7 +163,7 @@ srun --cpu-bind=cores "${SRUN_EXTRA[@]}" conda run -n mace_scf --no-capture-outp
     --valid_file "$VALID_DIR" \
     --statistics_file "$DATA/statistics.json" \
     --model FixedPoint \
-    --hidden_irreps '128x0e + 128x1o' \
+    "${BACKBONE_ARGS[@]}" \
     --num_interactions 2 \
     --correlation 3 \
     --max_ell 3 \

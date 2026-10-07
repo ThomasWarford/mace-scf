@@ -149,16 +149,22 @@ CASES = [
         ModelCase("FixedPoint", FIXED_POINT_ARGV, FIXED_POINT_OUTPUTS, fixed_point_mode=mode)
         for mode in ("direct", "unroll_scf", "implicit")
     ],
-    # NonLinear blocks, so the mul_ir Gate-transpose fix is exercised (FixedPoint has no
-    # --edge_irreps / --use_agnostic_product). The backbone runs once, before the SCF, so
-    # "direct" covers it; the SCF modes are covered above.
-    ModelCase(
-        "FixedPoint",
-        FIXED_POINT_ARGV + NONLINEAR_ZBL_AGNESI_ARGV,
-        FIXED_POINT_OUTPUTS,
-        name="FixedPoint-polar-backbone",
-        fixed_point_mode="direct",
-    ),
+    # the R2 backbone under FixedPoint, as LocalSplitCharges above, with the SCF-side blocks
+    # narrower than the backbone (--field_hidden_irreps). NonLinear blocks, so the mul_ir
+    # Gate-transpose fix is exercised. "direct" covers the backbone, which runs once before
+    # the SCF; "unroll_scf" covers the narrow field blocks inside it.
+    *[
+        ModelCase(
+            "FixedPoint",
+            FIXED_POINT_ARGV + POLAR_BACKBONE_ARGV
+            + ("--local_scale_shift", "True", "--mean", "-1.5", "--std", "0.7")
+            + ("--field_hidden_irreps", "4x0e + 4x1o"),
+            FIXED_POINT_OUTPUTS,
+            name=f"FixedPoint-polar-backbone-{mode}",
+            fixed_point_mode=mode,
+        )
+        for mode in ("direct", "unroll_scf")
+    ],
 ]
 CASE_IDS = [case.id for case in CASES]
 # the configuration tests only need each distinct model once; FixedPoint's mode is a

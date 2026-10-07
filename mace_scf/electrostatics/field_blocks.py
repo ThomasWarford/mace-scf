@@ -23,20 +23,26 @@ class MultiLayerFeatureMixer(torch.nn.Module):
         self,
         node_feats_irreps: o3.Irreps,
         num_interactions: int,
+        irreps_out: Optional[o3.Irreps] = None,
     ):
         super().__init__()
+        # irreps_out (default node_feats_irreps): FixedPointCore's SCF-side width
+        if irreps_out is None:
+            irreps_out = node_feats_irreps
         self.linears = torch.nn.ModuleList()
         for _ in range(num_interactions):
-            self.linears.append(o3.Linear(node_feats_irreps, node_feats_irreps))
+            self.linears.append(o3.Linear(node_feats_irreps, irreps_out))
 
     def forward(
         self,
         all_node_feats: torch.Tensor, # [num_interactions, n_node, hidden_irreps]
     ) -> torch.Tensor:
-        node_feats_out = torch.zeros_like(all_node_feats[0])
+        # summed from a list rather than into zeros_like(input): the output can be narrower
+        # than the input, and pickled models carry no record of the output width
+        mixed = []
         for i, linear in enumerate(self.linears):
-            node_feats_out += linear(all_node_feats[i])
-        return node_feats_out
+            mixed.append(linear(all_node_feats[i]))
+        return torch.stack(mixed, dim=0).sum(dim=0)
 
 
 @compile_mode("script")

@@ -18,6 +18,7 @@ from mace.modules import (
     LinearReadoutBlock,
     NonLinearReadoutBlock,
     RadialEmbeddingBlock,
+    ScaleShiftBlock,
     ZBLBasis,
 )
 
@@ -82,6 +83,11 @@ class FixedPointCore(torch.nn.Module):
         fixedpoint_update_config: Dict[str, Any],
         field_readout_config: Dict[str, Any],
         use_linear_local_charges: bool = False,
+        edge_irreps: Optional[o3.Irreps] = None,
+        use_agnostic_product: bool = False,
+        atomic_inter_scale: Optional[float] = None,
+        atomic_inter_shift: Optional[float] = None,
+        field_hidden_irreps: Optional[o3.Irreps] = None,
         cueq_config=None,
     ):
         super().__init__()
@@ -158,6 +164,15 @@ class FixedPointCore(torch.nn.Module):
             self.pair_repulsion_fn = ZBLBasis(p=num_polynomial_cutoff)
             self.pair_repulsion = True
 
+        # ScaleShiftMACE's per-atom scale/shift of the local energy (ZBL + backbone readouts),
+        # as LocalSplitCharges. Created only when asked for, so models and checkpoints
+        # trained without it are unchanged.
+        if atomic_inter_scale is not None or atomic_inter_shift is not None:
+            self.scale_shift = ScaleShiftBlock(
+                scale=1.0 if atomic_inter_scale is None else atomic_inter_scale,
+                shift=0.0 if atomic_inter_shift is None else atomic_inter_shift,
+            )
+
         edge_feats_irreps = o3.Irreps(f"{self.radial_embedding.out_dim}x0e")
 
         sh_irreps = o3.Irreps.spherical_harmonics(max_ell)
@@ -195,6 +210,7 @@ class FixedPointCore(torch.nn.Module):
             correlation=correlation,
             num_elements=num_elements,
             use_sc=use_sc_first,
+            use_agnostic_product=use_agnostic_product,
             cueq_config=cueq_config,
         )
         self.products = torch.nn.ModuleList([prod])
@@ -259,6 +275,8 @@ class FixedPointCore(torch.nn.Module):
                 target_irreps=interaction_irreps,
                 hidden_irreps=hidden_irreps_out,
                 avg_num_neighbors=avg_num_neighbors,
+                # layers 2+ only, as upstream MACE: layer 1's input is the scalar embedding
+                edge_irreps=edge_irreps,
                 radial_MLP=radial_MLP,
                 cueq_config=cueq_config,
             )
@@ -269,6 +287,7 @@ class FixedPointCore(torch.nn.Module):
                 correlation=correlation,
                 num_elements=num_elements,
                 use_sc=True,
+                use_agnostic_product=use_agnostic_product,
                 cueq_config=cueq_config,
             )
             self.products.append(prod)
@@ -309,21 +328,32 @@ class FixedPointCore(torch.nn.Module):
                     )
                 )
 
+        # Width of the SCF-side blocks (charge update, field energy readout), which run every
+        # SCF iteration: field_hidden_irreps, default hidden_irreps. A narrower width lets a
+        # wide backbone keep the SCF cost of a narrow one; the layer mixer and, for the field
+        # readout, field_node_projection map the backbone features down to it.
+        if field_hidden_irreps is None:
+            field_hidden_irreps = hidden_irreps
+        field_hidden_irreps = o3.Irreps(field_hidden_irreps)
+        num_field_features = field_hidden_irreps.count(o3.Irrep(0, 1))
+        if field_hidden_irreps != hidden_irreps:
+            self.field_node_projection = o3.Linear(hidden_irreps, field_hidden_irreps)
+
         # Field-dependent charge update block
         lr_source_cls = fixedpoint_update_config.pop("type")
         max_ell_field_update = 2
         field_update_sh_irreps = o3.Irreps.spherical_harmonics(max_ell_field_update)
         self.from_ell_max_field_update = (max_ell_field_update + 1) ** 2
         field_interaction_irreps = (
-            (field_update_sh_irreps * num_features).sort()[0].simplify()
+            (field_update_sh_irreps * num_field_features).sort()[0].simplify()
         )
         self.field_dependent_charges_map = lr_source_cls(
             node_attrs_irreps=node_attr_irreps,
-            node_feats_irreps=hidden_irreps,
+            node_feats_irreps=field_hidden_irreps,
             edge_attrs_irreps=field_update_sh_irreps,
             edge_feats_irreps=edge_feats_irreps,
             target_irreps=field_interaction_irreps,
-            hidden_irreps=hidden_irreps,
+            hidden_irreps=field_hidden_irreps,
             avg_num_neighbors=avg_num_neighbors,
             potential_irreps=self.potential_irreps,
             charges_irreps=self.charges_irreps,
@@ -338,11 +368,11 @@ class FixedPointCore(torch.nn.Module):
         field_readout_cls = field_readout_config.pop("type")
         self.local_electron_energy = field_readout_cls(
             node_attrs_irreps=node_attr_irreps,
-            node_feats_irreps=hidden_irreps,
+            node_feats_irreps=field_hidden_irreps,
             edge_attrs_irreps=field_update_sh_irreps,
             edge_feats_irreps=edge_feats_irreps,
             target_irreps=field_interaction_irreps,
-            hidden_irreps=hidden_irreps,
+            hidden_irreps=field_hidden_irreps,
             avg_num_neighbors=avg_num_neighbors,
             potential_irreps=self.potential_irreps,
             charges_irreps=self.charges_irreps,
@@ -373,6 +403,7 @@ class FixedPointCore(torch.nn.Module):
         self.layer_feature_mixer = MultiLayerFeatureMixer(
             node_feats_irreps=hidden_irreps,
             num_interactions=num_interactions,
+            irreps_out=field_hidden_irreps,
         )
 
     # ------------------------------------------------------------------ #
@@ -455,6 +486,13 @@ class FixedPointCore(torch.nn.Module):
         # Interaction layers
         energies = [e0]
 
+        # As ScaleShiftMACE and LocalSplitCharges: ZBL and every backbone readout are scaled,
+        # the shift is added once per atom (its own contribution column, appended last), and
+        # E0, the field energy readout and the electrostatics are left alone. Single head.
+        if hasattr(self, "scale_shift"):
+            local_scale = torch.atleast_1d(self.scale_shift.scale)[0]
+            local_shift = torch.atleast_1d(self.scale_shift.shift)[0]
+
         # ZBL pair repulsion. Charge-independent and purely geometric, so it is computed
         # once here in the SCF-independent local pass and never inside the SCF cycle.
         # Appended only when enabled -- see the note in localsources.py on `contributions`.
@@ -462,6 +500,8 @@ class FixedPointCore(torch.nn.Module):
             pair_node_energy = self.pair_repulsion_fn(
                 lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
             )
+            if hasattr(self, "scale_shift"):
+                pair_node_energy = local_scale * pair_node_energy
             energies.append(
                 scatter_sum(
                     src=pair_node_energy,
@@ -495,6 +535,8 @@ class FixedPointCore(torch.nn.Module):
             )
             features.append(node_feats.clone())
             node_energies = readout(node_feats).squeeze(-1)
+            if hasattr(self, "scale_shift"):
+                node_energies = local_scale * node_energies
             energy = scatter_sum(
                 src=node_energies,
                 index=data["batch"],
@@ -509,8 +551,21 @@ class FixedPointCore(torch.nn.Module):
             )
             charge_density += charge_sources.squeeze(-2)
 
+        if hasattr(self, "scale_shift"):
+            energies.append(
+                scatter_sum(
+                    src=local_shift.expand_as(node_e0),
+                    index=data["batch"],
+                    dim=-1,
+                    dim_size=num_graphs,
+                )
+            )
+
         all_layer_feats = self.layer_feature_mixer(torch.stack(features, dim=0))
         stacked_energies = torch.stack(energies, dim=-1)
+        # the field energy readout's input, at the SCF-side width
+        if hasattr(self, "field_node_projection"):
+            node_feats = self.field_node_projection(node_feats)
 
         # Precompute geometry for electrostatics
         electrostatics_cache = self.electric_potential_descriptor.precompute_geometry(

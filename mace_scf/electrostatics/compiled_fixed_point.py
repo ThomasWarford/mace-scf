@@ -93,6 +93,11 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
         # Unguarded, this would raise AttributeError on every pre-ZBL checkpoint.
         if hasattr(model, "pair_repulsion_fn"):
             self.pair_repulsion_fn = model.pair_repulsion_fn
+        # likewise optional: --local_scale_shift and a narrower --field_hidden_irreps
+        if hasattr(model, "scale_shift"):
+            self.scale_shift = model.scale_shift
+        if hasattr(model, "field_node_projection"):
+            self.field_node_projection = model.field_node_projection
         self.spherical_harmonics = model.spherical_harmonics
         self.interactions = model.interactions
         self.products = model.products
@@ -274,6 +279,11 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
 
         energies = [e0]
 
+        # local scale/shift, mirroring FixedPointCore.local_part
+        if hasattr(self, "scale_shift"):
+            local_scale = torch.atleast_1d(self.scale_shift.scale)[0]
+            local_shift = torch.atleast_1d(self.scale_shift.shift)[0]
+
         # ZBL pair repulsion, mirroring FixedPointCore.local_part: charge-independent and
         # purely geometric, so computed once outside the SCF cycle. Appended only when
         # enabled -- see the note in localsources.py on `contributions`.
@@ -285,6 +295,8 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
                 edge_index,
                 self.atomic_numbers,
             )
+            if hasattr(self, "scale_shift"):
+                pair_node_energy = local_scale * pair_node_energy
             energies.append(
                 self._sum_nodes(
                     src=pair_node_energy,
@@ -323,6 +335,8 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
             )
             features.append(node_feats.clone())
             node_energies = _call_module(readout, node_feats).squeeze(-1)
+            if hasattr(self, "scale_shift"):
+                node_energies = local_scale * node_energies
             energy = self._sum_nodes(
                 src=node_energies,
                 batch=batch,
@@ -338,11 +352,23 @@ class FixedPointSCFCompiledCore(torch.nn.Module):
             )
             charge_density = charge_density + charge_sources.squeeze(-2)
 
+        if hasattr(self, "scale_shift"):
+            energies.append(
+                self._sum_nodes(
+                    src=local_shift.expand_as(node_e0),
+                    batch=batch,
+                    num_graphs=num_graphs,
+                    dim=-1,
+                )
+            )
+
         all_layer_feats = _call_module(
             self.layer_feature_mixer,
             torch.stack(features, dim=0),
         )
         stacked_energies = torch.stack(energies, dim=-1)
+        if hasattr(self, "field_node_projection"):
+            node_feats = _call_module(self.field_node_projection, node_feats)
 
         electrostatics_plan = _call_module(
             self.electric_potential_descriptor.precompute_geometry,

@@ -35,8 +35,8 @@ CUEQ_SUPPORTED_MODELS = frozenset(
 APPLY_CUTOFF_SUPPORTED_MODELS = frozenset({"MACE", "ScaleShiftMACE"})
 
 
-# --edge_irreps and --use_agnostic_product reach upstream MACE's constructor and the
-# mace_scf models built on _LocalSourceModelBase. FixedPoint and MACEQEq re-implement the
+# --edge_irreps and --use_agnostic_product reach upstream MACE's constructor, the mace_scf
+# models built on _LocalSourceModelBase and FixedPointCore. MACEQEq re-implements the
 # backbone without either, so there the flags would parse and then silently build the
 # default architecture.
 BACKBONE_OPTION_MODELS = frozenset(
@@ -46,13 +46,14 @@ BACKBONE_OPTION_MODELS = frozenset(
         "LocalSplitCharges",
         "LocalCharges",
         "FixedChargeBaselinedMACE",
+        "FixedPoint",
     }
 )
 
 
 # --local_scale_shift: ScaleShiftMACE's per-atom scale/shift, for the mace_scf models that
 # implement it. The other models have no scale_shift block and would ignore it.
-LOCAL_SCALE_SHIFT_MODELS = frozenset({"LocalSplitCharges"})
+LOCAL_SCALE_SHIFT_MODELS = frozenset({"LocalSplitCharges", "FixedPoint"})
 
 
 def _disable_mul_ir_nonlinear_transposes(model: torch.nn.Module, cueq_config) -> int:
@@ -329,7 +330,14 @@ def build_model(
                 atom_density_scaling=args.atom_density_scaling,
                 pbc_handling=args.electrostatic_pbc_method,
                 fermi_level_offset=args.fermi_level_offset,
+                field_hidden_irreps=(
+                    o3.Irreps(args.field_hidden_irreps)
+                    if getattr(args, "field_hidden_irreps", None)
+                    else None
+                ),
                 cueq_config=cueq_config,
+                **backbone_options,
+                **local_scale_shift_options,
             )
         fixedpoint_initial_charge_head_scale = getattr(
             args,

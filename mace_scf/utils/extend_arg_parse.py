@@ -242,6 +242,15 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         default=False
     )
     parser.add_argument(
+        "--field_hidden_irreps",
+        type=str,
+        default=None,
+        help="FixedPoint: width of the SCF-side blocks (field-dependent charge update and "
+        "field energy readout), default --hidden_irreps. A narrower width keeps the "
+        "per-iteration SCF cost of a narrow backbone under a wide one; the backbone "
+        "features are projected down to it.",
+    )
+    parser.add_argument(
         "--atom_density_scaling",
         type=str,
         default="None"

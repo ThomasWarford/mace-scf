@@ -47,6 +47,11 @@ def check_config_conflicts(args: argparse.Namespace):
                     "use 'direct', 'unroll_scf' or 'implicit'."
                 )
     else:
+        if getattr(args, "field_hidden_irreps", None):
+            raise ValueError(
+                f"--field_hidden_irreps is a FixedPoint option; model={args.model} has no "
+                "SCF-side blocks"
+            )
         for train_stage in args.train_schedule:
             assert "scf_training_options" not in train_stage, f"scf_training_options should not be set for model={args.model}"
             assert "fixed_point_training_options" not in train_stage, f"fixed_point_training_options should not be set for model={args.model}"
@@ -284,7 +289,7 @@ def load_statistics_file(args: argparse.Namespace):
     args.avg_num_neighbors = statistics["avg_num_neighbors"]
     args.compute_avg_num_neighbors = False
 
-    # Read by ScaleShiftMACE, and by LocalSplitCharges under --local_scale_shift.
+    # Read by ScaleShiftMACE, and by LocalSplitCharges and FixedPoint under --local_scale_shift.
     args.mean = statistics["mean"]
     args.std = statistics["std"]
 

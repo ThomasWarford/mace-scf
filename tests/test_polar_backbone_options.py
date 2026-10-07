@@ -2,9 +2,9 @@
 
 Both flags parse upstream, but build_model used to drop them, so a run asking for the
 MACE-Polar backbone silently trained the default one. They are wired into the upstream
-MACE / ScaleShiftMACE branches and the models built on _LocalSourceModelBase
-(LocalSplitCharges, LocalCharges, FixedChargeBaselinedMACE). FixedPoint and MACEQEq
-re-implement the backbone without either, so there they must raise rather than be ignored.
+MACE / ScaleShiftMACE branches, the models built on _LocalSourceModelBase
+(LocalSplitCharges, LocalCharges, FixedChargeBaselinedMACE) and FixedPointCore. MACEQEq
+re-implements the backbone without either, so there they must raise rather than be ignored.
 """
 
 import numpy as np
@@ -19,6 +19,8 @@ from mace_scf.utils.check_args import check_config_conflicts
 from mace_scf.utils.run_train_utils import (
     BACKBONE_OPTION_MODELS,
     build_model,
+    get_atom_density_scaling,
+    get_field_feature_norms,
     get_formal_charges,
 )
 
@@ -29,6 +31,12 @@ HEADS = (
 SCHEDULE = (
     '{0: {"name": "stage1", "start": 0, "end": 1,'
     ' "loss": {"energy_per_atom": 1.0, "forces": 10.0}, "lr": 0.01}}'
+)
+# FixedPoint's config check requires the fixed-point training mode of every stage
+FIXED_POINT_SCHEDULE = (
+    '{0: {"name": "stage1", "start": 0, "end": 1,'
+    ' "loss": {"energy_per_atom": 1.0, "forces": 10.0}, "lr": 0.01,'
+    ' "fixed_point_training_options": {"mode": "direct"}}}'
 )
 NONLINEAR = "RealAgnosticResidualNonLinearInteractionBlock"
 
@@ -45,7 +53,9 @@ EXTRA_ARGV = {
     "LocalSplitCharges": FORMAL_CHARGES_ARGV + ELECTROSTATIC_ARGV,
     "LocalCharges": ELECTROSTATIC_ARGV,
     "FixedChargeBaselinedMACE": FORMAL_CHARGES_ARGV + ELECTROSTATIC_ARGV,
-    "FixedPoint": ELECTROSTATIC_ARGV,
+    "FixedPoint": ELECTROSTATIC_ARGV + (
+        "--fermi_level_offset", "0.0", "--field_feature_norms", "[1.0, 1.0, 1.0, 1.0]",
+    ),
     "MACEQEq": ELECTROSTATIC_ARGV,
 }
 REFUSING_MODELS = sorted(set(EXTRA_ARGV) - BACKBONE_OPTION_MODELS)
@@ -56,7 +66,7 @@ def _args(model: str, *extra, check: bool = True):
         "--name", "backbone_options_test",
         "--train_file", "unused.xyz",
         "--heads", HEADS,
-        "--train_schedule", SCHEDULE,
+        "--train_schedule", FIXED_POINT_SCHEDULE if model == "FixedPoint" else SCHEDULE,
         "--error_table", "PerAtomRMSE",
         "--model", model,
         "--interaction_first", NONLINEAR,
@@ -87,6 +97,11 @@ def _build(args):
     charges = get_formal_charges(
         args.model, args.formal_charges_from_data, args.atomic_formal_charges, z_table
     )
+    if args.model == "FixedPoint":
+        # what run_train resolves next from the data; every value here is explicit (or the
+        # unit default), so the absent loader is never read
+        args.field_feature_norms = get_field_feature_norms(None, args, "cpu")
+        args.atom_density_scaling = get_atom_density_scaling(None, args, "cpu", z_table)
     return build_model(args, z_table, np.zeros(len(z_table)), charges, train_loader=None)
 
 
@@ -118,7 +133,7 @@ def test_agnostic_product_reaches_the_product_blocks(model):
 
 
 def test_refusing_models_are_the_ones_without_the_shared_backbone():
-    assert REFUSING_MODELS == ["FixedPoint", "MACEQEq"]
+    assert REFUSING_MODELS == ["MACEQEq"]
 
 
 @pytest.mark.parametrize("model", REFUSING_MODELS)
@@ -126,8 +141,7 @@ def test_refusing_models_are_the_ones_without_the_shared_backbone():
     "flag", [("--edge_irreps", "4x0e + 4x1o"), ("--use_agnostic_product", "True")]
 )
 def test_other_models_refuse_the_flags(model, flag):
-    # unchecked: FixedPoint's config check wants training options that build_model never
-    # reaches, since the refusal comes before any model is constructed
+    # unchecked: the refusal comes before any model is constructed
     with pytest.raises(NotImplementedError, match="not wired up"):
         _build(_args(model, *flag, check=False))
 
