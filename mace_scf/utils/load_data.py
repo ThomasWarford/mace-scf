@@ -69,39 +69,53 @@ def _run_config_validators(args, validators):
                     validate(atoms, config_index, path, split_name)
 
 
-def _dipole_weight_validator(key_specification):
-    dipole_key = key_specification.info_keys.get("dipole")
-    if dipole_key is None or dipole_key == "none":
+# Per-axis component weights that must be given explicitly whenever the
+# property is present: property -> example weights for the error message.
+_EXPLICIT_AXIS_WEIGHTS = {
+    "dipole": "[1, 1, 1], [0, 0, 1], or [0, 0, 0]",
+    "stress": "[1, 1, 1], [1, 1, 0], or [0, 0, 0]",
+}
+
+
+def _component_weight_validator(key_specification):
+    property_keys = {
+        name: key_specification.info_keys.get(name)
+        for name in _EXPLICIT_AXIS_WEIGHTS
+    }
+    property_keys = {
+        name: key for name, key in property_keys.items() if key not in (None, "none")
+    }
+    if not property_keys:
         return None
 
     def validate(atoms, config_index, file_path, split_name):
-        if dipole_key not in atoms.info:
-            return
-        if "config_dipole_weight" not in atoms.info:
-            raise ValueError(
-                "Dipole data found without explicit config_dipole_weight. "
+        for name, key in property_keys.items():
+            if key not in atoms.info:
+                continue
+            location = (
                 f"split={split_name}, file={file_path}, index={config_index}, "
-                f"dipole_key={dipole_key!r}. "
-                "Set config_dipole_weight to a 3-vector such as [1, 1, 1], "
-                "[0, 0, 1], or [0, 0, 0]."
+                f"{name}_key={key!r}"
             )
+            weight_key = f"config_{name}_weight"
+            if weight_key not in atoms.info:
+                raise ValueError(
+                    f"{name.capitalize()} data found without explicit {weight_key}. "
+                    f"{location}. Set {weight_key} to a 3-vector such as "
+                    f"{_EXPLICIT_AXIS_WEIGHTS[name]}."
+                )
 
-        dipole_weight = np.asarray(
-            atoms.info["config_dipole_weight"], dtype=float
-        ).reshape(-1)
-        if dipole_weight.shape != (3,):
-            raise ValueError(
-                "config_dipole_weight must be a 3-vector whenever dipole data is "
-                "present. "
-                f"split={split_name}, file={file_path}, index={config_index}, "
-                f"dipole_key={dipole_key!r}, shape={dipole_weight.shape}."
-            )
+            weight = np.asarray(atoms.info[weight_key], dtype=float).reshape(-1)
+            if weight.shape != (3,):
+                raise ValueError(
+                    f"{weight_key} must be a 3-vector whenever {name} data is "
+                    f"present. {location}, shape={weight.shape}."
+                )
 
     return validate
 
 
-def check_explicit_dipole_component_weights(file_path, key_specification, split_name):
-    validate = _dipole_weight_validator(key_specification)
+def check_explicit_component_weights(file_path, key_specification, split_name):
+    validate = _component_weight_validator(key_specification)
     if validate is None:
         return
     for config_index, atoms in enumerate(ase.io.iread(file_path, index=":")):
@@ -170,8 +184,8 @@ def check_pbc_consistent_with_electrostatic_method_for_paths(args):
     _run_config_validators(args, [_enabled_pbc_validator(args)])
 
 
-def check_explicit_dipole_component_weights_for_paths(args):
-    _run_config_validators(args, [_dipole_weight_validator(args.key_specification)])
+def check_explicit_component_weights_for_paths(args):
+    _run_config_validators(args, [_component_weight_validator(args.key_specification)])
 
 
 def check_pbc_consistent_for_collections(collections, electrostatic_pbc_method):
@@ -191,12 +205,12 @@ def check_pbc_consistent_for_collections(collections, electrostatic_pbc_method):
 def validate_xyz_paths(args):
     """The checks that can only be answered from the raw xyz.
 
-    Only the dipole-weight check, which reads an atoms.info key that parsing does not
-    keep; it returns immediately when the head declares no dipole key, so datasets
-    without dipoles pay nothing. Everything else is checked after parsing, in
+    Only the dipole- and stress-weight checks, which read atoms.info keys that parsing
+    does not keep; they return immediately when the head declares neither key, so
+    datasets without them pay nothing. Everything else is checked after parsing, in
     validate_xyz_collections.
     """
-    _run_config_validators(args, [_dipole_weight_validator(args.key_specification)])
+    _run_config_validators(args, [_component_weight_validator(args.key_specification)])
 
 
 def validate_xyz_collections(collections, args):

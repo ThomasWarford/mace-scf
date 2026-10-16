@@ -46,6 +46,11 @@ def check_config_conflicts(args: argparse.Namespace):
                     "fixed-point mode 'linearize_solve' is not supported with --enable_cueq; "
                     "use 'direct', 'unroll_scf' or 'implicit'."
                 )
+            if args.compute_stress and mode == "implicit":
+                raise NotImplementedError(
+                    "fixed-point mode 'implicit' does not support stress; "
+                    "use linearize_solve or unroll_scf."
+                )
     else:
         if getattr(args, "field_hidden_irreps", None):
             raise ValueError(
