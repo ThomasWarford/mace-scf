@@ -78,6 +78,8 @@ FORMAL_CHARGE_DATA_MODELS = ("LocalSplitCharges", "FixedChargeBaselinedMACE")
 def check_formal_charge_noise(args: argparse.Namespace):
     sigma = getattr(args, "formal_charge_noise_sigma", None)
     if sigma is None:
+        if getattr(args, "formal_charge_noise_in_range", False):
+            raise ValueError("formal_charge_noise_in_range needs formal_charge_noise_sigma")
         return
     if sigma <= 0.0:
         raise ValueError(

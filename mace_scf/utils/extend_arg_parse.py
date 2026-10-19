@@ -132,6 +132,13 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         type=float,
         default=None,
     )
+    parser.add_argument(
+        "--formal_charge_noise_in_range",
+        help="Shrink each configuration's formal charge noise so no noised charge leaves "
+        "--oxidation_state_range (the noise stays zero-sum)",
+        type=strict_str2bool,
+        default=False,
+    )
     parser.add_argument("--field_feature_max_l", type=int, default=1)
     parser.add_argument("--field_feature_widths", type=str, default="[1.0, 2.0]")
     parser.add_argument(

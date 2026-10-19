@@ -61,6 +61,32 @@ def test_zero_sigma_returns_input_raises_error():
 
 
 
+def test_in_range_noise_stays_in_range_and_zero_sum():
+    torch.manual_seed(0)
+    transform = FormalChargeNoiseTransform(0.5, charge_range=(-8.0, 8.0))
+    data = make_data([7.0, -7.0, 7.9, -7.9, 0.0, 1.0, -1.0], batch=[0, 0, 0, 0, 1, 1, 1])
+    for _ in range(2000):
+        noised = transform(data)
+        assert noised.charges.min() >= -8.0 and noised.charges.max() <= 8.0
+        per_config = torch.zeros(2).scatter_add_(0, data.batch, noised.charges - data.charges)
+        assert torch.allclose(per_config, torch.zeros(2), atol=1e-6)
+
+
+def test_in_range_noise_shrinks_only_configurations_that_would_leave_the_range():
+    torch.manual_seed(0)
+    data = make_data([7.9, -7.9, 0.0, 1.0, -1.0], batch=[0, 0, 1, 1, 1])
+    torch.manual_seed(1)
+    bounded = FormalChargeNoiseTransform(0.5, charge_range=(-8.0, 8.0))(data)
+    torch.manual_seed(1)
+    free = FormalChargeNoiseTransform(0.5)(data)
+    # configuration 1 is far from the bounds and keeps its noise; configuration 0 is shrunk
+    # along the same direction
+    assert torch.allclose(bounded.charges[2:], free.charges[2:])
+    d_bounded, d_free = bounded.charges[:2] - data.charges[:2], free.charges[:2] - data.charges[:2]
+    assert (d_bounded.abs() <= d_free.abs() + 1e-6).all()
+    assert torch.allclose(d_bounded * d_free.norm(), d_free * d_bounded.norm(), atol=1e-6)
+
+
 def test_negative_sigma_is_rejected():
     with pytest.raises(ValueError):
         FormalChargeNoiseTransform(-0.1)

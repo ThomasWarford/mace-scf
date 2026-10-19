@@ -177,7 +177,9 @@ def main() -> None:
 
     if args.formal_charge_noise_sigma is not None:
         train_set = mace_scf.data.add_formal_charge_noise(
-            train_set, args.formal_charge_noise_sigma
+            train_set,
+            args.formal_charge_noise_sigma,
+            ast.literal_eval(args.oxidation_state_range) if args.formal_charge_noise_in_range else None,
         )
     
     train_sampler, valid_sampler = None, None
