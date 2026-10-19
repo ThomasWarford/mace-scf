@@ -50,7 +50,8 @@ class OxidationStateEmbeddingBlock(torch.nn.Module):
         self, 
         node_feats_irreps: o3.Irreps, 
         oxidation_state_range: Tuple[float, float],
-        num_basis_oxidation=8
+        num_basis_oxidation=8,
+        zero_init: bool = False,
     ):
         super().__init__()
 
@@ -68,6 +69,12 @@ class OxidationStateEmbeddingBlock(torch.nn.Module):
         self.oxidation_state_linear = o3.Linear(
             o3.Irreps(f"{num_basis_oxidation}x0e"), invariant_node_feats, biases=True
         )
+        # zero output at init, so a mixer that adds this to the element embedding starts
+        # from the plain backbone; the weights still get gradients through the sum
+        if zero_init:
+            with torch.no_grad():
+                for p in self.oxidation_state_linear.parameters():
+                    p.zero_()
     
     def forward(
         self,
@@ -80,8 +87,18 @@ class OxidationStateEmbeddingBlock(torch.nn.Module):
 
 
 class NoOxidationStateMixer(torch.nn.Module):
-    def __init__(self, node_feats_irreps: o3.Irreps, oxidation_state_range: Tuple):
+    def __init__(
+        self,
+        node_feats_irreps: o3.Irreps,
+        oxidation_state_range: Tuple,
+        zero_init: bool = False,
+        scale_ratio: Optional[float] = None,
+        num_elements: Optional[int] = None,
+    ):
         super().__init__()
+        assert not zero_init and scale_ratio is None, (
+            "zero_init and scale_ratio need an oxidation state mixer"
+        )
     def forward(
         self, 
         node_attrs: torch.Tensor, 
@@ -92,8 +109,18 @@ class NoOxidationStateMixer(torch.nn.Module):
 
 
 class ProductOxidationStateMixer(torch.nn.Module):
-    def __init__(self, node_feats_irreps: o3.Irreps, oxidation_state_range: Tuple):
+    def __init__(
+        self,
+        node_feats_irreps: o3.Irreps,
+        oxidation_state_range: Tuple,
+        zero_init: bool = False,
+        scale_ratio: Optional[float] = None,
+        num_elements: Optional[int] = None,
+    ):
         super().__init__()
+        # a zero oxidation embedding would zero every node feature through the product
+        assert not zero_init, "zero_init is not supported for ProductOxidationStateMixer"
+        assert scale_ratio is None, "scale_ratio is not supported for ProductOxidationStateMixer"
 
         self.ox_embedding = OxidationStateEmbeddingBlock(node_feats_irreps=node_feats_irreps, oxidation_state_range=oxidation_state_range)
 
@@ -116,9 +143,39 @@ class ProductOxidationStateMixer(torch.nn.Module):
 
 
 class SumOxidationStateMixer(torch.nn.Module):
-    def __init__(self, node_feats_irreps: o3.Irreps, oxidation_state_range: Tuple):
+    def __init__(
+        self,
+        node_feats_irreps: o3.Irreps,
+        oxidation_state_range: Tuple,
+        zero_init: bool = False,
+        scale_ratio: Optional[float] = None,
+        num_elements: Optional[int] = None,
+    ):
         super().__init__()
-        self.ox_embedding = OxidationStateEmbeddingBlock(node_feats_irreps=node_feats_irreps, oxidation_state_range=oxidation_state_range)
+        self.ox_embedding = OxidationStateEmbeddingBlock(
+            node_feats_irreps=node_feats_irreps,
+            oxidation_state_range=oxidation_state_range,
+            zero_init=zero_init,
+        )
+        # The oxidation embedding is e3nn-normalised, RMS ~0.66 from its near unit-variance
+        # Chebyshev input, while MACE's element embedding sees a one-hot and has RMS
+        # 1/sqrt(num_elements) (0.106 for MatPES's 89). scale_ratio fixes the ratio of the two
+        # at init: the embedding is multiplied by a constant that makes its RMS, over a grid
+        # spanning oxidation_state_range, scale_ratio times the element embedding's. Stored as
+        # a buffer so a reloaded model keeps the value it was trained with.
+        if scale_ratio is not None:
+            assert not zero_init, "zero_init and scale_ratio are mutually exclusive"
+            assert scale_ratio > 0, f"scale_ratio must be positive, got {scale_ratio}"
+            assert num_elements is not None, "scale_ratio needs num_elements"
+            with torch.no_grad():
+                grid = torch.linspace(
+                    oxidation_state_range[0], oxidation_state_range[1], 161,
+                    dtype=torch.get_default_dtype(),
+                )
+                ox_rms = self.ox_embedding(grid).pow(2).mean().sqrt()
+            self.register_buffer(
+                "ox_scale", scale_ratio / (num_elements ** 0.5 * ox_rms)
+            )
 
     def forward(
         self, 
@@ -127,6 +184,8 @@ class SumOxidationStateMixer(torch.nn.Module):
         node_formal_charges: torch.Tensor
     ) -> torch.Tensor:
         ox_feats = self.ox_embedding(node_formal_charges)
+        if hasattr(self, "ox_scale"):
+            ox_feats = ox_feats * self.ox_scale
         return node_feats + ox_feats
 
 

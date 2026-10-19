@@ -300,6 +300,8 @@ class LocalSplitCharges(_LocalSourceModelBase):
         static_bond_transfer_block: str = "NoFieldSymmetricPredictionSourceBlock",
         oxidation_state_mixer: str = "NoOxidationStateMixer",
         oxidation_state_range: Optional[Tuple] = (-4., 4.),
+        oxidation_state_mixer_zero_init: bool = False,
+        oxidation_state_mixer_scale_ratio: Optional[float] = None,
         heads: Optional[List[str]] = None,
         compute_polarizability: bool = False,
         use_linear_final_readout: bool = False,
@@ -350,6 +352,9 @@ class LocalSplitCharges(_LocalSourceModelBase):
         self.oxidation_state_mixer = oxidation_state_mixers[oxidation_state_mixer](
             node_feats_irreps=self.node_feats_irreps,
             oxidation_state_range=oxidation_state_range,
+            zero_init=oxidation_state_mixer_zero_init,
+            scale_ratio=oxidation_state_mixer_scale_ratio,
+            num_elements=num_elements,
         )
 
         # charge prediction

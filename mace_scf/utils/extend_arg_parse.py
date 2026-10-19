@@ -160,6 +160,25 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         default="SumOxidationStateMixer"
     )
     parser.add_argument(
+        "--oxidation_state_mixer_zero_init",
+        help=(
+            "Zero-initialise the oxidation-state embedding added by SumOxidationStateMixer, "
+            "so training starts from the plain backbone"
+        ),
+        type=strict_str2bool,
+        default=False,
+    )
+    parser.add_argument(
+        "--oxidation_state_mixer_scale_ratio",
+        help=(
+            "Scale the oxidation-state embedding added by SumOxidationStateMixer so that at "
+            "init its RMS is this multiple of the element embedding's (1/sqrt(num_elements)); "
+            "unset leaves it unscaled (RMS ~6x the element embedding's)"
+        ),
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
         "--return_electrostatic_potentials", action="store_true", default=False
     )
     parser.add_argument(
