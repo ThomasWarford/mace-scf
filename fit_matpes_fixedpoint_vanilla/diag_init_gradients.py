@@ -8,7 +8,8 @@ Run through train.sh so it sees exactly the training flags (one GPU, no DDP):
 
 For the freshly initialised model, and for each checkpoint in DIAG_CHECKPOINTS (space-separated
 .pt paths, e.g. the smoke run's direct epoch), on DIAG_BATCHES random train batches of
---batch_size frames, in the first train stage's mode (direct for vanilla.yaml):
+--batch_size frames, in the mode and with the loss of train stage DIAG_STAGE (default 0, the first;
+direct for vanilla.yaml):
 
 - density decomposition: RMS of the field-independent (local) part, the field update, their sum
   and the DDEC reference, per component (q, atomic dipole);
@@ -157,7 +158,7 @@ def main():
         args=args, z_table=z_table, atomic_energies=atomic_energies,
         atomic_charges=None, train_loader=loader,
     ).to(device)
-    stage = args.train_schedule[0]
+    stage = args.train_schedule[int(os.environ.get("DIAG_STAGE", "0"))]   # whose mode and loss
     output_args = {"energy": True, "forces": True, "virials": False,
                    "stress": args.compute_stress, "polarizability": False}
     optimizer = rtu.build_optimizer(rtu.get_param_options(model, args), args)

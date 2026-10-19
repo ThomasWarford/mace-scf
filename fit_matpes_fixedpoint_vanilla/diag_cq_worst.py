@@ -16,7 +16,11 @@
    - at the final state: per-atom dq_i/dmu (sign mix, |sum| vs sum|.|), Fukui weights f_i,
      charges vs reference;
    - energy / force errors with forces through the SCF, constant charge vs constant Fermi.
-Writes diag_cq_worst.json (all screened frames + deep dives) to the results dir.
+DIAG_FORCES=1 adds a pass with forces through the SCF in the unroll stages' validation setting
+(10 steps from the reference density and Fermi level): per-frame energy and force errors.
+For a OneBodyMonotoneChargeUpdate model, also the softness S of every screened atom (quantiles
+overall and per element). Writes diag_cq_worst.json (all screened frames + deep dives +
+softness summary) to the results dir.
 """
 
 import json
@@ -54,10 +58,61 @@ class Capture(logging.Handler):
         self.msgs.append(record.getMessage())
 
 
-def opts(cc, steps=100):
+def opts(cc, steps=100, initial_density="local_guess"):
     return FixedPointSCFOptions(num_scf_steps=steps, scf_tolerance=1e-6, mixing_parameter=0.3,
-                                constant_charge=cc, initial_density="local_guess",
+                                constant_charge=cc, initial_density=initial_density,
                                 initial_fermi_level="from_data")
+
+
+def force_screen(model, loader, device):
+    """Per-frame energy and force errors with forces through the SCF, in the unroll stages'
+    training/validation setting: 10 steps from the reference density and Fermi level."""
+    rows = []
+    runs = {"cc": FixedPointSCFRunner(opts(True, 10, "from_data")),
+            "cf": FixedPointSCFRunner(opts(False, 10, "from_data"))}
+    k = 0
+    for batch in loader:
+        batch = batch.to(device)
+        data = batch.to_dict()
+        n = data["ptr"][1:] - data["ptr"][:-1]
+        G = n.numel()
+        out = {}
+        for tag, run in runs.items():
+            ls = model.local_part(data, compute_force=True)
+            res = run.converge(model, data, ls, run.get_initial_density(ls, data),
+                               run.get_initial_fermi(model, ls, data), compute_force=True)
+            obs = model.build_observables(data=data, local_state=ls, density=res.density,
+                                          fermi_level=res.fermi_level, field_feats=res.field_feats,
+                                          training=False, compute_force=True)
+            ferr = (obs["forces"].detach() - data["forces"]).norm(dim=-1)
+            out[tag] = dict(
+                E=((obs["energy"].detach() - data["energy"]) / n).tolist(),
+                F_mae=(scatter_sum(ferr, data["batch"], dim=0, dim_size=G) / n).tolist(),
+                F_max=[float(ferr[data["batch"] == g].max()) for g in range(G)],
+                F_sq=scatter_sum(((obs["forces"].detach() - data["forces"]) ** 2).sum(-1),
+                                 data["batch"], dim=0, dim_size=G).tolist(),
+                mu=(res.fermi_level.detach() - data["fermi_level"]).tolist(),
+                change=res.final_avg_abs_change.detach().tolist(),
+            )
+            del ls, res, obs
+        for g in range(G):
+            row = dict(idx=k, n=int(n[g]))
+            for tag in out:
+                for key, v in out[tag].items():
+                    row[f"{tag}_{key}"] = float(v[g])
+            rows.append(row)
+            k += 1
+        if k % 1024 < G:
+            logging.info("force-screened %d frames", k)
+    for tag in ("cc", "cf"):
+        n_tot = sum(r["n"] for r in rows)
+        rmse = (sum(r[f"{tag}_F_sq"] for r in rows) / (3 * n_tot)) ** 0.5
+        worst = sorted(rows, key=lambda r: -r[f"{tag}_F_sq"])[:8]
+        logging.info("%s (10 steps from data): force RMSE %.1f meV/A; worst frames by sum |dF|^2: %s",
+                     tag, 1e3 * rmse, [(r["idx"], r["n"], round(r[f"{tag}_F_max"], 2),
+                                         round(r[f"{tag}_mu"], 2), f'{r[f"{tag}_change"]:.2g}')
+                                        for r in worst])
+    return rows
 
 
 def formula(zs):
@@ -75,7 +130,8 @@ def dq_at(model, data, ls, density, mu):
     return dq.detach(), (ls.field_independent_charge_density + dep).detach()
 
 
-def screen(model, loader, device, zs_of):
+def screen(model, loader, device, zs_of, softness):
+    """softness: if not None, a dict filled with each atom's S (n_atoms x widths) by Z."""
     rows = []
     run_cc, run_cf = FixedPointSCFRunner(opts(True)), FixedPointSCFRunner(opts(False))
     k = 0
@@ -85,6 +141,11 @@ def screen(model, loader, device, zs_of):
         n = (data["ptr"][1:] - data["ptr"][:-1])
         G = n.numel()
         ls = model.local_part(data, compute_force=False)
+        if softness is not None:
+            S = model.field_dependent_charges_map.softness(data["node_attrs"], ls.all_layer_feats).detach()
+            Z = data["node_attrs"].argmax(-1)
+            for z in Z.unique().tolist():
+                softness.setdefault(z, []).append(S[Z == z].cpu())
         dq, dens = dq_at(model, data, ls, data["density_coefficients"], data["fermi_level"])
         dQ0 = scatter_sum(dq, data["batch"], dim=-1, dim_size=G)
         Q0 = scatter_sum(dens[:, 0], data["batch"], dim=-1, dim_size=G) - data["total_charge"]
@@ -192,7 +253,32 @@ def main():
         p.requires_grad_(False)
 
     logging.info("screening %d validation frames", len(frames))
-    rows = screen(model, loader, device, zs_of)
+    softness = {} if hasattr(model.field_dependent_charges_map, "softness") else None
+    rows = screen(model, loader, device, zs_of, softness)
+    softness_summary = None
+    if softness is not None:
+        # S per atom (OneBodyMonotoneChargeUpdate): overall and per element quantiles, per width
+        qs = torch.tensor([0.0, 0.01, 0.5, 0.99, 1.0], dtype=torch.float64)
+        allS = torch.cat([t for v in softness.values() for t in v])
+        softness_summary = {"quantiles": [0.0, 0.01, 0.5, 0.99, 1.0],
+                            "all": torch.quantile(allS, qs, dim=0).T.tolist(),
+                            "by_element": {}}
+        for z, v in sorted(softness.items()):
+            Sz = torch.cat(v)
+            softness_summary["by_element"][chemical_symbols[z_table.zs[z]]] = dict(
+                n=int(Sz.shape[0]), q=torch.quantile(Sz, qs, dim=0).T.tolist())
+        logging.info("S quantiles (min, 1%%, median, 99%%, max) per width: %s",
+                     [[round(x, 4) for x in w] for w in softness_summary["all"]])
+        med = sorted((d["q"][0][2], el) for el, d in softness_summary["by_element"].items())
+        logging.info("S median (width 0) lowest elements: %s", [(el, round(m, 4)) for m, el in med[:8]])
+        logging.info("S median (width 0) highest elements: %s", [(el, round(m, 4)) for m, el in med[-8:]])
+
+    force_rows = None
+    if os.environ.get("DIAG_FORCES"):
+        logging.info("force screen: forces through 10 SCF steps from the reference density")
+        force_rows = force_screen(model, loader, device)
+        for r in force_rows:
+            r["formula"] = rows[r["idx"]]["formula"]
 
     top = int(os.environ.get("DIAG_TOP", "30"))
     by_mu = sorted(rows, key=lambda r: -abs(r["cc_mu_drift"]))[:top]
@@ -214,7 +300,8 @@ def main():
     out = os.path.join(args.results_dir, "diag_cq_worst.json")
     os.makedirs(args.results_dir, exist_ok=True)
     with open(out, "w") as fh:
-        json.dump({"frames": rows, "deep_dives": {str(k): v for k, v in dives.items()}}, fh)
+        json.dump({"frames": rows, "deep_dives": {str(k): v for k, v in dives.items()},
+                   "softness": softness_summary, "force_screen": force_rows}, fh)
     logging.info("wrote %s", out)
 
 

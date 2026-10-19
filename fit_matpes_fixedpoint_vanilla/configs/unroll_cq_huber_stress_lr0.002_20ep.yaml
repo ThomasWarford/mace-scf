@@ -1,0 +1,52 @@
+# unroll_cq_huber_lr0.002_20ep.yaml plus a Huber stress term at the force weight in both stages
+# (as direct_huber_stress_lr0.02.yaml). Seed the stress direct run's best checkpoint as
+# _direct_epoch-49. Epochs 50-69, lr 0.002. Run with BACKBONE=r2 UPDATE=monotone TAG=wrand CUEQ=1
+# BATCH=8. See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 49
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom_huber: {weight: 100.0, huber_delta: 0.01}
+      forces_huber: {weight: 1000.0, huber_delta: 0.01}
+      stress_huber: {weight: 1000.0, huber_delta: 0.01}
+    lr: 0.02
+    fixed_point_training_options:
+      mode: direct
+  1:
+    name: unroll
+    start: 50
+    end: 69
+    reset_optimizer: True
+    reset_ema: True
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom_huber: {weight: 10000.0, huber_delta: 0.01}
+      forces_huber: {weight: 1000.0, huber_delta: 0.01}
+      stress_huber: {weight: 1000.0, huber_delta: 0.01}
+      fermi_level_per_atom: 1.0
+    lr: 0.002
+    fixed_point_training_options:
+      mode: unroll_scf
+      scf:
+        num_scf_steps: 10
+        mixing_parameter: 0.3
+        constant_charge: true
+        initial_density: from_data
+        initial_fermi_level: from_data
+        use_autograd_forces: true

@@ -28,8 +28,9 @@
 # feeds it to the model as an input; the SCF stages use it as the initial guess.
 #
 # Differences from the LSC recipe (../fit_matpes_lsc_r2_full/train.sh): the 128x0e+128x1o default
-# backbone unless BACKBONE=r2 (below), no formal charges or oxidation-state flags (ignored), and
-# no stress (FixedPointCore returns none). Optimizer and electrostatics are R3's / LSC's.
+# backbone unless BACKBONE=r2 (below) and no formal charges or oxidation-state flags (ignored).
+# Optimizer and electrostatics are R3's / LSC's. Stress is computed (--compute_stress True) only
+# when the config has a stress loss (e.g. configs/*_stress_*.yaml); implicit mode refuses it.
 #
 # BACKBONE=r2: LSC's R2 (Polar-M) backbone -- 512x0e+512x1o, edge_irreps 128x0e+128x1o,
 # agnostic product, NonLinear interactions, 8 radial functions, ZBL, Agnesi and
@@ -58,6 +59,9 @@ cd "$ROOT"
 W="$ROOT/fit_matpes_fixedpoint_vanilla"
 CASE="${CASE:?set CASE=vanilla|smoke}"
 [ -f "$W/configs/$CASE.yaml" ] || { echo "no config for case $CASE" >&2; exit 1; }
+# a stress loss term (stress / stress_huber / stress_l1 with a weight) turns on --compute_stress
+COMPUTE_STRESS=False
+grep -Eq '^[[:space:]]+stress(_huber|_l1)?:[[:space:]]*(\{|[0-9])' "$W/configs/$CASE.yaml" && COMPUTE_STRESS=True
 FERMI="${FERMI:-ab}"
 case "$FERMI" in ab|raw) ;; *) echo "FERMI must be ab or raw, got $FERMI" >&2; exit 1 ;; esac
 DATA="${PSCRATCH:?PSCRATCH is unset}/mace-scf/matpes_fit/processed_pbe_random_frame_split_fermi_${FERMI}"
@@ -74,6 +78,18 @@ VALID_DIR="${VALID_DIR:-$DATA/val}"     # smoke tests only (full-val linsolve ev
 # linearize_solve stages, so use it with configs that have none (e.g. smoke_cueq).
 CUEQ_ARGS=(); CUEQ_TAG=""
 if [ -n "${CUEQ:-}" ]; then CUEQ_ARGS=(--enable_cueq True); CUEQ_TAG="_cueq"; fi
+# UPDATE=monotone|monotone_sigmoid: OneBodyMonotoneChargeUpdate (dq_i/dmu <= 0) instead of the
+# default OneBodyVariableUpdate, with a softplus (S unbounded) or sigmoid (S < 1) softness;
+# tags the run name _mono / _monosig
+UPDATE_ARGS=(); UPDATE_TAG=""
+MONO_CONFIG="'type': 'OneBodyMonotoneChargeUpdate', 'potential_embedding_cls': 'BiasedLinearPotentialEmbedding', 'nonlinearity_cls': 'NoNonLinearity'"
+case "${UPDATE:-}" in
+    "") ;;
+    monotone) UPDATE_ARGS=(--fixedpoint_update_config "{$MONO_CONFIG}"); UPDATE_TAG="_mono" ;;
+    monotone_sigmoid) UPDATE_ARGS=(--fixedpoint_update_config "{$MONO_CONFIG, 'softness_activation': 'sigmoid'}")
+                      UPDATE_TAG="_monosig" ;;
+    *) echo "UPDATE must be empty, monotone or monotone_sigmoid, got $UPDATE" >&2; exit 1 ;;
+esac
 BACKBONE_TAG=""
 case "${BACKBONE:-}" in
     "") BACKBONE_ARGS=(--hidden_irreps '128x0e + 128x1o') ;;
@@ -96,16 +112,19 @@ esac
 EMA_ARGS=(--ema --ema_decay 0.9998)
 [ -n "${NO_EMA:-}" ] && EMA_ARGS=()
 read -r -a EXTRA_ARGS <<< "${EXTRA:-}"   # extra run_train.py flags, e.g. EXTRA=--save_all_checkpoints (chain.sh)
-BATCH_SIZE="${BATCH:-2}"   # probe_batch_memory.py, see above; BATCH=<n> overrides (direct/unroll
-                           # with CUEQ=1 only; never for linearize_solve) and tags the run name _b<n>
+BATCH_SIZE="${BATCH:-2}"   # probe_batch_memory.py, see above; BATCH=<n> overrides and tags the run
+                           # name _b<n>: 8 for direct/unroll with CUEQ=1; 4 for linearize_solve since
+                           # the chunked, graph-free Jacobian (worst case 49 GiB, B>=6 OOMs in e3nn)
 BATCH_TAG=""; [ -n "${BATCH:-}" ] && BATCH_TAG="_b${BATCH}"
 # CLIP=<x>: gradient clip (default 1.0, which clips ~every step under the docs' MSE weights);
 # tags the run name _clip<x>
+# TAG=<x>: free-form suffix _<x> on the run name, e.g. to tell apart runs of different code
+RUN_TAG=""; [ -n "${TAG:-}" ] && RUN_TAG="_${TAG}"
 CLIP_GRAD="${CLIP:-1.0}"; CLIP_TAG=""; [ -n "${CLIP:-}" ] && CLIP_TAG="_clip${CLIP}"
 # `average` over train_0.h5 (5.8k shuffled frames, FERMI=ab) in smoke job 59165031; hard-coded so
 # each chain link skips a full-data pass at startup.
 FIELD_NORMS="[16.85128938, 11.29358665, 0.45036201, 0.25651795]"
-NAME="fp_vanilla_fermi${FERMI}_${CASE}${BACKBONE_TAG}${CUEQ_TAG}${BATCH_TAG}${CLIP_TAG}_g${SLURM_NTASKS}"
+NAME="fp_vanilla_fermi${FERMI}_${CASE}${BACKBONE_TAG}${UPDATE_TAG}${CUEQ_TAG}${BATCH_TAG}${CLIP_TAG}${RUN_TAG}_g${SLURM_NTASKS}"
 CKPT="${PSCRATCH}/mace-scf/fit_matpes_fixedpoint_vanilla/checkpoints/$NAME"
 
 # Outputs live on $SCRATCH: logs/results/wandb/models are links into $ROOT/fits (a link to
@@ -122,7 +141,7 @@ RECIPE="$W/logs/recipes/${NAME}_${SLURM_JOB_ID}"
 mkdir -p "$RECIPE"
 cp "$0" "$RECIPE/train.sh"
 cp "$W/configs/$CASE.yaml" "$RECIPE/config.yaml"
-printf 'BACKBONE=%s\nCLIP=%s\nBATCH=%s\nCUEQ=%s\nCASE=%s\nFERMI=%s\nTRAIN_DIR=%s\nVALID_DIR=%s\nEXTRA=%s\nDATA=%s\ngit=%s\n' "${BACKBONE:-}" "$CLIP_GRAD" "$BATCH_SIZE" "${CUEQ:-}" "$CASE" "$FERMI" "$TRAIN_DIR" "$VALID_DIR" "${EXTRA:-}" "$DATA" \
+printf 'COMPUTE_STRESS=%s\nBACKBONE=%s\nUPDATE=%s\nCLIP=%s\nBATCH=%s\nCUEQ=%s\nCASE=%s\nFERMI=%s\nTRAIN_DIR=%s\nVALID_DIR=%s\nEXTRA=%s\nDATA=%s\ngit=%s\n' "$COMPUTE_STRESS" "${BACKBONE:-}" "${UPDATE:-}" "$CLIP_GRAD" "$BATCH_SIZE" "${CUEQ:-}" "$CASE" "$FERMI" "$TRAIN_DIR" "$VALID_DIR" "${EXTRA:-}" "$DATA" \
     "$(git -C "$ROOT" rev-parse HEAD 2>/dev/null)$(git -C "$ROOT" diff --quiet 2>/dev/null || echo ' (dirty)')" > "$RECIPE/settings.txt"
 
 MASTER_PORT=$(python3 -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()' 2>/dev/null \
@@ -189,13 +208,14 @@ srun --cpu-bind=cores "${SRUN_EXTRA[@]}" conda run -n mace_scf --no-capture-outp
     --warmup_steps_schedulefree 2000 \
     "${EMA_ARGS[@]}" \
     --compute_polarizability False \
-    --compute_stress False \
+    --compute_stress "$COMPUTE_STRESS" \
     --default_dtype float64 \
     --device cuda \
     "${DIST_ARGS[@]}" \
     --seed 1 \
     --clip_grad "$CLIP_GRAD" \
     "${CUEQ_ARGS[@]}" \
+    "${UPDATE_ARGS[@]}" \
     "${EXTRA_ARGS[@]}" \
     --debug-log-grad-summary \
     --wandb \

@@ -15,6 +15,11 @@ Per (stage, path, B, batch kind) it reports peak allocated memory of a train ste
 (forward, loss, backward, clip, optimizer step) and of a validation forward, wall time, and
 linearize_solve fallback warnings. Batch sizes come from PROBE_BATCH_SIZES (default "16 8 4").
 
+PROBE_TIMING=n instead times n random batches per batch size (plus one warm-up batch, not
+counted) and reports the mean and median seconds per train step, e.g. to compare the cost of
+--compute_stress. PROBE_CHECKPOINT=<.pt> loads trained weights first (a cueq checkpoint for
+--enable_cueq, an e3nn one otherwise), so the SCF stages iterate as they do in training.
+
 PROBE_ATOMS="50 100 ..." instead sweeps atoms per batch (for a variable-batch-size / atom-budget
 sampler): per budget A, the largest frames that fit in A and random frames up to A. Results go to
 probe_atom_sweep.json.
@@ -115,6 +120,7 @@ def main():
     total_gib = torch.cuda.get_device_properties(device).total_memory / 2**30
     batch_sizes = [int(b) for b in os.environ.get("PROBE_BATCH_SIZES", "16 8 4").split()]
     atom_budgets = [int(a) for a in os.environ.get("PROBE_ATOMS", "").split()]
+    timing_steps = int(os.environ.get("PROBE_TIMING", "0"))
 
     counter = FallbackCounter()
     logging.getLogger().addHandler(counter)
@@ -144,6 +150,11 @@ def main():
         args=args, z_table=z_table, atomic_energies=atomic_energies,
         atomic_charges=None, train_loader=norm_loader,
     ).to(device)
+    checkpoint = os.environ.get("PROBE_CHECKPOINT")
+    if checkpoint:
+        state = torch.load(checkpoint, map_location=device, weights_only=False)["model"]
+        model.load_state_dict(state, strict=True)
+        logging.info("loaded weights from %s", checkpoint)
     param_options = rtu.get_param_options(model, args)
     output_args = {"energy": True, "forces": True, "virials": False,
                    "stress": args.compute_stress, "polarizability": False}
@@ -166,6 +177,13 @@ def main():
                 if total >= A:
                     break
             cases += [(len(large), "large", large), (len(small), "small", small)]
+    elif timing_steps:
+        for B in batch_sizes:
+            for k in range(timing_steps + 1):  # k == 0 is the warm-up
+                kind = "warmup" if k == 0 else "timing"
+                cases.append(
+                    (B, kind, [frames[i] for i in rng.choice(len(frames), size=B, replace=False)])
+                )
     else:
         for B in batch_sizes:
             cases += [
@@ -237,12 +255,29 @@ def main():
                     p.requires_grad_(True)
 
     logging.info("GPU total %.1f GiB", total_gib)
+    if timing_steps:
+        summary = {}
+        for r in rows:
+            if r["kind"] == "timing" and r["status"].startswith("ok"):
+                summary.setdefault((r["stage"], r["path"], r["phase"], r["B"]), []).append(r)
+        for (stage, path, phase, B), rs in summary.items():
+            seconds = np.array([r["seconds"] for r in rs])
+            logging.info(
+                "TIMING stage=%s path=%s phase=%s B=%d n=%d mean=%.3f s median=%.3f s "
+                "max=%.3f s, atoms mean %.1f, peak GiB max %.2f, fallbacks %d",
+                stage, path, phase, B, len(rs), seconds.mean(), np.median(seconds),
+                seconds.max(), np.mean([r["n_atoms"] for r in rs]),
+                max(r["peak_gib"] for r in rs), sum("fallback" in r["status"] for r in rs),
+            )
     print(f"\n{'stage':9} {'path':25} {'phase':5} {'B':>3} {'kind':7} {'atoms':>5} {'GiB':>6} {'frac':>5} {'s':>6}  status")
     for r in rows:
         print(f"{r['stage']:9} {r['path']:25} {r['phase']:5} {r['B']:>3} {r['kind']:7} {r['n_atoms']:>5} "
               f"{r['peak_gib']:>6} {r['frac']:>5} {r['seconds']:>6}  {r['status']}")
     out = os.path.join(
-        args.results_dir, "probe_atom_sweep.json" if atom_budgets else "probe_batch_memory.json"
+        args.results_dir,
+        "probe_atom_sweep.json" if atom_budgets
+        else "probe_timing.json" if timing_steps
+        else "probe_batch_memory.json",
     )
     os.makedirs(args.results_dir, exist_ok=True)
     with open(out, "w") as f:

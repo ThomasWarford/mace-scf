@@ -1,0 +1,29 @@
+# direct_huber_lr0.02.yaml plus a Huber (delta 0.01) stress term at the force weight, as LSC / R3
+# (E 1 : F 10 : S 10 Huber; here E 100 : F 1000 : S 1000). train.sh turns on --compute_stress
+# when a config has a stress loss. Needs FixedPoint stress (merge of fixed-point-stress, 42dee83).
+# Run with BACKBONE=r2 UPDATE=monotone TAG=wrand CUEQ=1 BATCH=8. See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 49
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom_huber: {weight: 100.0, huber_delta: 0.01}
+      forces_huber: {weight: 1000.0, huber_delta: 0.01}
+      stress_huber: {weight: 1000.0, huber_delta: 0.01}
+    lr: 0.02
+    fixed_point_training_options:
+      mode: direct

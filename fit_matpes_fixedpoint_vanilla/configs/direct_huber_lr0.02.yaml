@@ -1,0 +1,33 @@
+# direct_docs_lr0.02.yaml with Huber (delta 0.01) energy and force losses, as the R2 / Polar-M recipe
+# (fit_matpes_polarm_pbe_rf_wide: E 1 : F 10 Huber). Motivation: under MSE the R2 direct
+# validation loss is ~97% 100*RMSE_F^2, set by the outlier tail (RMSE_F flat from epoch ~30 while
+# the MAEs keep falling), so best-checkpoint choice and early stopping track the tail. Weights
+# E 100 / F 1000 keep R2's 1:10 ratio and roughly the MSE run's gradient scale at its errors
+# (Huber grad = w*delta: F 1000*0.01 = 10 vs MSE 2*100*0.09 = 18; E 1 vs 0.8), so the balance with
+# the multipole and total-charge terms stays as tested. Multipoles stay MSE: overfit tests showed
+# the Huber multipole mix of vanilla.yaml does not fit the DDEC density. Run with BACKBONE=r2
+# UPDATE=monotone CUEQ=1 BATCH=8. See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 49
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom_huber: {weight: 100.0, huber_delta: 0.01}
+      forces_huber: {weight: 1000.0, huber_delta: 0.01}
+    lr: 0.02
+    fixed_point_training_options:
+      mode: direct

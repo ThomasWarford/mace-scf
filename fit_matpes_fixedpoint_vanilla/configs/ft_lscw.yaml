@@ -1,0 +1,45 @@
+# Why are FixedPoint multipoles worse than LSC's (q MAE ~37 vs ~18 me, dipoles ~14 vs ~7 me A)?
+# Warm-started from the vanilla lr0.028 direct model (stage 0 is that run's, skipped: seed the
+# checkpoint dir with its direct_epoch-49 checkpoint, renamed), then 3 direct epochs with a fresh
+# optimizer and EMA, lr 0.028 sqrt-scaled from 32 to 8 GPUs -> 0.014. Run with CUEQ=1 BATCH=16.
+# ft_lscw: the loss balance of LSC mse_5 (fit_matpes_lsc_r2_full/configs/mse_5.yaml): Huber
+# energy 1 and forces 10 (delta 0.01, so their gradients are capped at delta * weight), MSE
+# multipoles 5; plus the MSE total charge 1000 of the docs weights (LSC conserves charge exactly).
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 49
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom: 10.0
+      forces: 100.0
+    lr: 0.028
+    fixed_point_training_options:
+      mode: direct
+  1:
+    name: ft
+    start: 50
+    end: 52
+    reset_optimizer: True
+    reset_ema: True
+    loss:
+      energy_per_atom_huber: {weight: 1.0, huber_delta: 0.01}
+      forces_huber: {weight: 10.0, huber_delta: 0.01}
+      atomic_multipoles: 5.0
+      total_charge_per_atom: 1000.0
+    lr: 0.014
+    fixed_point_training_options:
+      mode: direct

@@ -1,0 +1,44 @@
+# OneBodyMonotoneChargeUpdate (dq_i/dmu <= 0; run with UPDATE=monotone CUEQ=1 BATCH=16 on 16 GPUs),
+# warm-started from the vanilla lr0.028 direct model: stage 0 is that run's, skipped (seed the
+# checkpoint dir with seed_monotone_checkpoint.py). The monotone block reuses the vanilla block's
+# weights except the monopole's l=0 slope, which it replaces with -S (S = softness, init 0.05).
+# direct_mono: 3 direct epochs to refit the block, lr 0.028 sqrt-scaled from 32 to 16 GPUs -> 0.02,
+# fresh optimizer and EMA. Its last checkpoint seeds mono_unroll_cf / mono_unroll_cq.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+      fermi_level: REF_vasp_fermi_level_plus_alpha_bet
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: direct
+    start: 0
+    end: 49
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom: 10.0
+      forces: 100.0
+    lr: 0.028
+    fixed_point_training_options:
+      mode: direct
+  1:
+    name: direct_mono
+    start: 50
+    end: 52
+    reset_optimizer: True
+    reset_ema: True
+    loss:
+      atomic_multipoles: 100.0
+      total_charge_per_atom: 1000.0
+      energy_per_atom: 10.0
+      forces: 100.0
+    lr: 0.02
+    fixed_point_training_options:
+      mode: direct
