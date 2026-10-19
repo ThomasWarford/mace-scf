@@ -1,0 +1,25 @@
+# Multipole-loss scan case `l2_10`: R2's stage-1 Huber loss + MSE atomic_multipoles, weight 10.
+# See ../scan.sh. `end` is past the debug time limit on purpose: each case trains until
+# the job ends, and the scan reads the per-epoch validation lines.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+
+train_schedule:
+  0:
+    name: stage1
+    start: 0
+    end: 200
+    loss:
+      energy_per_atom_huber: {weight: 1.0, huber_delta: 0.01}
+      forces_huber: {weight: 10.0, huber_delta: 0.01}
+      stress_huber: {weight: 10.0, huber_delta: 0.01}
+      atomic_multipoles: {weight: 10.0}
+    lr: 0.005

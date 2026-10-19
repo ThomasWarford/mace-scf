@@ -1,0 +1,38 @@
+# Stage 2 as R2 ran it (../fit_matpes_polarm_pbe_rf_wide/config.yaml: energy 1 -> 100, forces 10 -> 20,
+# stress 10, lr / 10), started from stage 1's epoch-49 EMA weights with a fresh schedule-free
+# optimizer (reset_optimizer; 2000-step warmup again) and a fresh EMA. Without the reset,
+# schedule-free's average (weighted by the largest lr seen) would absorb stage 2 at ~1/36000 per step.
+# Stage 1 is hub_5.yaml's with end 49; it is skipped (its epoch-49 checkpoint is loaded). The
+# multipole term keeps its stage-1 weight. See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: stage1
+    start: 0
+    end: 49
+    loss:
+      energy_per_atom_huber: {weight: 1.0, huber_delta: 0.01}
+      forces_huber: {weight: 10.0, huber_delta: 0.01}
+      stress_huber: {weight: 10.0, huber_delta: 0.01}
+      atomic_multipoles_huber: {weight: 5.0, huber_delta: 0.01}
+    lr: 0.01
+  1:
+    name: stage2
+    start: 50
+    end: 69
+    reset_optimizer: True
+    loss:
+      energy_per_atom_huber: {weight: 100.0, huber_delta: 0.01}
+      forces_huber: {weight: 20.0, huber_delta: 0.01}
+      stress_huber: {weight: 10.0, huber_delta: 0.01}
+      atomic_multipoles_huber: {weight: 5.0, huber_delta: 0.01}
+    lr: 0.001

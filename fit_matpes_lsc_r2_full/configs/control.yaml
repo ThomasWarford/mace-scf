@@ -1,0 +1,23 @@
+# Full-data LSC fit, case `control`: R3's (../fit_matpes_polarm_pbe_rf_sf/config.yaml) stage 1
+# exactly
+# See ../train.sh.
+heads:
+  default:
+    info_keys:
+      energy: REF_energy
+      total_charge: REF_total_charge
+      stress: REF_stress
+    arrays_keys:
+      forces: REF_forces
+      charges: REF_formal_charges
+      atomic_multipoles: REF_multipoles
+train_schedule:
+  0:
+    name: stage1
+    start: 0
+    end: 49
+    loss:
+      energy_per_atom_huber: {weight: 1.0, huber_delta: 0.01}
+      forces_huber: {weight: 10.0, huber_delta: 0.01}
+      stress_huber: {weight: 10.0, huber_delta: 0.01}
+    lr: 0.01
