@@ -381,6 +381,22 @@ class HuberMultipoles:
         return f"{self.__class__.__name__}(huber_delta={self.huber_delta})"
 
 
+# L1 counterpart of `atomic_multipoles` (weighted_mean_squared_error_dma): mean absolute error
+# per component over q and the atomic dipoles, with the same config and NaN-DDEC6 masks.
+def weighted_mean_absolute_error_dma(
+    ref: Batch, pred: TensorDict, ddp: Optional[bool] = None
+) -> torch.Tensor:
+    num_atoms = ref.ptr[1:] - ref.ptr[:-1]
+    configs_weight = torch.repeat_interleave(
+        ref.weight * ref.density_coefficients_weight, num_atoms
+    ).unsqueeze(-1)  # [n_atoms, 1]
+    assert ref["density_coefficients"].shape == pred["density_coefficients"].shape
+    raw_loss = configs_weight * torch.abs(
+        ref["density_coefficients"] - pred["density_coefficients"]
+    )  # [n_atoms, (max_l+1)**2]
+    return reduce_loss(raw_loss, ddp)
+
+
 # The MACE-Polar / OMol `l1l2energyforces` recipe: MAE of the per-atom energy plus the mean
 # Euclidean norm of the per-atom force error, extended with an MAE stress term because
 # MatPES carries stress and Polar does not. Unlike upstream's mean_normed_error_forces,
@@ -445,6 +461,7 @@ _LOSS_FUNCTIONS = {
     "energy_per_atom_l1": weighted_mean_absolute_error_energy_per_atom,
     "forces_l2norm": weighted_mean_normed_error_forces,
     "stress_l1": weighted_mean_absolute_error_stress,
+    "atomic_multipoles_l1": weighted_mean_absolute_error_dma,
 }
 
 
