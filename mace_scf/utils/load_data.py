@@ -466,8 +466,9 @@ def load_train_valid_sets_from_xyz(args: argparse.Namespace,  config_type_weight
 def load_train_valid_sets_from_preprocessed(args: argparse.Namespace):
     """Load preprocessed HDF5: a directory of shards, or a single .h5 file.
 
-    Returns the same 5-tuple as the .xyz loader. Shards carry no config_type grouping,
-    so there are never test collections.
+    Returns the same 5-tuple as the .xyz loader. Shards carry no config_type grouping, so
+    test collections come only from an .xyz --test_file, grouped by config_type as the .xyz
+    loader groups them.
     """
     # The z-table cannot be derived from the shards, so it has to come from the command
     # line (or, via load_statistics_file, from the statistics.json written beside them).
@@ -500,7 +501,23 @@ def load_train_valid_sets_from_preprocessed(args: argparse.Namespace):
         [atomic_energies_dict[z] for z in z_table.zs]
     )
     log_dataset_summary(z_table, train_set, valid_set)
-    return train_set, valid_set, z_table, atomic_energies, []
+
+    # without this an .xyz --test_file next to .h5 train/valid input was silently ignored
+    test_collections = []
+    if args.test_file is not None:
+        _, test_configs = mace.data.load_from_xyz(
+            file_path=args.test_file,
+            key_specification=args.key_specification,
+            extract_atomic_energies=False,
+        )
+        unknown = {int(z) for c in test_configs for z in c.atomic_numbers} - set(z_table.zs)
+        if unknown:
+            raise ValueError(f"test_file has elements outside the z-table: {sorted(unknown)}")
+        test_collections = mace.data.test_config_types(test_configs)
+        logging.info(
+            f"Test set: {len(test_configs)} configurations in {len(test_collections)} config_type groups"
+        )
+    return train_set, valid_set, z_table, atomic_energies, test_collections
 
 
 def fermi_level_offset_from_configurations(configurations) -> Optional[float]:
