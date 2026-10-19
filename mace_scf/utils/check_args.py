@@ -148,6 +148,11 @@ def fill_default_train_settings(train_stage_dict):
     required_settings = ["start", "end", "loss", "name"]
     default_optional_settings = {
         "lr": 0.01,
+        # start the stage with a fresh optimizer (moments, schedule-free average and warmup);
+        # a resumed stage then loads its own checkpoint's optimizer state over it
+        "reset_optimizer": False,
+        # start the stage from the EMA weights with a fresh EMA (no-op without --ema)
+        "reset_ema": False,
     }
     for key in required_settings:
         assert key in train_stage_dict, f"Missing key {key} in train_stage_dict"

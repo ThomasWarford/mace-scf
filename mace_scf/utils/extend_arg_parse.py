@@ -395,6 +395,35 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         default=0,
     )
 
+    # lr range test (mace_scf/utils/lr_find.py)
+    parser.add_argument(
+        "--lr_find",
+        help="run a fastai-style lr range test on one train stage and exit without training",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument("--lr_find_min", help="lr at the start of the ramp", type=float, default=1e-6)
+    parser.add_argument("--lr_find_max", help="lr at the end of the ramp", type=float, default=1e-1)
+    parser.add_argument("--lr_find_steps", help="optimizer steps in the ramp", type=int, default=500)
+    parser.add_argument(
+        "--lr_find_stage",
+        help="train stage whose loss and lrs the range test uses (default: the first)",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "--lr_find_group",
+        help="ramp only the param group(s) of this name, holding the others at their stage lr",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "--lr_find_repeats",
+        help="repeat the range test from the same weights with different data orders",
+        type=int,
+        default=1,
+    )
+
     # QEq arguments
     parser.add_argument(
         "--qeq_charges",

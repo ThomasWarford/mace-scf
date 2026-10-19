@@ -4,6 +4,7 @@ import logging
 from functools import partial
 from pathlib import Path
 from typing import Any, Optional
+from copy import deepcopy
 from dataclasses import asdict, is_dataclass
 import types
 
@@ -28,6 +29,7 @@ from mace.tools.scripts_utils import LRScheduler
 # mace_scf replaces data, and some utils
 import mace_scf.data
 import mace_scf.utils
+from mace_scf.utils.train import load_resume_state
 
 from mace_scf import electrostatics
 from mace_scf.utils.check_args import (
@@ -92,6 +94,57 @@ def build_lr_scheduler(optimizer, args):
         )
         return NoOpLRScheduler()
     return LRScheduler(optimizer, args)
+
+
+def run_lr_find(
+    args, tag, stage_name, train_stage, model, model_wrapper, loss_fn, train_loader,
+    train_sampler, optimizer, device, rank,
+) -> None:
+    """--lr_find: range-test one stage, repeating from the same weights with reshuffled data.
+
+    Under --distributed every rank runs the test (the batch is the global batch, as in
+    training) and rank 0 writes the outputs.
+    """
+    model_state = deepcopy(model.state_dict())
+    optimizer_state = deepcopy(optimizer.state_dict())
+    all_suggestions = []
+    for repeat in range(args.lr_find_repeats):
+        model.load_state_dict(model_state)
+        optimizer.load_state_dict(optimizer_state)
+        # a single-process loader shuffles from the global RNG; a DistributedSampler from
+        # its epoch, so each repeat starts at its own (far apart) sampler epoch
+        torch.manual_seed(args.seed + repeat)
+        records = mace_scf.utils.lr_find(
+            model=model,
+            model_wrapper=model_wrapper,
+            loss_fn=loss_fn,
+            train_loader=train_loader,
+            optimizer=optimizer,
+            device=device,
+            ref_lr=train_stage["lr"],
+            lr_min=args.lr_find_min,
+            lr_max=args.lr_find_max,
+            num_steps=args.lr_find_steps,
+            max_grad_norm=args.clip_grad,
+            group=args.lr_find_group,
+            train_sampler=train_sampler,
+            sampler_epoch=1000 * repeat,
+        )
+        suggestions = mace_scf.utils.suggest_lr(records)
+        all_suggestions.append(suggestions)
+        if rank != 0:
+            continue
+        out_prefix = Path(args.results_dir) / f"{tag}_{stage_name}_lrfind"
+        if args.lr_find_repeats > 1:
+            out_prefix = out_prefix.with_name(f"{out_prefix.name}_r{repeat}")
+        mace_scf.utils.write_lr_find_outputs(records, suggestions, out_prefix, args.clip_grad)
+        logging.info(
+            f"lr_find repeat {repeat}: {len(records)} steps, suggestions {suggestions}; "
+            f"wrote {out_prefix}.png"
+        )
+    if args.lr_find_repeats > 1 and rank == 0:
+        medians = {k: float(np.nanmedian([s[k] for s in all_suggestions])) for k in all_suggestions[0]}
+        logging.info(f"lr_find median suggestions over {args.lr_find_repeats} repeats: {medians}")
 
 
 def main() -> None:
@@ -367,14 +420,52 @@ def main() -> None:
             )
             test_data_loaders[test_name] = test_loader
 
+    if args.lr_find:
+        stage_names = [train_stage["name"] for train_stage in args.train_schedule]
+        lr_find_stage = args.lr_find_stage or stage_names[0]
+        if lr_find_stage not in stage_names:
+            raise ValueError(f"--lr_find_stage {lr_find_stage!r} is not one of {stage_names}")
+
     # training loop
     for stage_index, train_stage in enumerate(args.train_schedule):
-        if train_stage["end"] <= start_epoch:
+        if args.lr_find:
+            # the range test starts from the current (initialised or restarted) weights,
+            # whatever the stage's epoch range
+            if train_stage["name"] != lr_find_stage:
+                continue
+        elif train_stage["end"] <= start_epoch:
             continue
         else:
             start_epoch = train_stage["start"]
 
         stage_name = train_stage["name"]
+        if train_stage["reset_ema"] and ema is not None:
+            # start the stage from the EMA weights with a fresh EMA, as a separate job resumed
+            # from the previous stage's (EMA-weight) checkpoint would. Before the optimizer
+            # reset so it is built on these weights; a resumed stage then loads its own
+            # checkpoint and resume state over both
+            logging.info(f"Loading the EMA weights and resetting the EMA at the start of stage {stage_name}")
+            ema.copy_to(model.parameters())
+            ema = ExponentialMovingAverage(model.parameters(), decay=args.ema_decay)
+        if train_stage["reset_optimizer"]:
+            # before the model wrapper, which holds the optimizer. Under schedule-free this
+            # matters: its average weights every step by the largest lr seen, so continuing
+            # with a lower stage lr would move the evaluated average only ~1/k per step
+            logging.info(f"Resetting the optimizer at the start of stage {stage_name}")
+            optimizer = mace_scf.utils.run_train_utils.build_optimizer(param_options, args)
+            lr_scheduler = build_lr_scheduler(optimizer, args)
+        if args.lr_find and args.optimizer == "schedulefree":
+            # schedule-free's warmup and its lr-weighted average of the iterates distort a
+            # range test; ramp plain AdamW with the same groups, betas and weight decay
+            logging.info("--lr_find: running the range test with AdamW in place of schedule-free")
+            optimizer = torch.optim.AdamW(
+                [
+                    {"name": g["name"], "params": g["params"], "weight_decay": g["weight_decay"]}
+                    for g in optimizer.param_groups
+                ],
+                lr=args.lr,
+                betas=(args.beta, args.beta_two),
+            )
         loss_fn = mace_scf.electrostatics.loss.WeightedLoss(train_stage["loss"])
         logging.info(loss_fn)
         model_wrapper = mace_scf.utils.make_model_wrapper(
@@ -396,6 +487,13 @@ def main() -> None:
                 param_group["lr"] = new_lr
         logging.debug(f"Optimizer: {optimizer}")
 
+        if args.lr_find:
+            run_lr_find(
+                args, tag, stage_name, train_stage, model, model_wrapper, loss_fn,
+                train_loader, train_sampler, optimizer, device, rank,
+            )
+            return
+
         checkpoint_handler_stage = tools.CheckpointHandler(
             directory=args.checkpoints_dir,
             tag=tag+"_"+stage_name,
@@ -409,6 +507,12 @@ def main() -> None:
             )
             if latest_checkpoint_epoch is not None:
                 start_epoch = latest_checkpoint_epoch
+                # with the live weights and EMA restored, the checkpoint's epoch is complete:
+                # continue at the next one instead of repeating it
+                if ema is not None and load_resume_state(
+                    checkpoint_handler_stage, model, ema, latest_checkpoint_epoch, device
+                ):
+                    start_epoch = latest_checkpoint_epoch + 1
 
         # train_loader = get_data_loader(train_dataset, train_stage["fixed_point_training_options"])
 

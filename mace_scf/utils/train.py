@@ -20,6 +20,63 @@ from mace_scf.utils.eval_metrics import MaceSCFLoss
 from mace_scf.utils.model_training_wrappers import BaseModelWrapper
 
 
+# With --ema, checkpoints hold the EMA weights (saved under ema.average_parameters()), and the
+# EMA itself is not saved. A resumed run then trains from the EMA weights with a fresh EMA,
+# and a schedule-free optimizer reads them as its x iterate. This sidecar keeps the live
+# weights and the EMA state next to each EMA-weight checkpoint, in <checkpoints_dir>/resume/,
+# so --restart_latest can continue the run exactly (load_resume_state). Checkpoints and
+# models are unchanged.
+def _resume_state_path(checkpoint_handler: CheckpointHandler, epoch: int) -> str:
+    io = checkpoint_handler.io
+    return os.path.join(io.directory, "resume", f"{io.tag}_epoch-{epoch}.pt")
+
+
+def save_resume_state(
+    checkpoint_handler: CheckpointHandler,
+    model: torch.nn.Module,
+    ema: ExponentialMovingAverage,
+    epoch: int,
+) -> None:
+    path = _resume_state_path(checkpoint_handler, epoch)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    state = {
+        "epoch": epoch,
+        "params": [p.detach().cpu().clone() for p in model.parameters()],
+        "ema": ema.state_dict(),
+    }
+    torch.save(state, path + ".tmp")
+    os.replace(path + ".tmp", path)  # a job killed mid-write leaves no partial sidecar
+    if not checkpoint_handler.io.keep:
+        prefix = f"{checkpoint_handler.io.tag}_epoch-"
+        for f in os.listdir(os.path.dirname(path)):
+            if f.startswith(prefix) and os.path.join(os.path.dirname(path), f) != path:
+                os.remove(os.path.join(os.path.dirname(path), f))
+
+
+def load_resume_state(
+    checkpoint_handler: CheckpointHandler,
+    model: torch.nn.Module,
+    ema: ExponentialMovingAverage,
+    epoch: int,
+    device: torch.device,
+) -> bool:
+    """Restore the live weights and EMA saved with the epoch-`epoch` checkpoint, which must
+    already be loaded. Returns False (leaving the EMA-weight resume) if there is no sidecar."""
+    path = _resume_state_path(checkpoint_handler, epoch)
+    if not os.path.isfile(path):
+        logging.warning(f"No resume state at {path}; resuming from the checkpoint's EMA weights")
+        return False
+    state = torch.load(path, map_location=device)
+    params = list(model.parameters())
+    assert len(params) == len(state["params"]), "resume state does not match the model"
+    with torch.no_grad():
+        for p, saved in zip(params, state["params"]):
+            p.copy_(saved.to(device=p.device, dtype=p.dtype))
+    ema.load_state_dict(state["ema"])
+    logging.info(f"Restored live weights and EMA state from {path}")
+    return True
+
+
 def _should_log_grad_summary(opt_step: int, frequency: Optional[int]) -> bool:
     return frequency is not None and frequency > 0 and opt_step % frequency == 0
 
@@ -248,6 +305,7 @@ def train(
                                     epochs=epoch,
                                     keep_last=True,
                                 )
+                            save_resume_state(checkpoint_handler, model, ema, epoch)
                         else:
                             checkpoint_handler.save(
                                 state=CheckpointState(model, optimizer, lr_scheduler),
@@ -273,6 +331,7 @@ def train(
                                 keep_last=keep_last,
                             )
                             keep_last = False or save_all_checkpoints
+                        save_resume_state(checkpoint_handler, model, ema, epoch)
                     else:
                         checkpoint_handler.save(
                             state=CheckpointState(model, optimizer, lr_scheduler),

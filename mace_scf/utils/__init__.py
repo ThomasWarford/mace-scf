@@ -1,4 +1,5 @@
 from .train import train
+from .lr_find import lr_find, plot_lr_find, read_lr_find_records, suggest_lr, write_lr_find_outputs
 
 from .script_utils import create_error_table
 from .scf_convergence_summary import create_scf_convergence_summary, is_fixed_point_model
