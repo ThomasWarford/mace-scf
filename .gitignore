@@ -53,3 +53,6 @@ fit_matpes_*/checkpoints/
 fit_matpes_*/logs/
 fit_matpes_*/results/
 fit_matpes_*/wandb/
+
+# fit outputs live on $SCRATCH/mace-scf/fits; ./fits is a symlink to it
+fits
