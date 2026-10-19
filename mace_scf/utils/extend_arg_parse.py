@@ -268,6 +268,15 @@ def extended_arg_parser() -> argparse.ArgumentParser:
         default=False
     )
     parser.add_argument(
+        "--density_MLP_irreps",
+        type=str,
+        default=None,
+        help="FixedPoint: hidden irreps of the field-independent density head "
+        "(GeneralNonLinearBiasReadoutBlock), default --MLP_irreps. Include an l=1 irrep "
+        "(e.g. '16x0e+16x1o') so the head can output atomic dipoles; --MLP_irreps itself "
+        "must stay scalar for MACE's energy readout.",
+    )
+    parser.add_argument(
         "--field_hidden_irreps",
         type=str,
         default=None,

@@ -80,6 +80,7 @@ class FixedPointCore(torch.nn.Module):
         fixedpoint_update_config: Dict[str, Any],
         field_readout_config: Dict[str, Any],
         use_linear_local_charges: bool = False,
+        density_MLP_irreps: Optional[o3.Irreps] = None,
         edge_irreps: Optional[o3.Irreps] = None,
         use_agnostic_product: bool = False,
         atomic_inter_scale: Optional[float] = None,
@@ -238,7 +239,11 @@ class FixedPointCore(torch.nn.Module):
             0
         ].simplify()
 
-        # Density readout blocks
+        # Density readout blocks. density_MLP_irreps (default MLP_irreps) is the nonlinear
+        # head's hidden irreps: it needs an l=1 irrep to output atomic dipoles, which
+        # MLP_irreps cannot have since MACE's energy readout shares it
+        if density_MLP_irreps is None:
+            density_MLP_irreps = MLP_irreps
         if use_linear_local_charges:
             self.lr_source_maps = torch.nn.ModuleList(
                 [
@@ -254,7 +259,7 @@ class FixedPointCore(torch.nn.Module):
                 [
                     GeneralNonLinearBiasReadoutBlock(
                         irreps_in=hidden_irreps,
-                        MLP_irreps=MLP_irreps,
+                        MLP_irreps=density_MLP_irreps,
                         irreps_out=self.charges_irreps,
                         gate=gate,
                     )
@@ -319,7 +324,7 @@ class FixedPointCore(torch.nn.Module):
                 self.lr_source_maps.append(
                     GeneralNonLinearBiasReadoutBlock(
                         irreps_in=hidden_irreps,
-                        MLP_irreps=MLP_irreps,
+                        MLP_irreps=density_MLP_irreps,
                         irreps_out=self.charges_irreps,
                         gate=gate,
                     )

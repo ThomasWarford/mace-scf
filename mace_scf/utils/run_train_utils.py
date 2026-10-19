@@ -327,6 +327,11 @@ def build_model(
                 field_norm_factor=args.field_norm_factor,
                 field_si=args.include_field_si,
                 use_linear_local_charges=args.use_linear_local_charges,
+                density_MLP_irreps=(
+                    o3.Irreps(args.density_MLP_irreps)
+                    if getattr(args, "density_MLP_irreps", None)
+                    else None
+                ),
                 atom_density_scaling=args.atom_density_scaling,
                 pbc_handling=args.electrostatic_pbc_method,
                 fermi_level_offset=args.fermi_level_offset,
