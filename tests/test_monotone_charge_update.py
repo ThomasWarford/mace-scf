@@ -191,8 +191,7 @@ def _block(cls, seed=4, **options):
 
 
 def _monotone_block(activation, seed=4):
-    """A monotone block away from its zero-initialised weights, so S depends on the
-    environment."""
+    """A monotone block with W and b away from their initial values."""
     block = _block(
         field_blocks.OneBodyMonotoneChargeUpdate,
         seed,
@@ -252,6 +251,11 @@ def test_monotone_block_initial_softness(activation):
         softness_init=SOFTNESS_INIT[activation],
     )
     node_attrs, node_feats, _ = _block_inputs(block)
+    softness = block.softness(node_attrs, node_feats)
+    # W h_i spreads S around softness_init, which sets the bias b
+    assert not torch.allclose(softness, softness[0, 0].expand_as(softness))
+    with torch.no_grad():
+        block.softness_linear.weight.zero_()
     softness = block.softness(node_attrs, node_feats)
     assert torch.allclose(softness, torch.full_like(softness, SOFTNESS_INIT[activation]))
 

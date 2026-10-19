@@ -608,7 +608,8 @@ class OneBodyMonotoneChargeUpdate(OneBodyVariableUpdate):
     The field features exclude each atom's own Coulomb potential by default (field_si
     off), so nothing in the features resists an atom's own charge growing. The SCF then
     only converges while S stays below roughly 1 / (own-site coefficient of the
-    normalised features), as for OneBodyVariableUpdate; hence the small softness_init.
+    normalised features), as for OneBodyVariableUpdate; hence the small softness_init,
+    which sets the per-element bias b (W h_i spreads S around it).
     """
 
     def _setup(
@@ -640,11 +641,12 @@ class OneBodyMonotoneChargeUpdate(OneBodyVariableUpdate):
         ), f"expected the monopole first, got {self.charges_irreps}"
         self.num_scalar_potentials = self.potential_irreps[0].mul
 
+        # e3nn's default init, as for the parent's layers: S starts spread around
+        # softness_init by the node features (0.025-0.11 for 0.05 on the trained MatPES
+        # vanilla backbone, whose scalar features have rms ~0.3)
         self.softness_linear = o3.Linear(
             self.node_feats_irreps, o3.Irreps(f"{self.num_scalar_potentials}x0e")
         )
-        with torch.no_grad():
-            self.softness_linear.weight.zero_()
         self.softness_bias = torch.nn.Parameter(
             torch.full(
                 (self.node_attrs_irreps.dim, self.num_scalar_potentials),
