@@ -8,10 +8,48 @@ from e3nn.io import CartesianTensor
 from e3nn import o3
 from e3nn.util.jit import compile_mode
 
+from mace.modules import RadialEmbeddingBlock
 from mace.modules.utils import (
     compute_forces,
     compute_hessians_vmap,
 )
+
+
+def make_radial_embedding(
+    r_max: float, num_bessel: int, num_polynomial_cutoff: int, radial_type: str
+) -> RadialEmbeddingBlock:
+    """The radial embedding every model uses, read with radial_features.
+
+    apply_cutoff=False returns the cutoff separately instead of folding it into the radial features, and each edge
+    block multiplies its edge MLP output by it. Folded in, interaction blocks that mix element embeddings into the
+    edge MLP (e.g. RealAgnosticResidualNonLinearInteractionBlock) are not zero at r_max, so energies and charges
+    jump whenever a pair crosses it.
+    """
+    return RadialEmbeddingBlock(
+        r_max=r_max,
+        num_bessel=num_bessel,
+        num_polynomial_cutoff=num_polynomial_cutoff,
+        radial_type=radial_type,
+        apply_cutoff=False, # cutoff applied to the interactions' edge MLP outputs, rather than radial features
+    )
+
+
+def radial_features(
+    radial_embedding: torch.nn.Module,
+    lengths: torch.Tensor,
+    node_attrs: torch.Tensor,
+    edge_index: torch.Tensor,
+    atomic_numbers: torch.Tensor,
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Radial edge features and the cutoff [n_edges, 1] that every edge block multiplies its output by.
+
+    Models saved before make_radial_embedding fold the cutoff into the features (MACE then returns None); for them
+    the cutoff here is 1, which leaves their outputs unchanged.
+    """
+    edge_feats, cutoff = radial_embedding(lengths, node_attrs, edge_index, atomic_numbers)
+    if cutoff is None:
+        cutoff = torch.ones_like(lengths)
+    return edge_feats, cutoff
 
 
 def get_change_of_basis() -> torch.Tensor:

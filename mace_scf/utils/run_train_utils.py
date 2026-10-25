@@ -94,6 +94,7 @@ def build_model(
             interaction_cls_first=mace.modules.interaction_classes[
                 args.interaction_first
             ],
+            apply_cutoff=False, # cutoff applied to the interactions' edge MLP outputs, rather than radial features
         )
     elif args.model == "ScaleShiftMACE":
         mean, std = mace.modules.scaling_classes[args.scaling](
@@ -106,6 +107,7 @@ def build_model(
             ],
             atomic_inter_scale=std,
             atomic_inter_shift=mean,
+            apply_cutoff=False, # cutoff applied to the interactions' edge MLP outputs, rather than radial features
         )
     elif args.model == "FixedChargeBaselinedMACE":
         formal_charges = ast.literal_eval(args.atomic_formal_charges)

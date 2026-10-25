@@ -17,7 +17,6 @@ from mace.modules import (
     LinearNodeEmbeddingBlock,
     LinearReadoutBlock,
     NonLinearReadoutBlock,
-    RadialEmbeddingBlock,
 )
 
 from graph_longrange.kspace import compute_k_vectors_flat
@@ -35,7 +34,7 @@ from .field_blocks import (
     MultiLayerFeatureMixer,
     GeneralNonLinearBiasReadoutBlock,
 )
-from .utils import compute_total_charge_dipole
+from .utils import compute_total_charge_dipole, make_radial_embedding, radial_features
 from .fixed_point_state import LocalState
 
 
@@ -140,11 +139,8 @@ class FixedPointCore(torch.nn.Module):
         self.node_embedding = LinearNodeEmbeddingBlock(
             irreps_in=node_attr_irreps, irreps_out=node_feats_irreps
         )
-        self.radial_embedding = RadialEmbeddingBlock(
-            r_max=r_max,
-            num_bessel=num_bessel,
-            num_polynomial_cutoff=num_polynomial_cutoff,
-            radial_type=radial_type,
+        self.radial_embedding = make_radial_embedding(
+            r_max, num_bessel, num_polynomial_cutoff, radial_type
         )
         edge_feats_irreps = o3.Irreps(f"{self.radial_embedding.out_dim}x0e")
 
@@ -418,8 +414,8 @@ class FixedPointCore(torch.nn.Module):
             shifts=data["shifts"],
         )
         edge_attrs = self.spherical_harmonics(permute_to_e3nn_convention(vectors))
-        edge_feats, cutoff = self.radial_embedding(
-            lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
+        edge_feats, cutoff = radial_features(
+            self.radial_embedding, lengths, data["node_attrs"], data["edge_index"], self.atomic_numbers
         )
 
         # K-space grid
@@ -449,6 +445,7 @@ class FixedPointCore(torch.nn.Module):
                 edge_attrs=edge_attrs,
                 edge_feats=edge_feats,
                 edge_index=data["edge_index"],
+                cutoff=cutoff,
             )
             node_feats = product(
                 node_feats=node_feats,
@@ -500,7 +497,7 @@ class FixedPointCore(torch.nn.Module):
             node_feats=node_feats,
             all_layer_feats=all_layer_feats,
             edge_attrs=edge_attrs,
-            edge_feats=edge_feats,
+            edge_feats=edge_feats * cutoff,  # cut already: the update blocks' edge MLPs see radial features only
             field_independent_charge_density=charge_density,
             positions=positions,
             energies=stacked_energies,
