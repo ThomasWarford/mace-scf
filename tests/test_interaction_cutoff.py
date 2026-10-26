@@ -15,6 +15,7 @@ from e3nn import o3
 import mace.modules
 from mace_scf.calculators.localsources import MACELocalCharges, MACELocalSplitCharges
 from mace_scf.electrostatics import LocalCharges, LocalSplitCharges
+from mace_scf.electrostatics.bonded_blocks import static_bond_transfer_blocks
 from mace_scf.electrostatics.compiled_localsources import build_compiled_local_source_evaluator
 
 R_MAX = 4.0
@@ -22,7 +23,7 @@ NONLINEAR = "RealAgnosticResidualNonLinearInteractionBlock"
 EPS = 1e-9  # small enough that the smooth change across the crossing is ~1e-9
 
 
-def _model(model_cls, interaction_name):
+def _model(model_cls, interaction_name, source_block="OxidationDependentSymmetricPredictionSourceBlock"):
     torch.set_default_dtype(torch.float64)
     torch.manual_seed(0)
     interaction = mace.modules.interaction_classes[interaction_name]
@@ -47,7 +48,7 @@ def _model(model_cls, interaction_name):
     if model_cls is LocalSplitCharges:
         kwargs.update(
             formal_charges_from_data=True,
-            static_bond_transfer_block="OxidationDependentSymmetricPredictionSourceBlock",
+            static_bond_transfer_block=source_block,
             oxidation_state_mixer="SumOxidationStateMixer",
             oxidation_state_range=(-2.0, 2.0),
         )
@@ -90,10 +91,18 @@ MODELS = [(LocalSplitCharges, MACELocalSplitCharges), (LocalCharges, MACELocalCh
 
 
 @pytest.mark.parametrize("compiled", [False, True])
-@pytest.mark.parametrize("interaction", ["RealAgnosticResidualInteractionBlock", NONLINEAR])
+@pytest.mark.parametrize("interaction", list(mace.modules.interaction_classes))
 @pytest.mark.parametrize("model_cls,calc_cls", MODELS)
 def test_continuous_at_r_max(tmp_path, model_cls, calc_cls, interaction, compiled):
     jumps = _across_r_max(tmp_path, _model(model_cls, interaction), calc_cls, compiled)
+    for key, jump in jumps.items():
+        assert jump < 1e-7, (key, jump)
+
+
+@pytest.mark.parametrize("source_block", list(static_bond_transfer_blocks))
+def test_lsc_source_blocks_continuous_at_r_max(tmp_path, source_block):
+    model = _model(LocalSplitCharges, NONLINEAR, source_block=source_block)
+    jumps = _across_r_max(tmp_path, model, MACELocalSplitCharges, compiled=False)
     for key, jump in jumps.items():
         assert jump < 1e-7, (key, jump)
 

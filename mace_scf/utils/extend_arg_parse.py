@@ -248,6 +248,8 @@ def extended_arg_parser() -> argparse.ArgumentParser:
             "--compute_polarizability",
             "--compute_atomic_dipole",
             "--restart_latest",
+            # every model applies the cutoff after the interactions' edge MLP (make_radial_embedding)
+            "--apply_cutoff",
         ],
     )
     parser.add_argument("--heads", required=True)
